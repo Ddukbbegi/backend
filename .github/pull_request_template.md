@@ -1,4 +1,4 @@
-- 제목 : ex) [FEAT] pull request template 작성
+- 제목 : ex) [FEAT] #(issue number)  pull request template 작성
   (확인 후 지워주세요)
 
 ## 🔎 작업 내용
