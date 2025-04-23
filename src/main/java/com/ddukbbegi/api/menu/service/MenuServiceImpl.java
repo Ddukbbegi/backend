@@ -3,6 +3,7 @@ package com.ddukbbegi.api.menu.service;
 import org.springframework.stereotype.Service;
 
 import com.ddukbbegi.api.menu.dto.request.NewMenuRequestDto;
+import com.ddukbbegi.api.menu.dto.response.DetailMenuResponseDto;
 import com.ddukbbegi.api.menu.entity.Menu;
 import com.ddukbbegi.api.menu.repository.MenuRepository;
 
@@ -19,6 +20,12 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class MenuServiceImpl implements MenuService{
 	private final MenuRepository menuRepository;
+
+	@Override
+	public DetailMenuResponseDto findMenuById(long id) {
+		Menu menu = menuRepository.findById(id).orElseThrow();
+		return DetailMenuResponseDto.toDto(menu);
+	}
 
 	@Override
 	public Long addNewMenu(long storeId, NewMenuRequestDto dto) {
