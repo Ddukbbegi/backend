@@ -13,13 +13,6 @@ import com.ddukbbegi.api.menu.service.MenuService;
 
 import lombok.RequiredArgsConstructor;
 
-/**
- * @packageName    : com.ddukbbegi.api.menu.controller
- * @fileName       : MenuController
- * @author         : yong
- * @date           : 4/23/25
- * @description    :
- */
 @RestController
 @RequestMapping("/api/stores/{storeId}/menus")
 @RequiredArgsConstructor
