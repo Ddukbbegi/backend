@@ -37,4 +37,9 @@ public class MenuServiceImpl implements MenuService{
 		menu.update(dto.getName(), dto.getPrice(), dto.getDescription(), dto.getCategory());
 		DetailMenuResponseDto.toDto(menu);
 	}
+
+	@Override
+	public void deleteMenuById(long menuId) {
+		menuRepository.deleteById(menuId);
+	}
 }

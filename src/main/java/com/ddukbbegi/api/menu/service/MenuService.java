@@ -10,4 +10,6 @@ public interface MenuService {
 	Long addNewMenu(long storeId, NewMenuRequestDto dto);
 
 	void updateMenuById(long id, UpdatingMenuRequestDto dto);
+
+	void deleteMenuById(long menuId);
 }
