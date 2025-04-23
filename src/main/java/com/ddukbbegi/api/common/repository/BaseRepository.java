@@ -1,6 +1,5 @@
 package com.ddukbbegi.api.common.repository;
 
-import com.ddukbbegi.api.menu.entity.Menu;
 import com.ddukbbegi.common.component.ResultCode;
 import com.ddukbbegi.common.exception.BusinessException;
 import org.springframework.data.jpa.repository.JpaRepository;
