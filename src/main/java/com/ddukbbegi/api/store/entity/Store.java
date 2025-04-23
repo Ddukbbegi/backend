@@ -6,16 +6,14 @@ import com.ddukbbegi.api.store.enums.DayOfWeekListConverter;
 import com.ddukbbegi.api.store.enums.StoreStatus;
 import com.ddukbbegi.api.user.entity.User;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalTime;
 import java.util.List;
 
 @Entity
 @Getter
+@Builder
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Store extends BaseUserEntity {
