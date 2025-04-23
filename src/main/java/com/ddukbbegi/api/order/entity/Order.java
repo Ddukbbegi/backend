@@ -12,6 +12,7 @@ import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
+@Table(name = "orders")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Order extends BaseTimeEntity {
 
@@ -35,5 +36,9 @@ public class Order extends BaseTimeEntity {
         this.store = store;
         this.orderStatus = OrderStatus.WAITING;
         this.requestComment = requestComment;
+    }
+
+    public void setId(long id) {
+        this.id = id;
     }
 }
