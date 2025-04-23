@@ -9,13 +9,6 @@ import com.ddukbbegi.api.menu.repository.MenuRepository;
 
 import lombok.RequiredArgsConstructor;
 
-/**
- * @packageName    : com.ddukbbegi.api.menu.service
- * @fileName       : MenuServiceImpl
- * @author         : yong
- * @date           : 4/23/25
- * @description    :
- */
 @Service
 @RequiredArgsConstructor
 public class MenuServiceImpl implements MenuService{
