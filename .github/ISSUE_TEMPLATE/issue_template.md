@@ -5,7 +5,7 @@ about: 기본 이슈 작성 형식입니다.
 ---
 
 <!-- Title convention
-Format → <Type>: <서술> 예)Feat: 카카오로그인 구현
+Format → <Type>: <서술> 예)[Feat] : 카카오로그인 구현
 Type : Label 중 대표성을 띄는 것 하나를 선택
 서술 : 첫 글자는 대문자.
 -->
