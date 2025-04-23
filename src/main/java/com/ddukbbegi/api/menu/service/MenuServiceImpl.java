@@ -1,9 +1,14 @@
 package com.ddukbbegi.api.menu.service;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.springframework.stereotype.Service;
 
 import com.ddukbbegi.api.menu.dto.request.NewMenuRequestDto;
 import com.ddukbbegi.api.menu.dto.request.UpdatingMenuRequestDto;
+import com.ddukbbegi.api.menu.dto.response.AllMenuResponseDto;
 import com.ddukbbegi.api.menu.dto.response.DetailMenuResponseDto;
 import com.ddukbbegi.api.menu.entity.Menu;
 import com.ddukbbegi.api.menu.repository.MenuRepository;
@@ -15,6 +20,13 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class MenuServiceImpl implements MenuService{
 	private final MenuRepository menuRepository;
+
+	@Override
+	public List<AllMenuResponseDto> findAllMenuByStore(long storeId){
+		return menuRepository.findAllMenuByStore(storeId).stream()
+			.map(menu -> AllMenuResponseDto.toDto(menu))
+			.collect(Collectors.toList());
+	}
 
 	@Override
 	public DetailMenuResponseDto findMenuById(long storeId, long id) {
