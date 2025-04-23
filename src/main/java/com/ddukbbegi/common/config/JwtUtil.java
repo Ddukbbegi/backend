@@ -110,7 +110,7 @@ public class JwtUtil {
      * JWT 서명을 위한 비밀 키 생성
      *
      * @param key
-     * @return
+     * @return Key
      */
     private Key createSigningKey(String key) {
         return new SecretKeySpec(Base64.getDecoder().decode(key), SignatureAlgorithm.HS256.getJcaName());
