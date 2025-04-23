@@ -16,7 +16,7 @@ public class MenuServiceImpl implements MenuService{
 
 	@Override
 	public DetailMenuResponseDto findMenuById(long id) {
-		Menu menu = menuRepository.findById(id).orElseThrow();
+		Menu menu = menuRepository.findByIdOrElseThrow(id);
 		return DetailMenuResponseDto.toDto(menu);
 	}
 
