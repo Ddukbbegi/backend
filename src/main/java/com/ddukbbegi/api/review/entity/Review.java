@@ -2,11 +2,9 @@ package com.ddukbbegi.api.review.entity;
 
 import com.ddukbbegi.api.common.entity.BaseUserEntity;
 import com.ddukbbegi.api.review.dto.AnonymousStatus;
+import com.ddukbbegi.api.review.dto.ReviewRequestDto;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.SQLRestriction;
 
 import java.time.LocalDateTime;
@@ -16,6 +14,7 @@ import java.time.LocalDateTime;
 @SQLRestriction("deleted_at IS NULL")
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Builder
 public class Review extends BaseUserEntity {
 
     @Id
@@ -57,5 +56,17 @@ public class Review extends BaseUserEntity {
     public void softDelete(){
         this.deletedAt = LocalDateTime.now();
     }
+
+    public static Review from(ReviewRequestDto dto) {
+        return Review.builder()
+                //user order 해야댐
+                .contents(dto.getContents())
+                .rate(dto.getRate())
+                .anonymousStatus(dto.getAnonymousStatus())
+                .build();
+    }
+
+
+
 
 }
