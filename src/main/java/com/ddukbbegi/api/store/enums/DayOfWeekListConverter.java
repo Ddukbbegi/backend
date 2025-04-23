@@ -5,6 +5,7 @@ import jakarta.persistence.Converter;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -21,8 +22,16 @@ public class DayOfWeekListConverter implements AttributeConverter<List<DayOfWeek
     // List<DayOfWeek> -> "SUN,MON"
     @Override
     public String convertToDatabaseColumn(List<DayOfWeek> attribute) {
-        return attribute == null ? "" :
-                attribute.stream().map(Enum::name).collect(Collectors.joining(","));
+        if (attribute == null) {
+            return "";
+        }
+
+        List<DayOfWeek> sortedAttribute = attribute.stream()
+                .distinct()
+                .sorted(Comparator.comparingInt(DayOfWeek::ordinal))
+                .toList();
+
+        return sortedAttribute.stream().map(Enum::name).collect(Collectors.joining(","));
     }
     
     // DB -> Entity 로딩 시 호출
