@@ -27,16 +27,16 @@ public class Store extends BaseUserEntity {
     private User user;
     
     @Column(nullable = false)
-    private String name;        // 가게 이름
+    private String name;
 
     @Column(nullable = false)
-    private String describe;    // 가게 소개
+    private String describe;
 
     @Column(nullable = false)
-    private Integer minDeliveryPrice;   // 최소주문금액
+    private Integer minDeliveryPrice;
 
     @Column(nullable = false)
-    private Integer deliveryTip;    // 배달팁
+    private Integer deliveryTip;
 
     @Column(nullable = false)
     @Convert(converter = DayOfWeekListConverter.class)
