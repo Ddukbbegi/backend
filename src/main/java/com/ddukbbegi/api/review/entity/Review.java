@@ -3,6 +3,7 @@ package com.ddukbbegi.api.review.entity;
 import com.ddukbbegi.api.common.entity.BaseUserEntity;
 import com.ddukbbegi.api.review.dto.AnonymousStatus;
 import com.ddukbbegi.api.review.dto.ReviewRequestDto;
+import com.ddukbbegi.api.review.dto.ReviewUpdateRequestDto;
 import com.ddukbbegi.api.user.entity.User;
 import jakarta.persistence.*;
 import lombok.*;
@@ -46,8 +47,11 @@ public class Review extends BaseUserEntity {
 //    @JoinColumn(name = "order_id")
 //    private Order order;
 
-    public void updateReview(){
+    public void updateReview(ReviewUpdateRequestDto requestDto){
 
+        this.contents = requestDto.getContents();
+        this.rate = requestDto.getRate();
+        this.anonymousStatus = requestDto.getAnonymousStatus();
     }
 
     public void updateReply(){
@@ -58,9 +62,10 @@ public class Review extends BaseUserEntity {
         this.deletedAt = LocalDateTime.now();
     }
 
-    public static Review from(ReviewRequestDto dto) {
+    public static Review from(User user, ReviewRequestDto dto) {
         return Review.builder()
                 //user order 해야댐
+                .user(user)
                 .contents(dto.getContents())
                 .rate(dto.getRate())
                 .anonymousStatus(dto.getAnonymousStatus())
