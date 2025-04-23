@@ -8,14 +8,6 @@ import jakarta.persistence.Id;
 import lombok.Builder;
 import lombok.Getter;
 
-/**
- * @packageName    : com.ddukbbegi.api.menu.entity
- * @fileName       : Menu
- * @author         : yong
- * @date           : 4/23/25
- * @description    :
- */
-
 @Entity
 @Getter
 public class Menu {
@@ -49,5 +41,12 @@ public class Menu {
 
 	public Menu() {
 
+	}
+
+	public void update(String name, int price, String description, String category) {
+		this.name = name;
+		this.price = price;
+		this.description = description;
+		this.category = category;
 	}
 }
