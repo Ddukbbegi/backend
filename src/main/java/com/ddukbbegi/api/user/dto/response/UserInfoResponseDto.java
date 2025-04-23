@@ -9,7 +9,7 @@ import lombok.Getter;
 public class UserInfoResponseDto {
     private String name;
 
-    public static UserInfoResponseDto toDto(User user) {
+    public static UserInfoResponseDto fromEntity(User user) {
         return new UserInfoResponseDto(user.getName());
     }
 }
