@@ -27,11 +27,13 @@ public class User extends BaseTimeEntity {
     @Column(nullable = false)
     private String name;
 
+    @Column(nullable = false)
     private String phone;
 
     @Enumerated(EnumType.STRING)
     private UserRole userRole;
 
+    @Column(nullable = false)
     private boolean isDeleted = Boolean.FALSE;
 
     public User(String email, String password, String name, String phone, UserRole userRole) {
