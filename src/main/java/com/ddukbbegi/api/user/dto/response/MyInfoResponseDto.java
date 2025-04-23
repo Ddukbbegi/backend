@@ -10,7 +10,7 @@ public class MyInfoResponseDto {
     private final String name;
     private final String email;
 
-    public static MyInfoResponseDto toDto(User user) {
+    public static MyInfoResponseDto fromEntity(User user) {
         return new MyInfoResponseDto(user.getName(), user.getEmail());
     }
 }

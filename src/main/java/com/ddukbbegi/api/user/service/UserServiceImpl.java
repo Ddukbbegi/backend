@@ -39,19 +39,19 @@ public class UserServiceImpl implements UserService {
 
         userRepository.save(user);
 
-        return SignupResponseDto.toDto(user.getId());
+        return SignupResponseDto.fromEntity(user.getId());
     }
 
     @Override
     public MyInfoResponseDto getUser(Long userId) {
         User findUser = userRepository.findByIdOrElseThrow(userId);
-        return MyInfoResponseDto.toDto(findUser);
+        return MyInfoResponseDto.fromEntity(findUser);
     }
 
     @Override
     public UserInfoResponseDto getUserById(Long userId) {
         User findUser = userRepository.findByIdOrElseThrow(userId);
-        return UserInfoResponseDto.toDto(findUser);
+        return UserInfoResponseDto.fromEntity(findUser);
     }
 
     @Transactional
