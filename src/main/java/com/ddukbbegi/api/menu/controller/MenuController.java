@@ -24,7 +24,7 @@ public class MenuController {
 
 	@GetMapping("/{menuId}")
 	public DetailMenuResponseDto findDetailMenu(@PathVariable long storeId, @PathVariable long menuId) {
-		return menuService.findMenuById(menuId);
+		return menuService.findMenuById(storeId, menuId);
 	}
 
 	@PostMapping

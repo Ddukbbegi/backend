@@ -17,11 +17,10 @@ public class MenuServiceImpl implements MenuService{
 	private final MenuRepository menuRepository;
 
 	@Override
-	public DetailMenuResponseDto findMenuById(long id) {
-		Menu menu = menuRepository.findByIdOrElseThrow(id);
+	public DetailMenuResponseDto findMenuById(long storeId, long id) {
+		Menu menu = menuRepository.findMenuById(storeId, id);
 		return DetailMenuResponseDto.toDto(menu);
 	}
-
 
 	@Override
 	@Transactional
@@ -39,7 +38,9 @@ public class MenuServiceImpl implements MenuService{
 	}
 
 	@Override
-	public void deleteMenuById(long menuId) {
-		menuRepository.deleteById(menuId);
+	@Transactional
+	public void deleteMenuById(long id) {
+		Menu menu = menuRepository.findById(id).orElseThrow();
+		menu.delete();
 	}
 }

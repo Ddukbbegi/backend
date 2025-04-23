@@ -5,7 +5,7 @@ import com.ddukbbegi.api.menu.dto.request.UpdatingMenuRequestDto;
 import com.ddukbbegi.api.menu.dto.response.DetailMenuResponseDto;
 
 public interface MenuService {
-	DetailMenuResponseDto findMenuById(long menuId);
+	DetailMenuResponseDto findMenuById(long storeId, long menuId);
 
 	Long addNewMenu(long storeId, NewMenuRequestDto dto);
 
