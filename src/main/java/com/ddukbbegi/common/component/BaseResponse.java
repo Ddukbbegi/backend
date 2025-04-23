@@ -31,6 +31,10 @@ public class BaseResponse<T> implements Serializable {
         return new BaseResponse<>(data, resultCode);
     }
 
+    public static <T> BaseResponse<T> success(ResultCode resultCode) {
+        return new BaseResponse<T>(null, resultCode);
+    }
+
     public static <T> BaseResponse<T> error(ResultCode resultCode, Exception e) {
         return new BaseResponse<>(JSONResult.failure(resultCode, e));
     }

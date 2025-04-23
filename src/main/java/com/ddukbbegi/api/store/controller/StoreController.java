@@ -15,13 +15,13 @@ public class StoreController {
 
     @GetMapping("/")
     public BaseResponse<?> success() {
-        return BaseResponse.success(null, ResultCode.OK);
+        return BaseResponse.success(ResultCode.OK);
     }
 
     @GetMapping("/fail")
     public BaseResponse<?> fail() {
         storeService.get();
-        return BaseResponse.success(null, ResultCode.OK);
+        return BaseResponse.success(ResultCode.OK);
     }
 
 }
