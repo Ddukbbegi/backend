@@ -17,6 +17,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Clock;
 import java.time.LocalTime;
 import java.util.List;
 
@@ -30,6 +31,12 @@ public class OrderService {
     private final StoreRepository storeRepository;
     private final OrderMenuRepository orderMenuRepository;
 
+    private final Clock clock;
+
+    protected LocalTime now() {
+        return LocalTime.now(clock);
+    }
+
     @Transactional
     public Long createOrder(OrderCreateRequestDto request, long userId) {
         User user = userRepository.findByIdOrElseThrow(userId);
@@ -39,12 +46,14 @@ public class OrderService {
                 .toList();
 
         List<Menu> menus = menuRepository.findAllByIdOrElseThrow(menuIds);
+        checkIsAllNotDeleted(menus);
+
         long storeId = menus.get(0).getStoreId();
 
         checkIsAllSameStore(menus, storeId);
         Store store = storeRepository.findByIdOrElseThrow(storeId);
 
-        LocalTime now = LocalTime.now();
+        LocalTime now = now();
         checkStoreIsWorking(now,store);
 
         checkIsTotalPriceOverMinDeliveryPrice(menus,request,store.getMinDeliveryPrice());
@@ -75,6 +84,14 @@ public class OrderService {
         return savedOrder.getId();
     }
 
+    private void checkIsAllNotDeleted(List<Menu> menus) {
+        for(Menu menu : menus) {
+            if (menu.isDeleted()) {
+                throw new BusinessException(ResultCode.MENU_IS_DELETED);
+            }
+        }
+    }
+
     private int checkIsTotalPriceOverMinDeliveryPrice(List<Menu> menus, OrderCreateRequestDto request, Integer minDeliveryPrice) {
         int totalPrice = 0;
         for (OrderCreateRequestDto.MenuOrderDto item : request.menus()) {
@@ -82,9 +99,7 @@ public class OrderService {
                     .filter(m -> m.getId().equals(item.menuId()))
                     .findFirst()
                     .orElseThrow();
-            if (menu.isDeleted()) {
-                throw new BusinessException(ResultCode.MENU_IS_DELETED);
-            }
+
             totalPrice += menu.getPrice() * item.count();
         }
 
