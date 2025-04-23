@@ -6,14 +6,16 @@ import com.ddukbbegi.api.store.enums.DayOfWeekListConverter;
 import com.ddukbbegi.api.store.enums.StoreStatus;
 import com.ddukbbegi.api.user.entity.User;
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalTime;
 import java.util.List;
 
-@Entity
 @Getter
-@Builder
+@Entity
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Store extends BaseUserEntity {
@@ -30,6 +32,12 @@ public class Store extends BaseUserEntity {
     private String name;
 
     @Column(nullable = false)
+    private String category;    // 추후 enum 타입으로 변경될 수 있음
+
+    @Column(nullable = false)
+    private String phoneNumber;
+
+    @Column(nullable = false)
     private String describe;
 
     @Column(nullable = false)
@@ -41,10 +49,6 @@ public class Store extends BaseUserEntity {
     @Column(nullable = false)
     @Convert(converter = DayOfWeekListConverter.class)
     private List<DayOfWeek> closedDays;   // 휴무일 ("SUN,MON"과 같은 형식으로 저장됨)
-
-    @Column(nullable = false)
-    @Enumerated(EnumType.STRING)
-    private StoreStatus status;     // 가게 영업 상태
 
     // 평일 영업/휴게 시간
     @Column(nullable = false) private LocalTime weekdayWorkingStartTime;
@@ -59,6 +63,12 @@ public class Store extends BaseUserEntity {
     @Column(nullable = false) private LocalTime weekendBreakEndTime;
 
     @Column(nullable = false)
-    private boolean isPermanentlyClosed;    // 폐업 여부
+    @Enumerated(EnumType.STRING)
+    private StoreStatus status = StoreStatus.CLOSED;     // 가게 영업 상태
+
+    @Column(nullable = false)
+    private boolean isPermanentlyClosed = false;    // 폐업 여부
+
+
 
 }
