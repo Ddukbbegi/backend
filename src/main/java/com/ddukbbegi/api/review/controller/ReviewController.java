@@ -9,10 +9,7 @@ import com.ddukbbegi.common.component.BaseResponse;
 import com.ddukbbegi.common.component.ResultCode;
 import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -21,7 +18,7 @@ public class ReviewController {
 
     private final ReviewService reviewService;
 
-    @GetMapping("/reviews")
+    @PostMapping("/reviews")
     public BaseResponse<ReviewResponseDto> saveReview(
             @RequestBody ReviewRequestDto requestDto
     ){
@@ -29,4 +26,6 @@ public class ReviewController {
         ReviewResponseDto responseDto = reviewService.saveReview(1L, requestDto);
         return BaseResponse.success(responseDto,ResultCode.CREATED);
     }
+
+
 }

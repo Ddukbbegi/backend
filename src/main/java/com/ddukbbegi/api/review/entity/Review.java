@@ -3,6 +3,7 @@ package com.ddukbbegi.api.review.entity;
 import com.ddukbbegi.api.common.entity.BaseUserEntity;
 import com.ddukbbegi.api.review.dto.AnonymousStatus;
 import com.ddukbbegi.api.review.dto.ReviewRequestDto;
+import com.ddukbbegi.api.user.entity.User;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.SQLRestriction;
@@ -37,9 +38,9 @@ public class Review extends BaseUserEntity {
     @Column(nullable = true)
     private String reply;
 
-//    @ManyToOne(fetch = FetchType.LAZY)
-//    @JoinColumn(name = "user_id")
-//    private User user;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    private User user;
 
 //    @ManyToOne(fetch = FetchType.LAZY)
 //    @JoinColumn(name = "order_id")
