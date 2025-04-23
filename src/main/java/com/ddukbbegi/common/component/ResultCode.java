@@ -24,7 +24,13 @@ public enum ResultCode {
     AUTHENTICATION_FAILED(HttpStatus.UNAUTHORIZED, "E102", "Authentication failed."),
     ACCESS_DENIED(HttpStatus.FORBIDDEN, "E103", "Access Denied."),
 
-    UNKNOWN_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "E999", "알 수 없는 오류");
+    UNKNOWN_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "E999", "알 수 없는 오류"),
+
+    /* 주문 도메인 */
+    CONTAIN_DIFFERENT_STORE_MENU(HttpStatus.BAD_REQUEST,"E201","서로 다른 가게의 메뉴가 포함되어 있습니다."),
+    STORE_NOT_WORKING(HttpStatus.BAD_REQUEST,"E202" ,"가게 운영중이 아닙니다." ),
+    MENU_IS_DELETED(HttpStatus.BAD_REQUEST, "E203", "삭제된 메뉴가 포함되어 있습니다."),
+    UNDER_MIN_DELIVERY_PRICE(HttpStatus.BAD_REQUEST, "E204", "최소 주문 금액이 충족되지 않았습니다." );
 
     private final HttpStatus status;
     private final String code;
