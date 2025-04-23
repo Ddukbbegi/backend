@@ -6,13 +6,6 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
-/**
- * @packageName    : com.ddukbbegi.api.menu.dto.response
- * @fileName       : DetailMenuResponseDto
- * @author         : yong
- * @date           : 4/23/25
- * @description    :
- */
 @Getter
 @RequiredArgsConstructor
 public class DetailMenuResponseDto {
