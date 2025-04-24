@@ -11,16 +11,10 @@ import java.util.Collection;
 @Getter
 public class CustomUserDetails implements UserDetails {
     private Long userId;
-    private String email;
-    private String password;
-    private UserRole userRole;
     private Collection<? extends GrantedAuthority> authorities;
 
-    public CustomUserDetails(Long userId, String email, String password, UserRole userRole, Collection<? extends GrantedAuthority> authorities) {
+    public CustomUserDetails(Long userId, Collection<? extends GrantedAuthority> authorities) {
         this.userId = userId;
-        this.email = email;
-        this.password = password;
-        this.userRole = userRole;
         this.authorities = authorities;
     }
 
@@ -28,18 +22,16 @@ public class CustomUserDetails implements UserDetails {
         return userId;
     }
 
-    public UserRole getUserRole() {
-        return userRole;
-    }
-
+    // Username 대신 userId 로 설정
     @Override
     public String getUsername() {
-        return email;  // 이메일 (아이디)
+        return String.valueOf(userId);  // 이메일 (아이디)
     }
 
+    // JWT 인증 방식에서는 Password 불필요
     @Override
     public String getPassword() {
-        return password;
+        return " ";
     }
 
     @Override
