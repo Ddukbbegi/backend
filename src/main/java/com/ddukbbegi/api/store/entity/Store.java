@@ -12,6 +12,7 @@ import java.time.LocalTime;
 import java.util.List;
 
 @Entity
+@Table(name = "stores")
 @Getter
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)

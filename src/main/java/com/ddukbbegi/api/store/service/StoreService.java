@@ -31,13 +31,13 @@ public class StoreService {
     @Transactional
     public StoreIdResponseDto registerStore(StoreRegisterRequestDto dto) {
 
+        User user = userRepository.findByIdOrElseThrow(1L); // TODO: user 연동
         if (!storeRepository.isStoreRegistrationAvailable(1L)) {    // TODO: user 연동
             throw new BusinessException(ResultCode.STORE_LIMIT_EXCEEDED);
         }
 
-        User user = userRepository.findByIdOrElseThrow(1L); // TODO: user 연동
-        Store entity = dto.toEntity(user);
-        Store savedStore = storeRepository.save(entity);
+        Store store = dto.toEntity(user);
+        Store savedStore = storeRepository.save(store);
 
         return StoreIdResponseDto.of(savedStore.getId());
     }
