@@ -66,6 +66,7 @@ class OrderServiceTest {
     @Test
     @DisplayName("정상적인 메뉴 리스트로 주문 생성에 성공한다")
     void createOrder_success() {
+        //given
         OrderCreateRequestDto request = new OrderCreateRequestDto(
                 List.of(
                         new OrderCreateRequestDto.MenuOrderDto(1L, 1),
@@ -94,13 +95,17 @@ class OrderServiceTest {
             return order;
         });
 
+        //when
         Long orderId = orderService.createOrder(request, 1L);
+
+        //then
         assertThat(orderId).isEqualTo(100L);
     }
 
     @Test
     @DisplayName("삭제된 메뉴가 포함되어 있으면 예외가 발생한다")
     void createOrder_fail_dueToDeletedMenu() {
+        //given
         OrderCreateRequestDto request = new OrderCreateRequestDto(
                 List.of(
                         new OrderCreateRequestDto.MenuOrderDto(1L, 1),
@@ -115,6 +120,7 @@ class OrderServiceTest {
 
         given(menuRepository.findAllByIdOrElseThrow(anyList())).willReturn(List.of(menu1));
 
+        // when & then
         assertThatThrownBy(() -> orderService.createOrder(request, 1L))
                 .isInstanceOf(BusinessException.class);
     }
@@ -142,6 +148,7 @@ class OrderServiceTest {
     @Test
     @DisplayName("최소 주문 금액 미만이면 예외가 발생한다")
     void createOrder_fail_dueToUnderMinimumAmount() {
+        //given
         OrderCreateRequestDto request = new OrderCreateRequestDto(
                 List.of(new OrderCreateRequestDto.MenuOrderDto(1L, 1)),
                 "적은 금액"
@@ -159,6 +166,7 @@ class OrderServiceTest {
         given(menuRepository.findAllByIdOrElseThrow(anyList())).willReturn(List.of(menu));
         given(storeRepository.findByIdOrElseThrow(1L)).willReturn(store);
 
+        // when & then
         assertThatThrownBy(() -> orderService.createOrder(request, 1L))
                 .isInstanceOf(BusinessException.class);
     }
@@ -166,6 +174,7 @@ class OrderServiceTest {
     @Test
     @DisplayName("가게가 영업 시간이 아니면 예외가 발생한다")
     void createOrder_fail_dueToStoreClosed() {
+        //given
         OrderCreateRequestDto request = new OrderCreateRequestDto(
                 List.of(new OrderCreateRequestDto.MenuOrderDto(1L, 1)),
                 "닫은 가게"
@@ -182,6 +191,7 @@ class OrderServiceTest {
         given(menuRepository.findAllByIdOrElseThrow(anyList())).willReturn(List.of(menu));
         given(storeRepository.findByIdOrElseThrow(1L)).willReturn(store);
 
+        // when & then
         assertThatThrownBy(() -> orderService.createOrder(request, 1L))
                 .isInstanceOf(BusinessException.class);
     }
