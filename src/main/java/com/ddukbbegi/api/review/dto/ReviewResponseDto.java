@@ -1,36 +1,28 @@
 package com.ddukbbegi.api.review.dto;
 
+import com.ddukbbegi.api.review.entity.Review;
 
-import com.ddukbbegi.api.review.entity.Reviews;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
+public record ReviewResponseDto(
+        Long reviewId,
+        Long orderId,
+        String contents,
+        Float rate,
+        String writer,
+        String reply
+) {
 
-@Getter
-@Builder
-@AllArgsConstructor
-public class ReviewResponseDto {
-
-    private final Long reviewId;
-    private final Long orderId;
-    private final String contents;
-    private final Float rate;
-    private final String writer;
-    private final String reply;
-
-    public static ReviewResponseDto from(Reviews reviews) {
-        String writer = reviews.getAnonymousStatus() == AnonymousStatus.ANONYMOUS
+    public static ReviewResponseDto from(Review review) {
+        String writer = review.getAnonymousStatus() == AnonymousStatus.ANONYMOUS
                 ? "익명"
-                : reviews.getUser().getEmail(); // 추후 review.getUser().getNickname() 으로 교체
+                : review.getUser().getEmail(); // 추후 review.getUser().getNickname() 으로 교체
 
-        return ReviewResponseDto.builder()
-                .reviewId(reviews.getId())
-                .orderId(/* review.getOrder().getId() */ null) // 추후 추가
-                .contents(reviews.getContents())
-                .rate(reviews.getRate())
-                .writer(writer)
-                .reply(reviews.getReply())
-                .build();
+        return new ReviewResponseDto(
+                review.getId(),
+                /* review.getOrder().getId() */ null, // 추후 추가
+                review.getContents(),
+                review.getRate(),
+                writer,
+                review.getReply()
+        );
     }
-
 }

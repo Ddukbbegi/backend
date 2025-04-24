@@ -17,7 +17,8 @@ import java.time.LocalDateTime;
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Builder
-public class Reviews extends BaseUserEntity {
+@Table(name = "reviews")
+public class Review extends BaseUserEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -49,9 +50,9 @@ public class Reviews extends BaseUserEntity {
 
     public void updateReview(ReviewUpdateRequestDto requestDto){
 
-        this.contents = requestDto.getContents();
-        this.rate = requestDto.getRate();
-        this.anonymousStatus = requestDto.getAnonymousStatus();
+        this.contents = requestDto.contents();
+        this.rate = requestDto.rate();
+        this.anonymousStatus = requestDto.anonymousStatus();
     }
 
     public void updateReply(String reply){
@@ -62,13 +63,13 @@ public class Reviews extends BaseUserEntity {
         this.deletedAt = LocalDateTime.now();
     }
 
-    public static Reviews from(User user, ReviewRequestDto dto) {
-        return Reviews.builder()
+    public static Review from(User user, ReviewRequestDto dto) {
+        return Review.builder()
                 //order 해야댐
                 .user(user)
-                .contents(dto.getContents())
-                .rate(dto.getRate())
-                .anonymousStatus(dto.getAnonymousStatus())
+                .contents(dto.contents())
+                .rate(dto.rate())
+                .anonymousStatus(dto.anonymousStatus())
                 .build();
     }
     @PrePersist
