@@ -3,24 +3,15 @@ package com.ddukbbegi.api.store.dto.request;
 import com.ddukbbegi.api.store.entity.Store;
 import com.ddukbbegi.api.user.entity.User;
 import jakarta.validation.Valid;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
 import org.springframework.data.util.Pair;
 
 import java.time.LocalTime;
 
-@Getter
-@AllArgsConstructor
-public class StoreRegisterRequestDto {
-
-    @Valid
-    private StoreBasicInfoDto basicInfoDto;
-
-    @Valid
-    private StoreOperationInfoDto operationInfo;
-
-    @Valid
-    private StoreOrderSettingsInfo orderSettingsInfo;
+public record StoreRegisterRequestDto(
+        @Valid StoreBasicInfoDto basicInfoDto,
+        @Valid StoreOperationInfoDto operationInfo,
+        @Valid StoreOrderSettingsInfo orderSettingsInfo
+) {
 
     public Store toEntity(User user) {
 
@@ -33,10 +24,10 @@ public class StoreRegisterRequestDto {
 
         return Store.builder()
                 .user(user)
-                .name(basicInfoDto.getName())
+                .name(basicInfoDto.name())
                 .category(basicInfoDto.getCategory())
-                .phoneNumber(basicInfoDto.getPhoneNumber())
-                .description(basicInfoDto.getDescription())
+                .phoneNumber(basicInfoDto.phoneNumber())
+                .description(basicInfoDto.description())
 
                 .closedDays(parsedOperationInfo.getClosedDays())
                 .weekdayWorkingStartTime(weekdayWorkingTime.getFirst())
@@ -48,8 +39,8 @@ public class StoreRegisterRequestDto {
                 .weekendBreakStartTime(weekendBreakTime.getFirst())
                 .weekendBreakEndTime(weekendBreakTime.getSecond())
 
-                .minDeliveryPrice(orderSettingsInfo.getMinDeliveryPrice())
-                .deliveryTip(orderSettingsInfo.getDeliveryTip())
+                .minDeliveryPrice(orderSettingsInfo.minDeliveryPrice())
+                .deliveryTip(orderSettingsInfo.deliveryTip())
 
                 .build();
     }
