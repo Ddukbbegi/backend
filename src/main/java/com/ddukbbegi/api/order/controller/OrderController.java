@@ -9,13 +9,15 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/orders")
+@RequestMapping("/api")
 @RequiredArgsConstructor
 public class OrderController {
     private final OrderService orderService;
 
-    @PostMapping
+    @PostMapping("/orders")
     public BaseResponse<Long> createOrder(@Validated @RequestBody OrderCreateRequestDto request) {
         return BaseResponse.success(orderService.createOrder(request, 1L), ResultCode.OK);
     }
+
+
 }
