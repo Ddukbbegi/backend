@@ -16,7 +16,7 @@ import lombok.*;
                 @UniqueConstraint(columnNames = {"review_id", "user_id"})
         }
 )
-public class ReviewLike extends BaseUserEntity {
+public class ReviewLikes extends BaseUserEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -24,15 +24,15 @@ public class ReviewLike extends BaseUserEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "review_id")
-    private Review review;
+    private Reviews reviews;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;
 
-    public static ReviewLike from(Review review, User user) {
-        return ReviewLike.builder()
-                .review(review)
+    public static ReviewLikes from(Reviews reviews, User user) {
+        return ReviewLikes.builder()
+                .reviews(reviews)
                 .user(user)
                 .build();
     }
