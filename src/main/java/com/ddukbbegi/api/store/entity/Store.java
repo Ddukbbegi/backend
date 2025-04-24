@@ -4,6 +4,7 @@ import com.ddukbbegi.api.common.entity.BaseUserEntity;
 import com.ddukbbegi.api.store.enums.DayOfWeek;
 import com.ddukbbegi.api.store.enums.DayOfWeekListConverter;
 import com.ddukbbegi.api.store.enums.StoreCategory;
+import com.ddukbbegi.api.store.enums.StoreStatus;
 import com.ddukbbegi.api.user.entity.User;
 import jakarta.persistence.*;
 import lombok.*;
@@ -66,6 +67,10 @@ public class Store extends BaseUserEntity {
 
     @Column(nullable = false)
     private boolean isPermanentlyClosed = false;    // 폐업 여부
+    
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    private StoreStatus status = StoreStatus.CLOSED;     // 가게 영업 상태. 10분마다 업데이트 됨
 
     @Builder
     public Store(User user,
@@ -143,6 +148,10 @@ public class Store extends BaseUserEntity {
 
     public void updatePermanentlyClosed(boolean status) {
         this.isPermanentlyClosed = status;
+    }
+
+    public void updateStatus(StoreStatus status) {
+        this.status = status;
     }
 
 }
