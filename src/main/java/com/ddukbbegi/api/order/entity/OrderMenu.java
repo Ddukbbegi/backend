@@ -1,5 +1,6 @@
 package com.ddukbbegi.api.order.entity;
 
+import com.ddukbbegi.api.common.entity.BaseUserEntity;
 import com.ddukbbegi.api.menu.entity.Menu;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -10,7 +11,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class OrderMenu {
+public class OrderMenu extends BaseUserEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

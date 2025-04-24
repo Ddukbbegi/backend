@@ -1,6 +1,6 @@
 package com.ddukbbegi.api.order.entity;
 
-import com.ddukbbegi.api.common.entity.BaseTimeEntity;
+import com.ddukbbegi.api.common.entity.BaseUserEntity;
 import com.ddukbbegi.api.order.enums.OrderStatus;
 import com.ddukbbegi.api.store.entity.Store;
 import com.ddukbbegi.api.user.entity.User;
@@ -14,7 +14,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @Table(name = "orders")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Order extends BaseTimeEntity {
+public class Order extends BaseUserEntity {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
