@@ -18,7 +18,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalTime;
 import java.util.List;
 
 @Service
@@ -71,21 +70,21 @@ public class StoreService {
 
         // TODO: 서비스 레이어에서 dto의 값을 직접 풀어서 entity로 전달하는 것은 좋지 않은 방법이다
         // 추후 MapStruct 등의 방법을 사용해 대체할 예정
-        StoreBasicInfoDto basicInfoDto = dto.getBasicInfoDto();
+        StoreBasicInfoDto basicInfoDto = dto.basicInfoDto();
 
         Store store = storeRepository.findByIdOrElseThrow(storeId);
         store.updateBasicInfo(
-                basicInfoDto.getName(),
+                basicInfoDto.name(),
                 basicInfoDto.getCategory(),
-                basicInfoDto.getPhoneNumber(),
-                basicInfoDto.getDescription()
+                basicInfoDto.phoneNumber(),
+                basicInfoDto.description()
         );
     }
 
     @Transactional
     public void updateStoreOperationInfo(Long storeId, StoreUpdateOperationInfoRequestDto dto) {
 
-        StoreOperationInfoDto.ParsedOperationInfo parsedData = dto.getOperationInfo().toParsedData();
+        StoreOperationInfoDto.ParsedOperationInfo parsedData = dto.operationInfo().toParsedData();
 
         Store store = storeRepository.findByIdOrElseThrow(storeId);
         store.updateOperationInfo(
@@ -104,24 +103,24 @@ public class StoreService {
     @Transactional
     public void updateStoreOrderSettings(Long storeId, StoreUpdateOrderSettingsRequestDto dto) {
 
-        StoreOrderSettingsInfo orderSettingsInfo = dto.getOrderSettingsInfo();
+        StoreOrderSettingsInfo orderSettingsInfo = dto.orderSettingsInfo();
 
         Store store = storeRepository.findByIdOrElseThrow(storeId);
         store.updateOrderSettings(
-                orderSettingsInfo.getMinDeliveryPrice(),
-                orderSettingsInfo.getDeliveryTip()
+                orderSettingsInfo.minDeliveryPrice(),
+                orderSettingsInfo.deliveryTip()
         );
     }
 
     public void updateTemporarilyClosed(Long storeId, StoreUpdateStatusRequest dto) {
 
         Store store = storeRepository.findByIdOrElseThrow(storeId);
-        store.updateTemporarilyClosed(dto.isStatus());
+        store.updateTemporarilyClosed(dto.status());
     }
 
     public void updatePermanentlyClosed(Long storeId, StoreUpdateStatusRequest dto) {
 
         Store store = storeRepository.findByIdOrElseThrow(storeId);
-        store.updatePermanentlyClosed(dto.isStatus());
+        store.updatePermanentlyClosed(dto.status());
     }
 }

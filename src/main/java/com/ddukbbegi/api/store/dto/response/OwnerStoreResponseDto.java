@@ -2,19 +2,15 @@ package com.ddukbbegi.api.store.dto.response;
 
 import com.ddukbbegi.api.store.entity.Store;
 import com.ddukbbegi.api.store.enums.StoreStatus;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
 
-@Getter
-@AllArgsConstructor
-public class OwnerStoreResponseDto {
-
-    private Long storeId;
-    private String name;
-    private String category;
-    private StoreStatus status;
-    private boolean isTemporarilyClosed;
-    private boolean isPermanentlyClosed;
+public record OwnerStoreResponseDto(
+        Long storeId,
+        String name,
+        String category,
+        StoreStatus status,
+        boolean isTemporarilyClosed,
+        boolean isPermanentlyClosed
+) {
 
     public static OwnerStoreResponseDto fromEntity(Store store) {
         return new OwnerStoreResponseDto(

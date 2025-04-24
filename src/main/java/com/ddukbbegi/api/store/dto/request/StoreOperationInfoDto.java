@@ -11,27 +11,15 @@ import java.time.LocalTime;
 import java.util.Arrays;
 import java.util.List;
 
-@Getter
-@AllArgsConstructor
-public class StoreOperationInfoDto {
-
-    @Pattern(
-            regexp = "^(MON|TUE|WED|THU|FRI|SAT|SUN)(,(MON|TUE|WED|THU|FRI|SAT|SUN)){0,6}$",
-            message = "정기 휴무일 형식이 올바르지 않습니다. 예: SUN,MON"
-    )
-    private String closedDays;
-
-    @Pattern(regexp = "^\\d{2}:\\d{2}-\\d{2}:\\d{2}$", message = "시간 형식은 HH:mm-HH:mm 이어야 합니다.")
-    private String weekdayWorkingTime;
-
-    @Pattern(regexp = "^\\d{2}:\\d{2}-\\d{2}:\\d{2}$", message = "시간 형식은 HH:mm-HH:mm 이어야 합니다.")
-    private String weekdayBreakTime;
-
-    @Pattern(regexp = "^\\d{2}:\\d{2}-\\d{2}:\\d{2}$", message = "시간 형식은 HH:mm-HH:mm 이어야 합니다.")
-    private String weekendWorkingTime;
-
-    @Pattern(regexp = "^\\d{2}:\\d{2}-\\d{2}:\\d{2}$", message = "시간 형식은 HH:mm-HH:mm 이어야 합니다.")
-    private String weekendBreakTime;
+public record StoreOperationInfoDto(
+        @Pattern(
+                regexp = "^(MON|TUE|WED|THU|FRI|SAT|SUN)(,(MON|TUE|WED|THU|FRI|SAT|SUN)){0,6}$",
+                message = "정기 휴무일 형식이 올바르지 않습니다. 예: SUN,MON"
+        ) String closedDays,
+        @Pattern(regexp = "^\\d{2}:\\d{2}-\\d{2}:\\d{2}$", message = "시간 형식은 HH:mm-HH:mm 이어야 합니다.") String weekdayWorkingTime,
+        @Pattern(regexp = "^\\d{2}:\\d{2}-\\d{2}:\\d{2}$", message = "시간 형식은 HH:mm-HH:mm 이어야 합니다.") String weekdayBreakTime,
+        @Pattern(regexp = "^\\d{2}:\\d{2}-\\d{2}:\\d{2}$", message = "시간 형식은 HH:mm-HH:mm 이어야 합니다.") String weekendWorkingTime,
+        @Pattern(regexp = "^\\d{2}:\\d{2}-\\d{2}:\\d{2}$", message = "시간 형식은 HH:mm-HH:mm 이어야 합니다.") String weekendBreakTime) {
 
     /**
      * 내부 파싱 로직을 통해 Entity 빌더에서 사용하기 좋은 자료형으로 변환

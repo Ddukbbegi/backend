@@ -1,18 +1,14 @@
 package com.ddukbbegi.api.store.dto.response;
 
 import com.ddukbbegi.api.store.entity.Store;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
 
-@Getter
-@AllArgsConstructor
-public class StorePageItemResponseDto {
-
-    private String name;
-    private String description;
-    private String storeCategory;
-    private Integer minDeliveryPrice;
-    private Integer deliveryTip;
+public record StorePageItemResponseDto(
+        String name,
+        String description,
+        String storeCategory,
+        Integer minDeliveryPrice,
+        Integer deliveryTip
+) {
 
     public static StorePageItemResponseDto fromEntity(Store store) {
 
