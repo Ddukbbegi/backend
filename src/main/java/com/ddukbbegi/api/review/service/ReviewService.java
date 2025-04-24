@@ -1,6 +1,12 @@
 package com.ddukbbegi.api.review.service;
 
 
+import com.ddukbbegi.api.menu.entity.Menu;
+import com.ddukbbegi.api.menu.repository.MenuRepository;
+import com.ddukbbegi.api.order.entity.Order;
+import com.ddukbbegi.api.order.entity.OrderMenu;
+import com.ddukbbegi.api.order.repository.OrderMenuRepository;
+import com.ddukbbegi.api.order.repository.OrderRepository;
 import com.ddukbbegi.api.review.dto.ReviewOwnerRequestDto;
 import com.ddukbbegi.api.review.dto.ReviewRequestDto;
 import com.ddukbbegi.api.review.dto.ReviewResponseDto;
@@ -9,6 +15,8 @@ import com.ddukbbegi.api.review.entity.Review;
 import com.ddukbbegi.api.review.entity.ReviewLike;
 import com.ddukbbegi.api.review.repository.ReviewLikeRepository;
 import com.ddukbbegi.api.review.repository.ReviewRepository;
+import com.ddukbbegi.api.store.entity.Store;
+import com.ddukbbegi.api.store.repository.StoreRepository;
 import com.ddukbbegi.api.user.entity.User;
 import com.ddukbbegi.api.user.enums.UserRole;
 import com.ddukbbegi.api.user.repository.UserRepository;
@@ -28,14 +36,15 @@ public class ReviewService {
     private final ReviewRepository reviewRepository;
     private final UserRepository userRepository;
     private final ReviewLikeRepository reviewLikeRepository;
-    //private final OrderRepository orderRepository;
+    private final OrderRepository orderRepository;
+    private final StoreRepository storeRepository;
 
     public ReviewResponseDto saveReview(Long userId, ReviewRequestDto requestDto){
         //주문테이블에 주문식별자로 존재 확인
-        User user = userRepository.findByIdOrElseThrow(userId);
-
+        Order findOrder = orderRepository.findByIdOrElseThrow(requestDto.orderId());
+        User findUser = userRepository.findByIdOrElseThrow(userId);
         //dto to entity
-        Review review = Review.from(user, requestDto);
+        Review review = Review.from(findUser, findOrder,requestDto);
         //리뷰 저장
         Review savedReview = reviewRepository.save(review);
         //리턴
@@ -47,6 +56,13 @@ public class ReviewService {
     public Page<ReviewResponseDto> findAllMyReviews(Long userId, Pageable pageable){
         User finduser = userRepository.findByIdOrElseThrow(userId);
         Page<Review> reviews = reviewRepository.findAllByUser(finduser,pageable);
+        return reviews.map(ReviewResponseDto::from);
+    }
+
+    @Transactional(readOnly = true)
+    public Page<ReviewResponseDto> findAllStoreReviews(Long storeId, Pageable pageable){
+        Store findStore = storeRepository.findByIdOrElseThrow(storeId);
+        Page<Review> reviews = reviewRepository.findByOrder_Store(findStore, pageable);
         return reviews.map(ReviewResponseDto::from);
     }
 

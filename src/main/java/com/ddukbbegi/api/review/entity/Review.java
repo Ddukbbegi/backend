@@ -1,6 +1,7 @@
 package com.ddukbbegi.api.review.entity;
 
 import com.ddukbbegi.api.common.entity.BaseUserEntity;
+import com.ddukbbegi.api.order.entity.Order;
 import com.ddukbbegi.api.review.dto.AnonymousStatus;
 import com.ddukbbegi.api.review.dto.ReviewRequestDto;
 import com.ddukbbegi.api.review.dto.ReviewUpdateRequestDto;
@@ -44,9 +45,9 @@ public class Review extends BaseUserEntity {
     @JoinColumn(name = "user_id")
     private User user;
 
-//    @ManyToOne(fetch = FetchType.LAZY)
-//    @JoinColumn(name = "order_id")
-//    private Order order;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "order_id")
+    private Order order;
 
     public void updateReview(ReviewUpdateRequestDto requestDto){
 
@@ -63,9 +64,9 @@ public class Review extends BaseUserEntity {
         this.deletedAt = LocalDateTime.now();
     }
 
-    public static Review from(User user, ReviewRequestDto dto) {
+    public static Review from(User user, Order order , ReviewRequestDto dto) {
         return Review.builder()
-                //order 해야댐
+                .order(order)
                 .user(user)
                 .contents(dto.contents())
                 .rate(dto.rate())
