@@ -30,7 +30,7 @@ public class Store extends BaseUserEntity {
     private String name;
 
     @Column(nullable = false)
-    private String describe;
+    private String description;
 
     @Column(nullable = false)
     private Integer minDeliveryPrice;

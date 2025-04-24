@@ -30,8 +30,8 @@ public class Review extends BaseUserEntity {
     private Float rate;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false, columnDefinition = "VARCHAR(20) DEFAULT 'NON_ANONYMOUS'")
-    private AnonymousStatus anonymousStatus = AnonymousStatus.NON_ANONYMOUS;
+    @Column(nullable = false)
+    private AnonymousStatus anonymousStatus;
 
     @Column(nullable = true)
     private LocalDateTime deletedAt;
@@ -54,8 +54,8 @@ public class Review extends BaseUserEntity {
         this.anonymousStatus = requestDto.getAnonymousStatus();
     }
 
-    public void updateReply(){
-
+    public void updateReply(String reply){
+        this.reply = reply;
     }
 
     public void softDelete(){
@@ -64,12 +64,18 @@ public class Review extends BaseUserEntity {
 
     public static Review from(User user, ReviewRequestDto dto) {
         return Review.builder()
-                //user order 해야댐
+                //order 해야댐
                 .user(user)
                 .contents(dto.getContents())
                 .rate(dto.getRate())
                 .anonymousStatus(dto.getAnonymousStatus())
                 .build();
+    }
+    @PrePersist
+    public void prePersist() {
+        if (anonymousStatus == null) {
+            anonymousStatus = AnonymousStatus.NON_ANONYMOUS;
+        }
     }
 
 

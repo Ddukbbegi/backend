@@ -15,7 +15,6 @@ public class ReviewRequestDto {
     private Long orderId;
     private String contents;
     private Float rate;
-    @Builder.Default
-    private AnonymousStatus anonymousStatus = AnonymousStatus.NON_ANONYMOUS;
+    private AnonymousStatus anonymousStatus;
 
 }
