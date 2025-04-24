@@ -3,19 +3,14 @@ package com.ddukbbegi.api.menu.dto.request;
 import com.ddukbbegi.api.menu.entity.Menu;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
-import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 
-@Builder
 @JsonIgnoreProperties(ignoreUnknown = true)
-public record NewMenuRequestDto(
+public record UpdatingMenuRequestDto(
 	@NotBlank(message = "이름은 필수 항목입니다.")
 	@Size(max = 50, message = "이름은 50자 이내로 입력해주세요.")
 	String name,
@@ -29,19 +24,7 @@ public record NewMenuRequestDto(
 	String description,
 
 	@Size(max = 100, message = "카테고리는 100자 이내로 입력해주세요.")
-	String category,
-
-	@NotNull(message = "옵션 여부는 true 또는 false로 입력해주세요.")
-	Boolean isOption
+	String category
 ) {
-	public Menu toEntity(long storeId) {
-		return Menu.builder()
-			.name(name)
-			.price(price)
-			.description(description)
-			.category(category)
-			.isOption(isOption)
-			.storeId(storeId)
-			.build();
-	}
+
 }

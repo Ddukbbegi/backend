@@ -49,5 +49,4 @@ public class Menu {
 	public void delete() {
 		this.isDeleted = true;
 	}
-
 }
