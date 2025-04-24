@@ -148,19 +148,21 @@ public class OrderService {
                 OrderHistoryUserResponseDto.from(
                         order,
                         orderMenuMap.getOrDefault(order.getId(), List.of()),
-                        isReviewed(orderIds, order)
+                        false
+                        //todo: Review에 Order 참조되면 주석 해제
+                        //isReviewed(orderIds, order)
                 )
         );
 
         return PageResponseDto.toDto(result);
     }
 
-    private boolean isReviewed(List<Long> orderIds, Order order) {
-        List<Long> reviewedOrderIds = reviewRepository.findReviewedOrderIds(orderIds);
-        Set<Long> reviewedOrderIdSet = new HashSet<>(reviewedOrderIds);
-
-        return reviewedOrderIdSet.contains(order.getId());
-    }
+//    private boolean isReviewed(List<Long> orderIds, Order order) {
+//        List<Long> reviewedOrderIds = reviewRepository.findReviewedOrderIds(orderIds);
+//        Set<Long> reviewedOrderIdSet = new HashSet<>(reviewedOrderIds);
+//
+//        return reviewedOrderIdSet.contains(order.getId());
+//    }
 
     @Transactional(readOnly = true)
     public PageResponseDto<OrderHistoryOwnerResponseDto> getOrdersForOwner(long storeId, Pageable pageable) {
