@@ -22,18 +22,15 @@ public class CustomUserDetailsService implements UserDetailsService {
     private final UserRepository userRepository;
 
     @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        // 데이터베이스에서 이메일로 사용자 조회
-        User userEntity = userRepository.findByEmail(username)
+    public UserDetails loadUserByUsername(String userId) throws UsernameNotFoundException {
+        // 데이터베이스에서 userId로 사용자 조회
+        User userEntity = userRepository.findById(Long.valueOf(userId))
                 .orElseThrow(() ->
                         new BusinessException(ResultCode.NOT_FOUND));
 
         // 사용자 정보를 CustomUserDetails 객체로 반환
         return new CustomUserDetails(
                 userEntity.getId(),  // userId
-                userEntity.getEmail(),  // 이메일
-                userEntity.getPassword(), // 비밀번호
-                userEntity.getUserRole(), // userRole
                 getAuthorities(userEntity) // 권한 설정
         );
     }
