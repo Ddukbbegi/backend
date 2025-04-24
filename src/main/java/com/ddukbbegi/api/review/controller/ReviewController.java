@@ -24,7 +24,6 @@ public class ReviewController {
 
     private final ReviewService reviewService;
 
-    //리뷰생성
     @PostMapping("/reviews")
     public BaseResponse<ReviewResponseDto> saveReview(
             @Valid @RequestBody ReviewRequestDto requestDto
@@ -35,7 +34,6 @@ public class ReviewController {
     }
 
 
-    //나의 리뷰 조회
     @GetMapping("/users/reviews")
     public BaseResponse<PageResponseDto<ReviewResponseDto>> findAllMyReviews(
             //유저 정보 추후 인증인가 적용후 구현
@@ -46,7 +44,6 @@ public class ReviewController {
         return BaseResponse.success(dto,ResultCode.OK);
     }
 
-    //리뷰 업데이트
     @PatchMapping("/reviews/{reviewId}")
     public BaseResponse<ReviewResponseDto> updateReview(
             @Positive @PathVariable Long reviewId,
@@ -57,7 +54,6 @@ public class ReviewController {
         return BaseResponse.success(responseDto, ResultCode.OK);
     }
 
-    //리뷰 삭제
     @DeleteMapping("/reviews/{reviewId}")
     public BaseResponse<Void> deleteReview(@Positive @PathVariable Long reviewId){
         {   reviewService.deleteReview(reviewId);
@@ -65,7 +61,6 @@ public class ReviewController {
         }
     }
 
-    //관리자 답글
     @PostMapping("/owners/reivews/{reviewId}/reply")
     public BaseResponse<ReviewResponseDto> saveReviewReply(
             @Positive @PathVariable Long reviewId,
@@ -75,7 +70,6 @@ public class ReviewController {
         ReviewResponseDto responseDto = reviewService.saveReviewReply(ownerId, reviewId, requestDto);
         return BaseResponse.success(responseDto, ResultCode.OK);
     }
-    //관리자 답글 수정
     @PatchMapping("/owners/reivews/{reviewId}/reply-update")
     public BaseResponse<ReviewResponseDto> updateReviewReply(
             @Positive @PathVariable Long reviewId,
@@ -85,7 +79,6 @@ public class ReviewController {
         ReviewResponseDto responseDto = reviewService.updateReviewReply(ownerId, reviewId, requestDto);
         return BaseResponse.success(responseDto, ResultCode.OK);
     }
-    //관리자 답글 삭제
     @DeleteMapping("/owners/reivews/{reviewId}/reply-delete")
     public BaseResponse<Void> deleteReviewReply(
             @Positive @PathVariable Long reviewId
@@ -95,7 +88,6 @@ public class ReviewController {
         return BaseResponse.success(ResultCode.NO_CONTENT);
     }
 
-    //리뷰 좋아요
     @PostMapping("/reviews/{reviewId}/likes")
     public BaseResponse<Void> saveLike(
             @Positive @PathVariable Long reviewId
@@ -104,7 +96,6 @@ public class ReviewController {
         reviewService.saveLike(userId, reviewId);
         return BaseResponse.success(ResultCode.OK);
     }
-    //리뷰 좋아요 취소
     @DeleteMapping("/reviews/{reviewId}/likes")
     public BaseResponse<Void> deleteLike(
             @Positive @PathVariable Long reviewId
