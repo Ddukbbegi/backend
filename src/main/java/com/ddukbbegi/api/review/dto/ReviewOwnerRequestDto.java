@@ -1,6 +1,7 @@
 package com.ddukbbegi.api.review.dto;
 
 
+import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -8,5 +9,6 @@ import lombok.Getter;
 @AllArgsConstructor
 public class ReviewOwnerRequestDto {
 
+    @NotBlank
     private String contents;
 }
