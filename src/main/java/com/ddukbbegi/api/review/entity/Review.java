@@ -50,9 +50,9 @@ public class Review extends BaseUserEntity {
 
     public void updateReview(ReviewUpdateRequestDto requestDto){
 
-        this.contents = requestDto.getContents();
-        this.rate = requestDto.getRate();
-        this.anonymousStatus = requestDto.getAnonymousStatus();
+        this.contents = requestDto.contents();
+        this.rate = requestDto.rate();
+        this.anonymousStatus = requestDto.anonymousStatus();
     }
 
     public void updateReply(String reply){
@@ -67,9 +67,9 @@ public class Review extends BaseUserEntity {
         return Review.builder()
                 //order 해야댐
                 .user(user)
-                .contents(dto.getContents())
-                .rate(dto.getRate())
-                .anonymousStatus(dto.getAnonymousStatus())
+                .contents(dto.contents())
+                .rate(dto.rate())
+                .anonymousStatus(dto.anonymousStatus())
                 .build();
     }
     @PrePersist

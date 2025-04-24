@@ -80,7 +80,7 @@ public class ReviewService {
         }
         Review findReview = reviewRepository.findById(reviewId)
                 .orElseThrow(()->new BusinessException(ResultCode.NOT_FOUND));
-        findReview.updateReply(requestDto.getContents());
+        findReview.updateReply(requestDto.contents());
         return ReviewResponseDto.from(findReview);
     }
 
@@ -93,7 +93,7 @@ public class ReviewService {
         }
         Review findReview = reviewRepository.findById(reviewId)
                 .orElseThrow(()->new BusinessException(ResultCode.NOT_FOUND));
-        findReview.updateReply(requestDto.getContents());
+        findReview.updateReply(requestDto.contents());
         return ReviewResponseDto.from(findReview);
     }
 
