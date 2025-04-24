@@ -8,6 +8,7 @@ import com.ddukbbegi.api.user.service.UserService;
 import com.ddukbbegi.common.auth.CustomUserDetails;
 import com.ddukbbegi.common.component.BaseResponse;
 import com.ddukbbegi.common.component.ResultCode;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -39,7 +40,7 @@ public class UserController {
     // 이메일 변경
     @PatchMapping("/users/me/email")
     public BaseResponse<Void> updateEmail(@AuthenticationPrincipal CustomUserDetails userDetails,
-                                          @RequestBody UpdateEmailRequestDto requestDto) {
+                                          @Valid @RequestBody UpdateEmailRequestDto requestDto) {
         userService.updateEmail(userDetails.getUserId(), requestDto);
         return BaseResponse.success(ResultCode.NO_CONTENT);
     }
@@ -47,7 +48,7 @@ public class UserController {
     // 이름 변경
     @PatchMapping("/users/me/name")
     public BaseResponse<Void> updateName(@AuthenticationPrincipal CustomUserDetails userDetails,
-                                         @RequestBody UpdateNameRequestDto requestDto
+                                         @Valid @RequestBody UpdateNameRequestDto requestDto
     ) {
         userService.updateName(userDetails.getUserId(), requestDto);
         return BaseResponse.success(ResultCode.NO_CONTENT);
@@ -56,7 +57,7 @@ public class UserController {
     // 전화번호 변경
     @PatchMapping("/users/me/phone")
     public BaseResponse<Void> updatePhone(@AuthenticationPrincipal CustomUserDetails userDetails,
-                                          @RequestBody UpdatePhoneRequestDto requestDto) {
+                                          @Valid @RequestBody UpdatePhoneRequestDto requestDto) {
         userService.updatePhone(userDetails.getUserId(), requestDto);
         return BaseResponse.success(ResultCode.NO_CONTENT);
     }
@@ -64,7 +65,7 @@ public class UserController {
     // 비밀번호 수정
     @PatchMapping("/auth/changePassword")
     public BaseResponse<Void> updatePassword(@AuthenticationPrincipal CustomUserDetails userDetails,
-                                             @RequestBody UpdatePasswordRequestDto requestDto) {
+                                             @Valid @RequestBody UpdatePasswordRequestDto requestDto) {
         userService.updatePassword(userDetails.getUserId(), requestDto);
         return BaseResponse.success(ResultCode.NO_CONTENT);
     }
