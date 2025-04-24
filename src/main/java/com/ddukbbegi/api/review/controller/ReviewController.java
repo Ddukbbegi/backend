@@ -66,7 +66,8 @@ public class ReviewController {
 
     @DeleteMapping("/reviews/{reviewId}")
     public BaseResponse<Void> deleteReview(@Positive @PathVariable Long reviewId){
-        {   reviewService.deleteReview(reviewId);
+        {   Long userId = 1L;
+            reviewService.deleteReview(userId, reviewId);
             return BaseResponse.success(ResultCode.NO_CONTENT);
         }
     }

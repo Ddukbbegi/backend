@@ -80,6 +80,10 @@ public class Review extends BaseUserEntity {
         }
     }
 
+    public boolean validUser(Long userId){
+        return this.user.getId().equals(userId);
+    }
+
 
 
 
