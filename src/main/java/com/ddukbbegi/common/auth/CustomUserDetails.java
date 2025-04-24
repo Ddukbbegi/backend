@@ -28,7 +28,7 @@ public class CustomUserDetails implements UserDetails {
         return String.valueOf(userId);  // 이메일 (아이디)
     }
 
-    // JWT 인증 방식에서는 Password 불필요
+    // JWT 인증 방식에서는 Password 불필요하여 해당 부분 공백으로 반환
     @Override
     public String getPassword() {
         return " ";
