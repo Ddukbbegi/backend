@@ -1,14 +1,15 @@
 package com.ddukbbegi.api.user.controller;
 
+import com.ddukbbegi.api.auth.dto.request.UpdatePasswordRequestDto;
 import com.ddukbbegi.api.user.dto.request.*;
 import com.ddukbbegi.api.user.dto.response.MyInfoResponseDto;
-import com.ddukbbegi.api.user.dto.response.SignupResponseDto;
 import com.ddukbbegi.api.user.dto.response.UserInfoResponseDto;
 import com.ddukbbegi.api.user.service.UserService;
+import com.ddukbbegi.common.auth.CustomUserDetails;
 import com.ddukbbegi.common.component.BaseResponse;
 import com.ddukbbegi.common.component.ResultCode;
-import com.fasterxml.jackson.databind.ser.Serializers;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -18,19 +19,11 @@ public class UserController {
 
     private final UserService userService;
 
-    // 회원가입
-    @PostMapping("/auth/signup")
-    public BaseResponse<SignupResponseDto> createUser(@RequestBody SignupRequestDto requestDto) {
-
-        SignupResponseDto signUpResponseDto = userService.signup(requestDto);
-        return BaseResponse.success(signUpResponseDto, ResultCode.CREATED);
-    }
-
     // 내 정보 조회
     // 추후에 PathVariable 대신 토큰 값 이용할 예정.
-    @GetMapping("/users/me/{userId}")
-    public BaseResponse<MyInfoResponseDto> getUser(@PathVariable Long userId) {
-        MyInfoResponseDto myInfoResponseDto = userService.getUser(userId);
+    @GetMapping("/users/me")
+    public BaseResponse<MyInfoResponseDto> getUser(@AuthenticationPrincipal CustomUserDetails userDetails) {
+        MyInfoResponseDto myInfoResponseDto = userService.getUser(userDetails.getUserId());
 
         return BaseResponse.success(myInfoResponseDto, ResultCode.OK);
     }
@@ -43,49 +36,44 @@ public class UserController {
         return BaseResponse.success(userInfoResponseDto, ResultCode.OK);
     }
 
-    /**
-     * 추후에 PathVariable 대신 토큰 값 이용할 예정.
-     * Auth 경로인 경우 Auth 패키지에 추가할 예정 (기본적인 User Crud 만드는 것이 목적)
-     * -> 필터와 토큰 로직이 만들어질 경우 리팩토링 할 것임.
-     */
-
-    // 패스워드 변경
-    @PatchMapping("/auth/changePassword/{userId}")
-    public BaseResponse<Void> updatePassword(@PathVariable Long userId,
-                                             @RequestBody UpdatePasswordRequestDto requestDto) {
-        userService.updatePassword(userId, requestDto);
-        return BaseResponse.success(ResultCode.NO_CONTENT);
-    }
-
     // 이메일 변경
-    @PatchMapping("/users/me/email/{userId}")
-    public BaseResponse<Void> updateEmail(@PathVariable Long userId,
+    @PatchMapping("/users/me/email")
+    public BaseResponse<Void> updateEmail(@AuthenticationPrincipal CustomUserDetails userDetails,
                                           @RequestBody UpdateEmailRequestDto requestDto) {
-        userService.updateEmail(userId, requestDto);
+        userService.updateEmail(userDetails.getUserId(), requestDto);
         return BaseResponse.success(ResultCode.NO_CONTENT);
     }
 
     // 이름 변경
-    @PatchMapping("/users/me/name/{userId}")
-    public BaseResponse<Void> updateName(@PathVariable Long userId,
+    @PatchMapping("/users/me/name")
+    public BaseResponse<Void> updateName(@AuthenticationPrincipal CustomUserDetails userDetails,
                                          @RequestBody UpdateNameRequestDto requestDto
     ) {
-        userService.updateName(userId, requestDto);
+        userService.updateName(userDetails.getUserId(), requestDto);
         return BaseResponse.success(ResultCode.NO_CONTENT);
     }
 
     // 전화번호 변경
-    @PatchMapping("/users/me/phone/{userId}")
-    public BaseResponse<Void> updatePhone(@PathVariable Long userId,
+    @PatchMapping("/users/me/phone")
+    public BaseResponse<Void> updatePhone(@AuthenticationPrincipal CustomUserDetails userDetails,
                                           @RequestBody UpdatePhoneRequestDto requestDto) {
-        userService.updatePhone(userId, requestDto);
+        userService.updatePhone(userDetails.getUserId(), requestDto);
+        return BaseResponse.success(ResultCode.NO_CONTENT);
+    }
+
+    // 비밀번호 수정
+    @PatchMapping("/auth/changePassword")
+    public BaseResponse<Void> updatePassword(@AuthenticationPrincipal CustomUserDetails userDetails,
+                                             @RequestBody UpdatePasswordRequestDto requestDto) {
+        userService.updatePassword(userDetails.getUserId(), requestDto);
         return BaseResponse.success(ResultCode.NO_CONTENT);
     }
 
     // 회원 탈퇴
-    @DeleteMapping("/users/{userId}")
-    public BaseResponse<Void> deleteUser(@PathVariable Long userId, @RequestBody DeleteUserRequestDto requestDto) {
-        userService.deleteUser(userId, requestDto);
+    @DeleteMapping("/users")
+    public BaseResponse<Void> deleteUser(@AuthenticationPrincipal CustomUserDetails userDetails,
+                                         @RequestBody DeleteUserRequestDto requestDto) {
+        userService.deleteUser(userDetails.getUserId(), requestDto);
         return BaseResponse.success(ResultCode.NO_CONTENT);
     }
 }
