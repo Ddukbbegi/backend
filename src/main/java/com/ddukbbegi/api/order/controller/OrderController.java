@@ -21,18 +21,20 @@ public class OrderController {
     private final OrderService orderService;
 
     @PostMapping("/orders")
-    public BaseResponse<Long> createOrder(@AuthenticationPrincipal CustomUserDetails userDetails, @Validated @RequestBody OrderCreateRequestDto request) {
+    public BaseResponse<Long> createOrder(@AuthenticationPrincipal CustomUserDetails userDetails,
+                                          @Validated @RequestBody OrderCreateRequestDto request) {
         return BaseResponse.success(orderService.createOrder(request, userDetails.getUserId()), ResultCode.OK);
     }
 
     @GetMapping("/orders")
-    public BaseResponse<PageResponseDto<OrderHistoryUserResponseDto>> getOrdersForUser(@AuthenticationPrincipal CustomUserDetails userDetails, Pageable pageable) {
-        PageResponseDto<OrderHistoryUserResponseDto> result = orderService.getOrdersForUser(userDetails.getUserId(), pageable);
+    public BaseResponse<PageResponseDto<OrderHistoryUserResponseDto>> getOrdersForUser(//@AuthenticationPrincipal CustomUserDetails userDetails,
+                                                                                       Pageable pageable) {
+        PageResponseDto<OrderHistoryUserResponseDto> result = orderService.getOrdersForUser(1L, pageable);
         return BaseResponse.success(result, ResultCode.OK);
     }
 
-    @GetMapping("/owner/store/{storeId}/orders")
-    public BaseResponse<PageResponseDto<OrderHistoryOwnerResponseDto>> getOrdersForOwner(@PathVariable long storeId, Pageable pageable) {
+    @GetMapping("/owner/stores/{storeId}/orders")
+    public BaseResponse<PageResponseDto<OrderHistoryOwnerResponseDto>> getOrdersForOwner(@PathVariable("storeId") long storeId, Pageable pageable) {
         PageResponseDto<OrderHistoryOwnerResponseDto> result = orderService.getOrdersForOwner(storeId, pageable);
         return BaseResponse.success(result, ResultCode.OK);
     }
