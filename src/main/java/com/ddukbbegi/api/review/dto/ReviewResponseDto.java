@@ -1,7 +1,7 @@
 package com.ddukbbegi.api.review.dto;
 
 
-import com.ddukbbegi.api.review.entity.Reviews;
+import com.ddukbbegi.api.review.entity.Review;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -18,18 +18,18 @@ public class ReviewResponseDto {
     private final String writer;
     private final String reply;
 
-    public static ReviewResponseDto from(Reviews reviews) {
-        String writer = reviews.getAnonymousStatus() == AnonymousStatus.ANONYMOUS
+    public static ReviewResponseDto from(Review review) {
+        String writer = review.getAnonymousStatus() == AnonymousStatus.ANONYMOUS
                 ? "익명"
-                : reviews.getUser().getEmail(); // 추후 review.getUser().getNickname() 으로 교체
+                : review.getUser().getEmail(); // 추후 review.getUser().getNickname() 으로 교체
 
         return ReviewResponseDto.builder()
-                .reviewId(reviews.getId())
+                .reviewId(review.getId())
                 .orderId(/* review.getOrder().getId() */ null) // 추후 추가
-                .contents(reviews.getContents())
-                .rate(reviews.getRate())
+                .contents(review.getContents())
+                .rate(review.getRate())
                 .writer(writer)
-                .reply(reviews.getReply())
+                .reply(review.getReply())
                 .build();
     }
 

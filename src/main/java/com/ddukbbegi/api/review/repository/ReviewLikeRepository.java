@@ -1,15 +1,15 @@
 package com.ddukbbegi.api.review.repository;
 
 import com.ddukbbegi.api.common.repository.BaseRepository;
-import com.ddukbbegi.api.review.entity.Reviews;
-import com.ddukbbegi.api.review.entity.ReviewLikes;
+import com.ddukbbegi.api.review.entity.Review;
+import com.ddukbbegi.api.review.entity.ReviewLike;
 import com.ddukbbegi.api.user.entity.User;
 
 import java.util.Optional;
 
-public interface ReviewLikeRepository extends BaseRepository<ReviewLikes, Long> {
+public interface ReviewLikeRepository extends BaseRepository<ReviewLike, Long> {
 
-    Optional<ReviewLikes> findByUserAndReview(User user, Reviews reviews);
+    Optional<ReviewLike> findByUserAndReview(User user, Review review);
 
-    boolean existsReviewLikeByUserAndReview(User user, Reviews reviews);
+    boolean existsReviewLikeByUserAndReview(User user, Review review);
 }

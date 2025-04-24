@@ -11,12 +11,12 @@ import lombok.*;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Builder(access = AccessLevel.PRIVATE)
 @Table(
-        name = "review_like",
+        name = "review_likes",
         uniqueConstraints = {
                 @UniqueConstraint(columnNames = {"review_id", "user_id"})
         }
 )
-public class ReviewLikes extends BaseUserEntity {
+public class ReviewLike extends BaseUserEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -24,15 +24,15 @@ public class ReviewLikes extends BaseUserEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "review_id")
-    private Reviews reviews;
+    private Review review;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;
 
-    public static ReviewLikes from(Reviews reviews, User user) {
-        return ReviewLikes.builder()
-                .reviews(reviews)
+    public static ReviewLike from(Review review, User user) {
+        return ReviewLike.builder()
+                .review(review)
                 .user(user)
                 .build();
     }

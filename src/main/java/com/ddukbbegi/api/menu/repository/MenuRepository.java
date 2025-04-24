@@ -15,4 +15,6 @@ public interface MenuRepository extends BaseRepository<Menu, Long> {
 
 	@Query("SELECT m FROM Menu m WHERE m.storeId = :storeId AND m.isDeleted = false")
 	List<Menu> findAllMenuByStoreAndIsDeletedFalse(long storeId);
+
+	List<Menu> findAllByIdInAndIsDeletedFalse(List<Long> menuIds);
 }

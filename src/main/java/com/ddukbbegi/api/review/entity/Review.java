@@ -17,7 +17,8 @@ import java.time.LocalDateTime;
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Builder
-public class Reviews extends BaseUserEntity {
+@Table(name = "reviews")
+public class Review extends BaseUserEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -62,8 +63,8 @@ public class Reviews extends BaseUserEntity {
         this.deletedAt = LocalDateTime.now();
     }
 
-    public static Reviews from(User user, ReviewRequestDto dto) {
-        return Reviews.builder()
+    public static Review from(User user, ReviewRequestDto dto) {
+        return Review.builder()
                 //order 해야댐
                 .user(user)
                 .contents(dto.getContents())
