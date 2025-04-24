@@ -5,10 +5,12 @@ import com.ddukbbegi.api.store.dto.response.OwnerStoreResponseDto;
 import com.ddukbbegi.api.store.dto.response.StoreIdResponseDto;
 import com.ddukbbegi.api.store.dto.response.StoreRegisterAvailableResponseDto;
 import com.ddukbbegi.api.store.service.StoreService;
+import com.ddukbbegi.common.auth.CustomUserDetails;
 import com.ddukbbegi.common.component.BaseResponse;
 import com.ddukbbegi.common.component.ResultCode;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -21,23 +23,24 @@ public class StoreOwnerController {
     private final StoreService storeService;
 
     @PostMapping
-    public BaseResponse<StoreIdResponseDto> registerStore(@RequestBody @Valid StoreRegisterRequestDto dto) {
+    public BaseResponse<StoreIdResponseDto> registerStore(@RequestBody @Valid StoreRegisterRequestDto dto,
+                                                          @AuthenticationPrincipal CustomUserDetails customUserDetails) {
 
-        StoreIdResponseDto response = storeService.registerStore(dto);
+        StoreIdResponseDto response = storeService.registerStore(dto, customUserDetails.getUserId());
         return BaseResponse.success(response, ResultCode.CREATED);
     }
 
     @GetMapping("/available")
-    public BaseResponse<StoreRegisterAvailableResponseDto> checkStoreRegistrationAvailability() {
+    public BaseResponse<StoreRegisterAvailableResponseDto> checkStoreRegistrationAvailability(@AuthenticationPrincipal CustomUserDetails customUserDetails) {
 
-        StoreRegisterAvailableResponseDto response = storeService.checkStoreRegistrationAvailability();
+        StoreRegisterAvailableResponseDto response = storeService.checkStoreRegistrationAvailability(customUserDetails.getUserId());
         return BaseResponse.success(response, ResultCode.OK);
     }
 
     @GetMapping
-    public BaseResponse<List<OwnerStoreResponseDto>> getOwnerStoreList() {
+    public BaseResponse<List<OwnerStoreResponseDto>> getOwnerStoreList(@AuthenticationPrincipal CustomUserDetails customUserDetails) {
 
-        List<OwnerStoreResponseDto> response = storeService.getOwnerStoreList();
+        List<OwnerStoreResponseDto> response = storeService.getOwnerStoreList(customUserDetails.getUserId());
         return BaseResponse.success(response, ResultCode.OK);
     }
 
