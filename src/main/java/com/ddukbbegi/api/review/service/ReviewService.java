@@ -8,7 +8,6 @@ import com.ddukbbegi.api.review.entity.Review;
 import com.ddukbbegi.api.review.entity.ReviewLike;
 import com.ddukbbegi.api.review.repository.ReviewLikeRepository;
 import com.ddukbbegi.api.review.repository.ReviewRepository;
-import com.ddukbbegi.api.store.entity.Store;
 import com.ddukbbegi.api.store.repository.StoreRepository;
 import com.ddukbbegi.api.user.entity.User;
 import com.ddukbbegi.api.user.repository.UserRepository;
@@ -16,13 +15,12 @@ import com.ddukbbegi.common.component.ResultCode;
 import com.ddukbbegi.common.exception.BusinessException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 
 @Service
@@ -46,19 +44,38 @@ public class ReviewService {
     }
 
     @Transactional(readOnly = true)
-    public Page<ReviewResponseDto> findAllMyReviews(Long userId, Pageable pageable){
-        User finduser = userRepository.findByIdOrElseThrow(userId);
-        Page<Review> reviews = reviewRepository.findAllByUser(finduser,pageable);
+    public Page<ReviewResponseDto> findAllMyReviews(Long userId, Pageable pageable) {
+        List<ReviewWithLikeCountDto> fullList = reviewLikeRepository.countLikesByUserId(userId);
 
-        return setLikeCountToPage(reviews);
+        int total = fullList.size();
+
+        int start = (int) pageable.getOffset();
+        int end = Math.min(start + pageable.getPageSize(), total);
+        List<ReviewResponseDto> content = fullList.subList(start, end)
+                .stream()
+                .map(ReviewWithLikeCountDto::from)
+                .toList();
+
+        return new PageImpl<>(content, pageable, total);
     }
+
 
 
     @Transactional(readOnly = true)
     public Page<ReviewResponseDto> findAllStoreReviews(Long storeId, Pageable pageable){
-        Store findStore = storeRepository.findByIdOrElseThrow(storeId);
-        Page<Review> reviews = reviewRepository.findByOrder_Store(findStore, pageable);
-        return setLikeCountToPage(reviews);
+        List<ReviewWithLikeCountDto> fullList = reviewLikeRepository.countLikesByStoreId(storeId);
+
+        int total = fullList.size();
+
+        int start = (int) pageable.getOffset();
+        int end = Math.min(start + pageable.getPageSize(), total);
+        List<ReviewResponseDto> content = fullList.subList(start, end)
+                .stream()
+                .map(ReviewWithLikeCountDto::from)
+                .toList();
+
+        return new PageImpl<>(content, pageable, total);
+
     }
 
     @Transactional
@@ -133,23 +150,6 @@ public class ReviewService {
     }
 
 
-    private Page<ReviewResponseDto> setLikeCountToPage(Page<Review> reviews){
-        List<Long> reviewIds = reviews.stream()
-                .map(Review::getId)
-                .toList();
-
-        List<ReviewLikeCountDto> likeCounts = reviewLikeRepository.countLikesByReviewIds(reviewIds);
-
-        Map<Long, Long> likeCountMap = likeCounts.stream()
-                .collect(Collectors.toMap(
-                        ReviewLikeCountDto::getReviewId,
-                        ReviewLikeCountDto::getLikeCount
-                ));
-        return reviews.map(review -> {
-            long likeCount = likeCountMap.getOrDefault(review.getId(), 0L);
-            return ReviewResponseDto.from(review, likeCount);
-        });
-    }
 
 
 }
