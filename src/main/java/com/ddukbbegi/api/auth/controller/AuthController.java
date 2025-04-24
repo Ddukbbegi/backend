@@ -9,6 +9,7 @@ import com.ddukbbegi.api.auth.dto.response.SignupResponseDto;
 import com.ddukbbegi.common.auth.JwtUtil;
 import com.ddukbbegi.common.component.BaseResponse;
 import com.ddukbbegi.common.component.ResultCode;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,14 +22,14 @@ public class AuthController {
 
     // 회원가입
     @PostMapping("/signup")
-    public BaseResponse<SignupResponseDto> signup(@RequestBody SignupRequestDto requestDto) {
+    public BaseResponse<SignupResponseDto> signup(@Valid @RequestBody SignupRequestDto requestDto) {
         SignupResponseDto signUpResponseDto = authService.signup(requestDto);
         return BaseResponse.success(signUpResponseDto, ResultCode.CREATED);
     }
 
     // 로그인
     @PostMapping("/login")
-    public BaseResponse<LoginResponseDto> login(@RequestBody LoginRequestDto requestDto) {
+    public BaseResponse<LoginResponseDto> login(@Valid @RequestBody LoginRequestDto requestDto) {
         LoginResponseDto loginResponseDto = authService.login(requestDto);
         return BaseResponse.success(loginResponseDto, ResultCode.OK);
     }
