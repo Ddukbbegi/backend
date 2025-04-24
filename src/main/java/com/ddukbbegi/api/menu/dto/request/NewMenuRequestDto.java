@@ -1,29 +1,40 @@
 package com.ddukbbegi.api.menu.dto.request;
 
 import com.ddukbbegi.api.menu.entity.Menu;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
-/**
- * @packageName    : com.ddukbbegi.api.menu.dto.request
- * @fileName       : CreateMenuDto
- * @author         : yong
- * @date           : 4/23/25
- * @description    :
- */
-@Getter
 @Builder
-@RequiredArgsConstructor
-public class NewMenuRequestDto {
-	private final String name;
-	private final int price;
-	private final String description;
-	private final String category;
-	private final boolean isOption;
+@JsonIgnoreProperties(ignoreUnknown = true)
+public record NewMenuRequestDto(
+	@NotBlank(message = "이름은 필수 항목입니다.")
+	@Size(max = 50, message = "이름은 50자 이내로 입력해주세요.")
+	String name,
 
-	public Menu fromDto(long storeId) {
+	@NotNull(message = "가격은 필수 항목입니다.")
+	@Min(value = 0, message = "가격은 0원 이상이어야 합니다.")
+	@Max(value = 1_000_000, message = "가격은 1,000,000원 이하로 입력해주세요.")
+	Integer price,
+
+	@Size(max = 255, message = "설명은 255자 이내로 입력해주세요.")
+	String description,
+
+	@Size(max = 100, message = "카테고리는 100자 이내로 입력해주세요.")
+	String category,
+
+	@NotNull(message = "옵션 여부는 true 또는 false로 입력해주세요.")
+	Boolean isOption
+) {
+	public Menu toEntity(long storeId) {
 		return Menu.builder()
 			.name(name)
 			.price(price)

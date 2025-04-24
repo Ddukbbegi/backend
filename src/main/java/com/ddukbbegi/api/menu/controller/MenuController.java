@@ -43,7 +43,7 @@ public class MenuController {
 
 	@PutMapping("/{menuId}")
 	public void updateMenu(@PathVariable long storeId, @PathVariable long menuId,
-		@RequestBody UpdatingMenuRequestDto dto) {
+		@Valid @RequestBody UpdatingMenuRequestDto dto) {
 		menuService.updateMenu(menuId, dto);
 	}
 

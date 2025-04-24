@@ -39,7 +39,7 @@ public class MenuServiceImpl implements MenuService{
 	@Override
 	@Transactional
 	public Long addNewMenu(long storeId, NewMenuRequestDto dto) {
-		Menu menu = menuRepository.save(dto.fromDto(storeId));
+		Menu menu = menuRepository.save(dto.toEntity(storeId));
 		return menu.getId();
 	}
 
@@ -47,7 +47,7 @@ public class MenuServiceImpl implements MenuService{
 	@Transactional
 	public void updateMenu(long id, UpdatingMenuRequestDto dto) {
 		Menu menu = menuRepository.findById(id).orElseThrow();
-		menu.update(dto.getName(), dto.getPrice(), dto.getDescription(), dto.getCategory());
+		menu.update(dto.name(), dto.price(), dto.description(), dto.category());
 		DetailMenuResponseDto.toDto(menu);
 	}
 
