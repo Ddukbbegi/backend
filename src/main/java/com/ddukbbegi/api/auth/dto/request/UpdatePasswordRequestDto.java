@@ -1,4 +1,4 @@
-package com.ddukbbegi.api.user.dto.request;
+package com.ddukbbegi.api.auth.dto.request;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
