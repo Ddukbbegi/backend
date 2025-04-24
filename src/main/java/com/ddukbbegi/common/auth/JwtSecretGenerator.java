@@ -1,4 +1,4 @@
-package com.ddukbbegi.common.config;
+package com.ddukbbegi.common.auth;
 
 import io.jsonwebtoken.security.Keys;
 
