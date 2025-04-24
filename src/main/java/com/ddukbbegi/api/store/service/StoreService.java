@@ -7,9 +7,7 @@ import com.ddukbbegi.api.store.dto.response.StoreIdResponseDto;
 import com.ddukbbegi.api.store.dto.response.StorePageItemResponseDto;
 import com.ddukbbegi.api.store.dto.response.StoreRegisterAvailableResponseDto;
 import com.ddukbbegi.api.store.entity.Store;
-import com.ddukbbegi.api.store.enums.StoreCategory;
 import com.ddukbbegi.api.store.repository.StoreRepository;
-import com.ddukbbegi.api.store.util.TimeRangeParser;
 import com.ddukbbegi.api.user.entity.User;
 import com.ddukbbegi.api.user.repository.UserRepository;
 import com.ddukbbegi.common.component.ResultCode;
@@ -17,7 +15,6 @@ import com.ddukbbegi.common.exception.BusinessException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -74,43 +71,45 @@ public class StoreService {
 
         // TODO: 서비스 레이어에서 dto의 값을 직접 풀어서 entity로 전달하는 것은 좋지 않은 방법이다
         // 추후 MapStruct 등의 방법을 사용해 대체할 예정
+        StoreBasicInfoDto basicInfoDto = dto.getBasicInfoDto();
+
         Store store = storeRepository.findByIdOrElseThrow(storeId);
         store.updateBasicInfo(
-                dto.getName(),
-                StoreCategory.fromString(dto.getCategory()),
-                dto.getPhoneNumber(),
-                dto.getDescription()
+                basicInfoDto.getName(),
+                basicInfoDto.getCategory(),
+                basicInfoDto.getPhoneNumber(),
+                basicInfoDto.getDescription()
         );
     }
 
     @Transactional
     public void updateStoreOperationInfo(Long storeId, StoreUpdateOperationInfoRequestDto dto) {
 
-        Pair<LocalTime, LocalTime> weekdayWorkingTime = TimeRangeParser.parse(dto.getWeekdayWorkingTime());
-        Pair<LocalTime, LocalTime> weekdayBreakTime = TimeRangeParser.parse(dto.getWeekdayBreakTime());
-        Pair<LocalTime, LocalTime> weekendWorkingTime = TimeRangeParser.parse(dto.getWeekendWorkingTime());
-        Pair<LocalTime, LocalTime> weekendBreakTime = TimeRangeParser.parse(dto.getWeekendBreakTime());
+        StoreOperationInfoDto.ParsedOperationInfo parsedData = dto.getOperationInfo().toParsedData();
 
         Store store = storeRepository.findByIdOrElseThrow(storeId);
         store.updateOperationInfo(
-                weekdayWorkingTime.getFirst(),
-                weekdayWorkingTime.getSecond(),
-                weekdayBreakTime.getFirst(),
-                weekdayBreakTime.getSecond(),
-                weekendWorkingTime.getFirst(),
-                weekendWorkingTime.getSecond(),
-                weekendBreakTime.getFirst(),
-                weekendBreakTime.getSecond()
+                parsedData.getClosedDays(),
+                parsedData.getWeekdayWorkingTime().getFirst(),
+                parsedData.getWeekdayWorkingTime().getSecond(),
+                parsedData.getWeekdayBreakTime().getFirst(),
+                parsedData.getWeekdayBreakTime().getSecond(),
+                parsedData.getWeekendWorkingTime().getFirst(),
+                parsedData.getWeekendWorkingTime().getSecond(),
+                parsedData.getWeekendBreakTime().getFirst(),
+                parsedData.getWeekendBreakTime().getSecond()
         );
     }
 
     @Transactional
     public void updateStoreOrderSettings(Long storeId, StoreUpdateOrderSettingsRequestDto dto) {
 
+        StoreOrderSettingsInfo orderSettingsInfo = dto.getOrderSettingsInfo();
+
         Store store = storeRepository.findByIdOrElseThrow(storeId);
         store.updateOrderSettings(
-                dto.getMinDeliveryPrice(),
-                dto.getDeliveryTip()
+                orderSettingsInfo.getMinDeliveryPrice(),
+                orderSettingsInfo.getDeliveryTip()
         );
     }
 

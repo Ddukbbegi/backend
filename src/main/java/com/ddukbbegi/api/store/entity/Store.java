@@ -111,7 +111,8 @@ public class Store extends BaseUserEntity {
         this.description = description;
     }
 
-    public void updateOperationInfo(LocalTime weekdayWorkingStartTime,
+    public void updateOperationInfo(List<DayOfWeek> closedDays,
+                                    LocalTime weekdayWorkingStartTime,
                                     LocalTime weekdayWorkingEndTime,
                                     LocalTime weekdayBreakStartTime,
                                     LocalTime weekdayBreakEndTime,
@@ -119,6 +120,7 @@ public class Store extends BaseUserEntity {
                                     LocalTime weekendWorkingEndTime,
                                     LocalTime weekendBreakStartTime,
                                     LocalTime weekendBreakEndTime) {
+        this.closedDays = closedDays;
         this.weekdayWorkingStartTime = weekdayWorkingStartTime;
         this.weekdayWorkingEndTime = weekdayWorkingEndTime;
         this.weekdayBreakStartTime = weekdayBreakStartTime;
