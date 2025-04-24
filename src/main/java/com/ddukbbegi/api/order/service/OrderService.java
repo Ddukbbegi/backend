@@ -45,8 +45,8 @@ public class OrderService {
                 .map(OrderCreateRequestDto.MenuOrderDto::menuId)
                 .toList();
 
-        List<Menu> menus = menuRepository.findAllByIdOrElseThrow(menuIds);
-        checkIsAllNotDeleted(menus);
+        List<Menu> menus = menuRepository.findAllByIdInAndIsDeletedFalse(menuIds);
+        checkIsAllNotDeleted(menuIds.size(),menus.size());
 
         long storeId = menus.get(0).getStoreId();
 
@@ -84,11 +84,9 @@ public class OrderService {
         return savedOrder.getId();
     }
 
-    private void checkIsAllNotDeleted(List<Menu> menus) {
-        for(Menu menu : menus) {
-            if (menu.isDeleted()) {
-                throw new BusinessException(ResultCode.MENU_IS_DELETED);
-            }
+    private void checkIsAllNotDeleted(int expectedSize, int realSize) {
+        if (expectedSize != realSize) {
+            throw new BusinessException(ResultCode.MENU_IS_DELETED);
         }
     }
 
