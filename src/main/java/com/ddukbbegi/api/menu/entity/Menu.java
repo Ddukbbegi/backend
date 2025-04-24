@@ -1,5 +1,4 @@
 package com.ddukbbegi.api.menu.entity;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -14,15 +13,10 @@ public class Menu {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
-
 	private String name;
-
 	private int price;
-
 	private String description;
-
 	private String category;
-
 	@Column(name = "is_option")
 	private boolean isOption;
 
@@ -41,7 +35,6 @@ public class Menu {
 		this.isOption = isOption;
 		this.storeId = storeId;
 	}
-
 	public Menu() {
 
 	}
