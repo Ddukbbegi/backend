@@ -8,13 +8,13 @@ import com.ddukbbegi.api.menu.dto.response.AllMenuResponseDto;
 import com.ddukbbegi.api.menu.dto.response.DetailMenuResponseDto;
 
 public interface MenuService {
-	List<AllMenuResponseDto> findAllMenuByStore(long storeId);
+	List<AllMenuResponseDto> findAllMenu(long storeId);
 
-	DetailMenuResponseDto findMenuById(long storeId, long menuId);
+	DetailMenuResponseDto findMenu(long storeId, long menuId);
 
 	Long addNewMenu(long storeId, NewMenuRequestDto dto);
 
-	void updateMenuById(long id, UpdatingMenuRequestDto dto);
+	void updateMenu(long id, UpdatingMenuRequestDto dto);
 
-	void deleteMenuById(long menuId);
+	void deleteMenu(long menuId);
 }

@@ -13,7 +13,7 @@ import com.ddukbbegi.api.menu.dto.response.DetailMenuResponseDto;
 import com.ddukbbegi.api.menu.entity.Menu;
 import com.ddukbbegi.api.menu.repository.MenuRepository;
 
-import jakarta.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -22,15 +22,17 @@ public class MenuServiceImpl implements MenuService{
 	private final MenuRepository menuRepository;
 
 	@Override
-	public List<AllMenuResponseDto> findAllMenuByStore(long storeId){
-		return menuRepository.findAllMenuByStore(storeId).stream()
+	@Transactional(readOnly = true)
+	public List<AllMenuResponseDto> findAllMenu(long storeId){
+		return menuRepository.findAllMenuByStoreAndIsDeletedFalse(storeId).stream()
 			.map(menu -> AllMenuResponseDto.toDto(menu))
 			.collect(Collectors.toList());
 	}
 
 	@Override
-	public DetailMenuResponseDto findMenuById(long storeId, long id) {
-		Menu menu = menuRepository.findMenuById(storeId, id);
+	@Transactional(readOnly = true)
+	public DetailMenuResponseDto findMenu(long storeId, long id) {
+		Menu menu = menuRepository.findMenuByIdAndStoreIdAndIsDeletedFalse(storeId, id);
 		return DetailMenuResponseDto.toDto(menu);
 	}
 
@@ -43,7 +45,7 @@ public class MenuServiceImpl implements MenuService{
 
 	@Override
 	@Transactional
-	public void updateMenuById(long id, UpdatingMenuRequestDto dto) {
+	public void updateMenu(long id, UpdatingMenuRequestDto dto) {
 		Menu menu = menuRepository.findById(id).orElseThrow();
 		menu.update(dto.getName(), dto.getPrice(), dto.getDescription(), dto.getCategory());
 		DetailMenuResponseDto.toDto(menu);
@@ -51,7 +53,7 @@ public class MenuServiceImpl implements MenuService{
 
 	@Override
 	@Transactional
-	public void deleteMenuById(long id) {
+	public void deleteMenu(long id) {
 		Menu menu = menuRepository.findById(id).orElseThrow();
 		menu.delete();
 	}

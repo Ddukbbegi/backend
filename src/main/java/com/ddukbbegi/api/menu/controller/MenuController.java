@@ -17,6 +17,7 @@ import com.ddukbbegi.api.menu.dto.response.AllMenuResponseDto;
 import com.ddukbbegi.api.menu.dto.response.DetailMenuResponseDto;
 import com.ddukbbegi.api.menu.service.MenuService;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -27,28 +28,28 @@ public class MenuController {
 
 	@GetMapping
 	public List<AllMenuResponseDto> findAllMenu(@PathVariable long storeId) {
-		return menuService.findAllMenuByStore(storeId);
+		return menuService.findAllMenu(storeId);
 	}
 
 	@GetMapping("/{menuId}")
 	public DetailMenuResponseDto findDetailMenu(@PathVariable long storeId, @PathVariable long menuId) {
-		return menuService.findMenuById(storeId, menuId);
+		return menuService.findMenu(storeId, menuId);
 	}
 
 	@PostMapping
-	public Long addNewMenu(@PathVariable long storeId, @RequestBody NewMenuRequestDto dto) {
+	public Long addNewMenu(@PathVariable long storeId, @Valid @RequestBody NewMenuRequestDto dto) {
 		return menuService.addNewMenu(storeId, dto);
 	}
 
 	@PutMapping("/{menuId}")
 	public void updateMenu(@PathVariable long storeId, @PathVariable long menuId,
 		@RequestBody UpdatingMenuRequestDto dto) {
-		menuService.updateMenuById(menuId, dto);
+		menuService.updateMenu(menuId, dto);
 	}
 
 	@DeleteMapping("/{menuId}")
 	public void deleteMenu(@PathVariable long storeId, @PathVariable long menuId) {
-		menuService.deleteMenuById(menuId);
+		menuService.deleteMenu(menuId);
 	}
 
 }
