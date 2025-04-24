@@ -28,10 +28,10 @@ public class StoreService {
     private final UserRepository userRepository;
 
     @Transactional
-    public StoreIdResponseDto registerStore(StoreRegisterRequestDto dto) {
+    public StoreIdResponseDto registerStore(StoreRegisterRequestDto dto, Long userId) {
 
-        User user = userRepository.findByIdOrElseThrow(1L); // TODO: user 연동
-        if (!storeRepository.isStoreRegistrationAvailable(1L)) {    // TODO: user 연동
+        User user = userRepository.findByIdOrElseThrow(userId);
+        if (!storeRepository.isStoreRegistrationAvailable(userId)) {
             throw new BusinessException(ResultCode.STORE_LIMIT_EXCEEDED);
         }
 
@@ -42,16 +42,16 @@ public class StoreService {
     }
 
     @Transactional(readOnly = true)
-    public StoreRegisterAvailableResponseDto checkStoreRegistrationAvailability() {
+    public StoreRegisterAvailableResponseDto checkStoreRegistrationAvailability(Long userId) {
 
-        boolean available = storeRepository.isStoreRegistrationAvailable(1L); // TODO: user 연동
+        boolean available = storeRepository.isStoreRegistrationAvailable(userId);
         return StoreRegisterAvailableResponseDto.of(available);
     }
 
     @Transactional(readOnly = true)
-    public List<OwnerStoreResponseDto> getOwnerStoreList() {
+    public List<OwnerStoreResponseDto> getOwnerStoreList(Long userId) {
 
-        List<Store> storeList = storeRepository.findAllByUser_Id(1L);   // TODO: user 연동
+        List<Store> storeList = storeRepository.findAllByUser_Id(userId);
         return storeList.stream()
                 .map(OwnerStoreResponseDto::fromEntity)
                 .toList();
