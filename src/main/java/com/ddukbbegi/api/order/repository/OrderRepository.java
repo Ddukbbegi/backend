@@ -8,7 +8,16 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 public interface OrderRepository extends BaseRepository<Order, Long> {
-    Page<Order> findAllByUserId(long userId, Pageable pageable);
+    @Query(value = """
+    SELECT o FROM Order o
+    JOIN FETCH o.store
+    WHERE o.user.id = :userId
+    """,
+            countQuery = """
+    SELECT COUNT(o) FROM Order o
+    WHERE o.user.id = :userId
+    """)
+    Page<Order> findAllByUserId(@Param(value = "userId") long userId, Pageable pageable);
 
     @Query(
             value = "SELECT o FROM Order o JOIN FETCH o.user WHERE o.store.id = :storeId",
