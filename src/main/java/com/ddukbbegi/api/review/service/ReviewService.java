@@ -1,16 +1,9 @@
 package com.ddukbbegi.api.review.service;
 
 
-import com.ddukbbegi.api.menu.entity.Menu;
-import com.ddukbbegi.api.menu.repository.MenuRepository;
 import com.ddukbbegi.api.order.entity.Order;
-import com.ddukbbegi.api.order.entity.OrderMenu;
-import com.ddukbbegi.api.order.repository.OrderMenuRepository;
 import com.ddukbbegi.api.order.repository.OrderRepository;
-import com.ddukbbegi.api.review.dto.ReviewOwnerRequestDto;
-import com.ddukbbegi.api.review.dto.ReviewRequestDto;
-import com.ddukbbegi.api.review.dto.ReviewResponseDto;
-import com.ddukbbegi.api.review.dto.ReviewUpdateRequestDto;
+import com.ddukbbegi.api.review.dto.*;
 import com.ddukbbegi.api.review.entity.Review;
 import com.ddukbbegi.api.review.entity.ReviewLike;
 import com.ddukbbegi.api.review.repository.ReviewLikeRepository;
@@ -18,7 +11,6 @@ import com.ddukbbegi.api.review.repository.ReviewRepository;
 import com.ddukbbegi.api.store.entity.Store;
 import com.ddukbbegi.api.store.repository.StoreRepository;
 import com.ddukbbegi.api.user.entity.User;
-import com.ddukbbegi.api.user.enums.UserRole;
 import com.ddukbbegi.api.user.repository.UserRepository;
 import com.ddukbbegi.common.component.ResultCode;
 import com.ddukbbegi.common.exception.BusinessException;
@@ -27,6 +19,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 
 @Service
@@ -44,7 +40,8 @@ public class ReviewService {
         User findUser = userRepository.findByIdOrElseThrow(userId);
         Review review = Review.from(findUser, findOrder,requestDto);
         Review savedReview = reviewRepository.save(review);
-        return ReviewResponseDto.from(savedReview);
+        Long likeCount = reviewLikeRepository.countLikesByReviewId(savedReview.getId());
+        return ReviewResponseDto.from(savedReview, likeCount);
 
     }
 
@@ -52,14 +49,16 @@ public class ReviewService {
     public Page<ReviewResponseDto> findAllMyReviews(Long userId, Pageable pageable){
         User finduser = userRepository.findByIdOrElseThrow(userId);
         Page<Review> reviews = reviewRepository.findAllByUser(finduser,pageable);
-        return reviews.map(ReviewResponseDto::from);
+
+        return setLikeCountToPage(reviews);
     }
+
 
     @Transactional(readOnly = true)
     public Page<ReviewResponseDto> findAllStoreReviews(Long storeId, Pageable pageable){
         Store findStore = storeRepository.findByIdOrElseThrow(storeId);
         Page<Review> reviews = reviewRepository.findByOrder_Store(findStore, pageable);
-        return reviews.map(ReviewResponseDto::from);
+        return setLikeCountToPage(reviews);
     }
 
     @Transactional
@@ -69,7 +68,8 @@ public class ReviewService {
             throw new BusinessException(ResultCode.ACCESS_DENIED);
         }
         findReview.updateReview(requestDto);
-        return ReviewResponseDto.from(findReview);
+        Long likeCount = reviewLikeRepository.countLikesByReviewId(findReview.getId());
+        return ReviewResponseDto.from(findReview, likeCount);
     }
 
     @Transactional
@@ -88,7 +88,8 @@ public class ReviewService {
             throw new BusinessException(ResultCode.ACCESS_DENIED);
         }
         findReview.updateReply(requestDto.contents());
-        return ReviewResponseDto.from(findReview);
+        Long likeCount = reviewLikeRepository.countLikesByReviewId(findReview.getId());
+        return ReviewResponseDto.from(findReview, likeCount);
     }
 
 
@@ -100,7 +101,8 @@ public class ReviewService {
             throw new BusinessException(ResultCode.ACCESS_DENIED);
         }
         findReview.updateReply(requestDto.contents());
-        return ReviewResponseDto.from(findReview);
+        Long likeCount = reviewLikeRepository.countLikesByReviewId(findReview.getId());
+        return ReviewResponseDto.from(findReview, likeCount);
     }
 
     @Transactional
@@ -128,6 +130,25 @@ public class ReviewService {
         Review findReview = reviewRepository.findReviewByIdWithUser(reviewId);
         reviewLikeRepository.findByUserAndReview(findUser, findReview)
                 .ifPresent(reviewLikeRepository::delete);
+    }
+
+
+    private Page<ReviewResponseDto> setLikeCountToPage(Page<Review> reviews){
+        List<Long> reviewIds = reviews.stream()
+                .map(Review::getId)
+                .toList();
+
+        List<ReviewLikeCountDto> likeCounts = reviewLikeRepository.countLikesByReviewIds(reviewIds);
+
+        Map<Long, Long> likeCountMap = likeCounts.stream()
+                .collect(Collectors.toMap(
+                        ReviewLikeCountDto::getReviewId,
+                        ReviewLikeCountDto::getLikeCount
+                ));
+        return reviews.map(review -> {
+            long likeCount = likeCountMap.getOrDefault(review.getId(), 0L);
+            return ReviewResponseDto.from(review, likeCount);
+        });
     }
 
 

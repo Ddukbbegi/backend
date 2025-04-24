@@ -22,9 +22,12 @@ public interface ReviewRepository extends BaseRepository<Review, Long> {
 
     @Query("select r from Review r join fetch r.user where r.id = :reviewId")
     Optional<Review> findByIdWithUser(@Param("reviewId") Long reviewId);
+
+
     default Review findReviewByIdWithUser(Long reviewId){
         return findByIdWithUser(reviewId).orElseThrow(()->new BusinessException(ResultCode.NOT_FOUND));
     }
     Page<Review> findByOrder_Store(@NotNull Store orderStore, Pageable pageable);
+
 
 }
