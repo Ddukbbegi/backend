@@ -1,6 +1,5 @@
-package com.ddukbbegi.api.user.dto.response;
+package com.ddukbbegi.api.auth.dto.response;
 
-import com.ddukbbegi.api.user.entity.User;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -10,7 +9,7 @@ public class SignupResponseDto {
 
     private final Long id;
 
-    public static SignupResponseDto toDto(Long id) {
+    public static SignupResponseDto fromEntity(Long id) {
         return new SignupResponseDto(id);
     }
 }
