@@ -23,6 +23,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 import java.time.*;
 import java.util.List;
 
+import static com.ddukbbegi.common.component.ResultCode.*;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
@@ -122,7 +123,8 @@ class OrderServiceTest {
 
         // when & then
         assertThatThrownBy(() -> orderService.createOrder(request, 1L))
-                .isInstanceOf(BusinessException.class);
+                .isInstanceOf(BusinessException.class)
+                .hasMessage(MENU_IS_DELETED.getDefaultMessage());;
     }
 
     @Test
@@ -142,7 +144,8 @@ class OrderServiceTest {
         given(menuRepository.findAllByIdOrElseThrow(anyList())).willReturn(List.of(menu1, menu2));
 
         assertThatThrownBy(() -> orderService.createOrder(request, 1L))
-                .isInstanceOf(BusinessException.class);
+                .isInstanceOf(BusinessException.class)
+                .hasMessage(CONTAIN_DIFFERENT_STORE_MENU.getDefaultMessage());
     }
 
     @Test
@@ -168,7 +171,8 @@ class OrderServiceTest {
 
         // when & then
         assertThatThrownBy(() -> orderService.createOrder(request, 1L))
-                .isInstanceOf(BusinessException.class);
+                .isInstanceOf(BusinessException.class)
+                .hasMessage(UNDER_MIN_DELIVERY_PRICE.getDefaultMessage());
     }
 
     @Test
@@ -193,6 +197,7 @@ class OrderServiceTest {
 
         // when & then
         assertThatThrownBy(() -> orderService.createOrder(request, 1L))
-                .isInstanceOf(BusinessException.class);
+                .isInstanceOf(BusinessException.class)
+                .hasMessage(STORE_NOT_WORKING.getDefaultMessage());
     }
 }
