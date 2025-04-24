@@ -29,7 +29,7 @@ public class Review extends BaseUserEntity {
     private Float rate;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false, columnDefinition = "VARCHAR(20) DEFAULT 'NON_ANONYMOUS'")
+    @Column(nullable = false)
     private AnonymousStatus anonymousStatus = AnonymousStatus.NON_ANONYMOUS;
 
     @Column(nullable = true)
