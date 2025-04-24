@@ -18,6 +18,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import java.time.*;
 import java.util.List;
@@ -74,9 +75,10 @@ class OrderServiceTest {
         );
 
         Menu menu1 = Menu.builder().name("짜장면").price(7000).isOption(false).storeId(1L).build();
-        menu1.setId(1L);
         Menu menu2 = Menu.builder().name("짬뽕").price(8000).isOption(false).storeId(1L).build();
-        menu2.setId(2L);
+
+        ReflectionTestUtils.setField(menu1,"id",1L);
+        ReflectionTestUtils.setField(menu2,"id",2L);
 
         Store store = Store.builder()
                 .minDeliveryPrice(1000)
@@ -88,7 +90,7 @@ class OrderServiceTest {
         given(storeRepository.findByIdOrElseThrow(1L)).willReturn(store);
         given(orderRepository.save(any())).willAnswer(invocation -> {
             Order order = invocation.getArgument(0);
-            order.setId(100L);
+            ReflectionTestUtils.setField(order,"id",100L);
             return order;
         });
 
@@ -108,7 +110,7 @@ class OrderServiceTest {
         );
 
         Menu menu1 = Menu.builder().name("짜장면").price(7000).isOption(false).storeId(1L).build();
-        menu1.setId(1L);
+        ReflectionTestUtils.setField(menu1,"id",1L);
         menu1.delete();
 
         given(menuRepository.findAllByIdOrElseThrow(anyList())).willReturn(List.of(menu1));
@@ -146,7 +148,7 @@ class OrderServiceTest {
         );
 
         Menu menu = Menu.builder().name("미니샐러드").price(1000).isOption(false).storeId(1L).build();
-        menu.setId(1L);
+        ReflectionTestUtils.setField(menu,"id",1L);
 
         Store store = Store.builder()
                 .minDeliveryPrice(12000)

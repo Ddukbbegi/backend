@@ -43,8 +43,4 @@ public class Order extends BaseUserEntity {
         this.orderStatus = OrderStatus.WAITING;
         this.requestComment = requestComment;
     }
-
-    public void setId(long id) {
-        this.id = id;
-    }
 }
