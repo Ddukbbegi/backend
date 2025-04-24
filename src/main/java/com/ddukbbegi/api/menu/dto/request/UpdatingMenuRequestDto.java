@@ -1,6 +1,11 @@
 package com.ddukbbegi.api.menu.dto.request;
 
+import org.aspectj.bridge.IMessage;
+import org.aspectj.bridge.IMessageHolder;
+
 import com.ddukbbegi.api.menu.entity.Menu;
+import com.ddukbbegi.api.menu.enums.Category;
+import com.ddukbbegi.api.menu.enums.MenuStatus;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import jakarta.validation.constraints.Max;
@@ -23,8 +28,8 @@ public record UpdatingMenuRequestDto(
 	@Size(max = 255, message = "설명은 255자 이내로 입력해주세요.")
 	String description,
 
-	@Size(max = 100, message = "카테고리는 100자 이내로 입력해주세요.")
-	String category
+	@NotNull(message = "category는 MAIN_MENU, SIDE_MENU, DESSERT, DRINK 중 하나만 선택 가능합니다.")
+	Category category
 ) {
 
 }

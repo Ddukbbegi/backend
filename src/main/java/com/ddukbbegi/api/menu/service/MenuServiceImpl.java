@@ -1,6 +1,5 @@
 package com.ddukbbegi.api.menu.service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -8,9 +7,11 @@ import org.springframework.stereotype.Service;
 
 import com.ddukbbegi.api.menu.dto.request.NewMenuRequestDto;
 import com.ddukbbegi.api.menu.dto.request.UpdatingMenuRequestDto;
+import com.ddukbbegi.api.menu.dto.request.UpdatingMenuStatusRequestDto;
 import com.ddukbbegi.api.menu.dto.response.AllMenuResponseDto;
 import com.ddukbbegi.api.menu.dto.response.DetailMenuResponseDto;
 import com.ddukbbegi.api.menu.entity.Menu;
+import com.ddukbbegi.api.menu.enums.MenuStatus;
 import com.ddukbbegi.api.menu.repository.MenuRepository;
 
 import org.springframework.transaction.annotation.Transactional;
@@ -23,8 +24,16 @@ public class MenuServiceImpl implements MenuService{
 
 	@Override
 	@Transactional(readOnly = true)
-	public List<AllMenuResponseDto> findAllMenu(long storeId){
-		return menuRepository.findAllMenuByStoreAndIsDeletedFalse(storeId).stream()
+	public List<AllMenuResponseDto> findAllMenusForOwner(long storeId){
+		return menuRepository.findAllByStoreId(storeId).stream()
+			.map(menu -> AllMenuResponseDto.toDto(menu))
+			.collect(Collectors.toList());
+	}
+
+	@Override
+	@Transactional(readOnly = true)
+	public List<AllMenuResponseDto> findAllMenusForCustomer(long storeId){
+		return menuRepository.findAllByStoreIdAndStatusNot(storeId, MenuStatus.DELETED).stream()
 			.map(menu -> AllMenuResponseDto.toDto(menu))
 			.collect(Collectors.toList());
 	}
@@ -32,7 +41,7 @@ public class MenuServiceImpl implements MenuService{
 	@Override
 	@Transactional(readOnly = true)
 	public DetailMenuResponseDto findMenu(long storeId, long id) {
-		Menu menu = menuRepository.findMenuByIdAndStoreIdAndIsDeletedFalse(storeId, id);
+		Menu menu = menuRepository.findMenuByIdAndStoreId(storeId, id);
 		return DetailMenuResponseDto.toDto(menu);
 	}
 
@@ -53,8 +62,7 @@ public class MenuServiceImpl implements MenuService{
 
 	@Override
 	@Transactional
-	public void deleteMenu(long id) {
-		Menu menu = menuRepository.findById(id).orElseThrow();
-		menu.delete();
+	public void switchMenuStatus(long id, UpdatingMenuStatusRequestDto dto) {
+		menuRepository.updateMenuStatusById(id, dto.status());
 	}
 }

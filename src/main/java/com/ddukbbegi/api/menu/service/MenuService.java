@@ -4,11 +4,15 @@ import java.util.List;
 
 import com.ddukbbegi.api.menu.dto.request.NewMenuRequestDto;
 import com.ddukbbegi.api.menu.dto.request.UpdatingMenuRequestDto;
+import com.ddukbbegi.api.menu.dto.request.UpdatingMenuStatusRequestDto;
 import com.ddukbbegi.api.menu.dto.response.AllMenuResponseDto;
 import com.ddukbbegi.api.menu.dto.response.DetailMenuResponseDto;
+import com.ddukbbegi.api.menu.enums.MenuStatus;
 
 public interface MenuService {
-	List<AllMenuResponseDto> findAllMenu(long storeId);
+	List<AllMenuResponseDto> findAllMenusForOwner(long storeId);
+
+	List<AllMenuResponseDto> findAllMenusForCustomer(long storeId);
 
 	DetailMenuResponseDto findMenu(long storeId, long menuId);
 
@@ -16,5 +20,5 @@ public interface MenuService {
 
 	void updateMenu(long id, UpdatingMenuRequestDto dto);
 
-	void deleteMenu(long menuId);
+	void switchMenuStatus(long menuId, UpdatingMenuStatusRequestDto dto);
 }
