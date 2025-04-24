@@ -1,27 +1,26 @@
 package com.ddukbbegi.api.auth.entity;
 
-import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisHash;
+
+import java.util.UUID;
 
 @Getter
 @RedisHash(value = "refreshToken", timeToLive = 14440)
 public class Auth {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private String id = UUID.randomUUID().toString();
+
+    private Long userId;  // String 타입으로 변경
 
     private String refreshToken;
 
-    private Long userId;
-
     @Builder
-    public Auth(String refreshToken, Long userId) {
+    public Auth(Long userId, String refreshToken) {
         this.refreshToken = refreshToken;
         this.userId = userId;
     }
@@ -31,3 +30,4 @@ public class Auth {
         this.refreshToken = refreshToken;
     }
 }
+
