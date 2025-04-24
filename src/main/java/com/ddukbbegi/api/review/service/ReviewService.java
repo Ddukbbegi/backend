@@ -6,6 +6,8 @@ import com.ddukbbegi.api.review.dto.ReviewRequestDto;
 import com.ddukbbegi.api.review.dto.ReviewResponseDto;
 import com.ddukbbegi.api.review.dto.ReviewUpdateRequestDto;
 import com.ddukbbegi.api.review.entity.Review;
+import com.ddukbbegi.api.review.entity.ReviewLike;
+import com.ddukbbegi.api.review.repository.ReviewLikeRepository;
 import com.ddukbbegi.api.review.repository.ReviewRepository;
 import com.ddukbbegi.api.user.entity.User;
 import com.ddukbbegi.api.user.enums.UserRole;
@@ -25,6 +27,7 @@ public class ReviewService {
 
     private final ReviewRepository reviewRepository;
     private final UserRepository userRepository;
+    private final ReviewLikeRepository reviewLikeRepository;
     //private final OrderRepository orderRepository;
 
     public ReviewResponseDto saveReview(Long userId, ReviewRequestDto requestDto){
@@ -71,7 +74,8 @@ public class ReviewService {
     @Transactional
     public ReviewResponseDto saveReviewReply(Long ownerId , Long reviewId, ReviewOwnerRequestDto requestDto){
         User findUser = userRepository.findByIdOrElseThrow(ownerId);
-        if(findUser.getUserRole() == UserRole.USER){
+        if(findUser.getUserRole() != UserRole.OWNER){
+            System.out.println(findUser.getUserRole());
             throw new BusinessException(ResultCode.ACCESS_DENIED);
         }
         Review findReview = reviewRepository.findById(reviewId)
@@ -84,7 +88,7 @@ public class ReviewService {
     @Transactional
     public ReviewResponseDto updateReviewReply(Long ownerId , Long reviewId, ReviewOwnerRequestDto requestDto){
         User findUser = userRepository.findByIdOrElseThrow(ownerId);
-        if(findUser.getUserRole() == UserRole.USER){
+        if(findUser.getUserRole() != UserRole.OWNER){
             throw new BusinessException(ResultCode.ACCESS_DENIED);
         }
         Review findReview = reviewRepository.findById(reviewId)
@@ -96,12 +100,42 @@ public class ReviewService {
     @Transactional
     public void deleteReviewReply(Long ownerId, Long reviewId){
         User findUser = userRepository.findByIdOrElseThrow(ownerId);
-        if(findUser.getUserRole() == UserRole.USER){
+        if(findUser.getUserRole() != UserRole.OWNER){
             throw new BusinessException(ResultCode.ACCESS_DENIED);
         }
         Review findReview = reviewRepository.findById(reviewId)
                 .orElseThrow(()->new BusinessException(ResultCode.NOT_FOUND));
         findReview.updateReply(null);
+    }
+
+    @Transactional
+    public void saveLike(Long userId, Long reviewId){
+        User findUser = userRepository.findByIdOrElseThrow(userId);
+        Review findReview = reviewRepository.findById(reviewId)
+                .orElseThrow(()->new BusinessException(ResultCode.NOT_FOUND));
+        if(reviewLikeRepository.existsReviewLikeByUserAndReview(findUser, findReview)){
+            return ;
+        }
+        ReviewLike reviewLike = ReviewLike.from(findReview, findUser);
+        reviewLikeRepository.save(reviewLike);
+    }
+
+    @Transactional
+    public void deleteLike(Long userId, Long reviewId){
+        User findUser = userRepository.findByIdOrElseThrow(userId);
+        Review findReview = reviewRepository.findById(reviewId)
+                .orElseThrow(()->new BusinessException(ResultCode.NOT_FOUND));
+
+        reviewLikeRepository.findByUserAndReview(findUser, findReview)
+                .ifPresentOrElse(
+                        reviewLike -> {
+                            reviewLikeRepository.delete(reviewLike);
+                        },
+                        () -> {
+                            // 없으면 바로 return
+                            return;
+                        }
+                );
     }
 
 

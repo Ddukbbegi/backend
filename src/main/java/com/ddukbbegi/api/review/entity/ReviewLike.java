@@ -1,16 +1,21 @@
 package com.ddukbbegi.api.review.entity;
 
 import com.ddukbbegi.api.common.entity.BaseUserEntity;
+import com.ddukbbegi.api.user.entity.User;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Entity
 @Getter
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Builder(access = AccessLevel.PRIVATE)
+@Table(
+        name = "review_like",
+        uniqueConstraints = {
+                @UniqueConstraint(columnNames = {"review_id", "user_id"})
+        }
+)
 public class ReviewLike extends BaseUserEntity {
 
     @Id
@@ -21,9 +26,17 @@ public class ReviewLike extends BaseUserEntity {
     @JoinColumn(name = "review_id")
     private Review review;
 
-//    @ManyToOne(fetch = FetchType.LAZY)
-//    @JoinColumn(name = "user_id")
-//    private User user;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    private User user;
+
+    public static ReviewLike from(Review review, User user) {
+        return ReviewLike.builder()
+                .review(review)
+                .user(user)
+                .build();
+    }
+
 
 
 }

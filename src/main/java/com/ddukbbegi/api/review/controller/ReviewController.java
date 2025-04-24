@@ -9,12 +9,9 @@ import com.ddukbbegi.api.review.dto.ReviewUpdateRequestDto;
 import com.ddukbbegi.api.review.service.ReviewService;
 import com.ddukbbegi.common.component.BaseResponse;
 import com.ddukbbegi.common.component.ResultCode;
-import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.repository.query.Param;
-import org.springframework.data.web.PageableDefault;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -93,6 +90,25 @@ public class ReviewController {
         Long ownerId = 2L;
         reviewService.deleteReviewReply(ownerId, reviewId);
         return BaseResponse.success(ResultCode.NO_CONTENT);
+    }
+
+    //리뷰 좋아요
+    @PostMapping("/reviews/{reviewId}/likes")
+    public BaseResponse<Void> saveLike(
+            @PathVariable Long reviewId
+    ){
+        Long userId = 1L;
+        reviewService.saveLike(userId, reviewId);
+        return BaseResponse.success(ResultCode.OK);
+    }
+    //리뷰 좋아요 취소
+    @DeleteMapping("/reviews/{reviewId}/likes")
+    public BaseResponse<Void> deleteLike(
+            @PathVariable Long reviewId
+    ){
+        Long userId = 1L;
+        reviewService.deleteLike(userId, reviewId);
+        return BaseResponse.success(ResultCode.OK);
     }
 
 
