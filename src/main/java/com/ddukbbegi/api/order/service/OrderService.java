@@ -9,6 +9,7 @@ import com.ddukbbegi.api.order.dto.response.OrderHistoryOwnerResponseDto;
 import com.ddukbbegi.api.order.dto.response.OrderHistoryUserResponseDto;
 import com.ddukbbegi.api.order.entity.Order;
 import com.ddukbbegi.api.order.entity.OrderMenu;
+import com.ddukbbegi.api.order.enums.OrderStatus;
 import com.ddukbbegi.api.order.repository.OrderMenuRepository;
 import com.ddukbbegi.api.order.repository.OrderRepository;
 import com.ddukbbegi.api.review.repository.ReviewRepository;
@@ -185,4 +186,27 @@ public class OrderService {
 
         return PageResponseDto.toDto(result);
     }
+
+    @Transactional
+    public void cancelOrder(long orderId, long userId) {
+        Order order = orderRepository.findByIdOrElseThrow(orderId);
+        checkOrderIsUserOrder(order, userId);
+        checkCancelIsAvailable(order);
+
+        order.cancel();
+    }
+
+    private void checkOrderIsUserOrder(Order order, long userId) {
+        if (!order.getUser().getId().equals(userId)) {
+            throw new BusinessException(ResultCode.ORDER_USER_MISMATCH);
+        }
+    }
+
+    private void checkCancelIsAvailable(Order order) {
+        if (order.getOrderStatus() != OrderStatus.WAITING) {
+            throw new BusinessException(ResultCode.ORDER_CANNOT_BE_CANCELED,
+                    "취소할 수 없는 주문입니다. (주문상태: " + order.getOrderStatus() + ")" );
+        }
+    }
+
 }
