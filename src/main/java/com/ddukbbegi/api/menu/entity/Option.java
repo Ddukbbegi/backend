@@ -12,6 +12,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -33,4 +34,10 @@ public class Option {
 	@Column(nullable = false)
 	private MenuStatus status;
 
+	@Builder
+	public Option(String name, int price, MenuStatus status) {
+		this.name = name;
+		this.price = price;
+		this.status = status;
+	}
 }
