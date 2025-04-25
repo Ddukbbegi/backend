@@ -15,6 +15,9 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.regex.Pattern;
 
 @Component
 @RequiredArgsConstructor
@@ -23,11 +26,23 @@ public class JwtFilter extends OncePerRequestFilter {
     private final JwtUtil jwtUtil;
     private final RedisTemplate<String, Object> redisTemplate;
 
+    // 화이트리스트에 포함될 URL 경로들
+    // 동적으로 바뀌는 경우 -> .+ 이런식 표기
+    // 비회원일 때 접근 가능한 경로 추가
+    private static final String[] DYNAMIC_WHITELIST_URLS = {
+            "/api/stores/.+/menus"
+    };
+
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         String url = request.getRequestURI();
 
         if (url.startsWith("/api/auth")) {
+            filterChain.doFilter(request, response);
+            return;
+        }
+
+        if (isDynamicWhitelisted(url)) {
             filterChain.doFilter(request, response);
             return;
         }
@@ -58,7 +73,21 @@ public class JwtFilter extends OncePerRequestFilter {
     }
 
     /**
+     * 동적 경로 패턴 체크
+     */
+    private boolean isDynamicWhitelisted(String url) {
+        for (String dynamicUrl : DYNAMIC_WHITELIST_URLS) {
+            Pattern pattern = Pattern.compile(dynamicUrl);
+            if (pattern.matcher(url).matches()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
      * AccessToken 이 Blacklist 에 있는지 검증
+     *
      * @param accessToken
      * @return boolean
      */
