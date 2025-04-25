@@ -1,24 +1,26 @@
 package com.ddukbbegi.api.review.service;
 
 
-import com.ddukbbegi.api.review.dto.ReviewOwnerRequestDto;
-import com.ddukbbegi.api.review.dto.ReviewRequestDto;
-import com.ddukbbegi.api.review.dto.ReviewResponseDto;
-import com.ddukbbegi.api.review.dto.ReviewUpdateRequestDto;
+import com.ddukbbegi.api.order.entity.Order;
+import com.ddukbbegi.api.order.repository.OrderRepository;
+import com.ddukbbegi.api.review.dto.*;
 import com.ddukbbegi.api.review.entity.Review;
 import com.ddukbbegi.api.review.entity.ReviewLike;
 import com.ddukbbegi.api.review.repository.ReviewLikeRepository;
 import com.ddukbbegi.api.review.repository.ReviewRepository;
+import com.ddukbbegi.api.store.repository.StoreRepository;
 import com.ddukbbegi.api.user.entity.User;
-import com.ddukbbegi.api.user.enums.UserRole;
 import com.ddukbbegi.api.user.repository.UserRepository;
 import com.ddukbbegi.common.component.ResultCode;
 import com.ddukbbegi.common.exception.BusinessException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 
 @Service
@@ -28,44 +30,67 @@ public class ReviewService {
     private final ReviewRepository reviewRepository;
     private final UserRepository userRepository;
     private final ReviewLikeRepository reviewLikeRepository;
-    //private final OrderRepository orderRepository;
+    private final OrderRepository orderRepository;
+    private final StoreRepository storeRepository;
 
     public ReviewResponseDto saveReview(Long userId, ReviewRequestDto requestDto){
-        //주문테이블에 주문식별자로 존재 확인
-        User user = userRepository.findByIdOrElseThrow(userId);
-
-        //dto to entity
-        Review review = Review.from(user, requestDto);
-        //리뷰 저장
+        Order findOrder = orderRepository.findByIdOrElseThrow(requestDto.orderId());
+        User findUser = userRepository.findByIdOrElseThrow(userId);
+        Review review = Review.from(findUser, findOrder,requestDto);
         Review savedReview = reviewRepository.save(review);
-        //리턴
-        return ReviewResponseDto.from(savedReview);
+        Long likeCount = reviewLikeRepository.countLikesByReviewId(savedReview.getId());
+        return ReviewResponseDto.from(savedReview, likeCount);
 
     }
 
     @Transactional(readOnly = true)
-    public Page<ReviewResponseDto> findAllMyReviews(Long userId, Pageable pageable){
-        User finduser = userRepository.findByIdOrElseThrow(userId);
-        Page<Review> reviews = reviewRepository.findAllByUser(finduser,pageable);
-        return reviews.map(ReviewResponseDto::from);
+    public Page<ReviewResponseDto> findAllMyReviews(Long userId, Pageable pageable) {
+
+//        int total = fullList.size();
+//
+//        int start = (int) pageable.getOffset();
+//        int end = Math.min(start + pageable.getPageSize(), total);
+//        List<ReviewResponseDto> content = fullList.subList(start, end)
+//                .stream()
+//                .map(ReviewWithLikeCountDto::from)
+//                .toList();
+
+        return reviewLikeRepository.countLikesByUserId(userId, pageable);
+    }
+
+
+
+    @Transactional(readOnly = true)
+    public Page<ReviewResponseDto> findAllStoreReviews(Long storeId, Pageable pageable){
+
+//        int total = fullList.size();
+//
+//        int start = (int) pageable.getOffset();
+//        int end = Math.min(start + pageable.getPageSize(), total);
+//        List<ReviewResponseDto> content = fullList.subList(start, end)
+//                .stream()
+//                .map(ReviewWithLikeCountDto::from)
+//                .toList();
+
+        return reviewLikeRepository.countLikesByStoreId(storeId, pageable);
+
     }
 
     @Transactional
     public ReviewResponseDto updateReview(Long userId, Long reviewId, ReviewUpdateRequestDto requestDto){
-        Review findReview = reviewRepository.findByIdWithUser(reviewId)
-                .orElseThrow(()->new BusinessException(ResultCode.NOT_FOUND));
-        if(!findReview.getUser().getId().equals(userId)){
+        Review findReview = reviewRepository.findReviewByIdWithUser(reviewId);
+        if(!findReview.validUser(userId)){
             throw new BusinessException(ResultCode.ACCESS_DENIED);
         }
         findReview.updateReview(requestDto);
-        return ReviewResponseDto.from(findReview);
+        Long likeCount = reviewLikeRepository.countLikesByReviewId(findReview.getId());
+        return ReviewResponseDto.from(findReview, likeCount);
     }
 
     @Transactional
-    public void deleteReview(Long reviewId){
-        Review findReview = reviewRepository
-                .findByIdWithUser(reviewId).orElseThrow(()->new BusinessException(ResultCode.NOT_FOUND));
-        if(!findReview.getUser().getId().equals(reviewId)){
+    public void deleteReview(Long userId, Long reviewId){
+        Review findReview = reviewRepository.findReviewByIdWithUser(reviewId);
+        if(!findReview.validUser(userId)){
             throw new BusinessException(ResultCode.ACCESS_DENIED);
         }
         findReview.softDelete();
@@ -73,70 +98,56 @@ public class ReviewService {
 
     @Transactional
     public ReviewResponseDto saveReviewReply(Long ownerId , Long reviewId, ReviewOwnerRequestDto requestDto){
-        User findUser = userRepository.findByIdOrElseThrow(ownerId);
-        if(findUser.getUserRole() != UserRole.OWNER){
-            System.out.println(findUser.getUserRole());
+        Review findReview = reviewRepository.findReviewByIdWithUser(reviewId);
+        if(!findReview.getOrder().getStore().getUser().getId().equals(ownerId)){
             throw new BusinessException(ResultCode.ACCESS_DENIED);
         }
-        Review findReview = reviewRepository.findById(reviewId)
-                .orElseThrow(()->new BusinessException(ResultCode.NOT_FOUND));
         findReview.updateReply(requestDto.contents());
-        return ReviewResponseDto.from(findReview);
+        Long likeCount = reviewLikeRepository.countLikesByReviewId(findReview.getId());
+        return ReviewResponseDto.from(findReview, likeCount);
     }
+
 
 
     @Transactional
     public ReviewResponseDto updateReviewReply(Long ownerId , Long reviewId, ReviewOwnerRequestDto requestDto){
-        User findUser = userRepository.findByIdOrElseThrow(ownerId);
-        if(findUser.getUserRole() != UserRole.OWNER){
+        Review findReview = reviewRepository.findReviewByIdWithUser(reviewId);
+        if(!findReview.getOrder().getStore().getUser().getId().equals(ownerId)){
             throw new BusinessException(ResultCode.ACCESS_DENIED);
         }
-        Review findReview = reviewRepository.findById(reviewId)
-                .orElseThrow(()->new BusinessException(ResultCode.NOT_FOUND));
         findReview.updateReply(requestDto.contents());
-        return ReviewResponseDto.from(findReview);
+        Long likeCount = reviewLikeRepository.countLikesByReviewId(findReview.getId());
+        return ReviewResponseDto.from(findReview, likeCount);
     }
 
     @Transactional
     public void deleteReviewReply(Long ownerId, Long reviewId){
-        User findUser = userRepository.findByIdOrElseThrow(ownerId);
-        if(findUser.getUserRole() != UserRole.OWNER){
+        Review findReview = reviewRepository.findReviewByIdWithUser(reviewId);
+        if(!findReview.getOrder().getStore().getUser().getId().equals(ownerId)){
             throw new BusinessException(ResultCode.ACCESS_DENIED);
         }
-        Review findReview = reviewRepository.findById(reviewId)
-                .orElseThrow(()->new BusinessException(ResultCode.NOT_FOUND));
         findReview.updateReply(null);
     }
 
     @Transactional
     public void saveLike(Long userId, Long reviewId){
         User findUser = userRepository.findByIdOrElseThrow(userId);
-        Review findReview = reviewRepository.findById(reviewId)
-                .orElseThrow(()->new BusinessException(ResultCode.NOT_FOUND));
-        if(reviewLikeRepository.existsReviewLikeByUserAndReview(findUser, findReview)){
-            return ;
+        Review findReview = reviewRepository.findReviewByIdWithUser(reviewId);
+        if(!reviewLikeRepository.existsReviewLikeByUserAndReview(findUser, findReview)){
+            ReviewLike reviewLike = ReviewLike.from(findReview, findUser);
+            reviewLikeRepository.save(reviewLike);
         }
-        ReviewLike reviewLike = ReviewLike.from(findReview, findUser);
-        reviewLikeRepository.save(reviewLike);
     }
 
     @Transactional
     public void deleteLike(Long userId, Long reviewId){
         User findUser = userRepository.findByIdOrElseThrow(userId);
-        Review findReview = reviewRepository.findById(reviewId)
-                .orElseThrow(()->new BusinessException(ResultCode.NOT_FOUND));
-
+        Review findReview = reviewRepository.findReviewByIdWithUser(reviewId);
         reviewLikeRepository.findByUserAndReview(findUser, findReview)
-                .ifPresentOrElse(
-                        reviewLike -> {
-                            reviewLikeRepository.delete(reviewLike);
-                        },
-                        () -> {
-                            // 없으면 바로 return
-                            return;
-                        }
-                );
+                .ifPresent(reviewLikeRepository::delete);
     }
+
+
 
 
 }
