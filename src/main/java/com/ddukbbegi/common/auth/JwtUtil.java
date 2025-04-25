@@ -133,17 +133,30 @@ public class JwtUtil {
      * JWT 토큰의 만료 시간 생성
      *
      * @param expireDate : 시간 연산에 사용되는 밀리초 값 = long
-     * @return Date
+     * @return Date : 만료 시간
      */
     public Date createExpireDate(Long expireDate) {
         return new Date(System.currentTimeMillis() + expireDate);
     }
 
     /**
+     * JWT 토큰의 만료 시간 생성 Extract
+     *
+     * @param token
+     * @return
+     */
+    public Date getExpireDate(String token) {
+        return Jwts.parserBuilder()
+                .setSigningKey(createSigningKey(secretKey))
+                .build()
+                .parseClaimsJws(token).getBody().getExpiration();
+    }
+
+    /**
      * JWT 서명을 위한 비밀 키 생성
      *
      * @param key
-     * @return
+     * @return Key : 비밀키
      */
     private Key createSigningKey(String key) {
         return new SecretKeySpec(Base64.getDecoder().decode(key), SignatureAlgorithm.HS256.getJcaName());
@@ -153,7 +166,7 @@ public class JwtUtil {
      * Header 에서 Bearer 제외한 토큰 Extract
      *
      * @param authorizationHeader
-     * @return
+     * @return String : Bearer 제외한 Token 반환
      */
     public static String extractToken(String authorizationHeader) {
         if (StringUtils.hasText(authorizationHeader) && authorizationHeader.startsWith(BEARER_PREFIX)) {
@@ -175,7 +188,7 @@ public class JwtUtil {
         UserDetails userDetails = userDetailsService.loadUserByUsername(String.valueOf(userId));
 
         if (userRepository.existsByIdAndIsDeletedTrue(userId)) {
-            throw new BusinessException(ResultCode.AUTHENTICATION_FAILED, "탈퇴한 유저는 접근 불가.");
+            throw new BusinessException(ResultCode.WITHDRAWN_USER_ACCESS);
         }
 
         return new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
