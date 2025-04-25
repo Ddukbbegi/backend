@@ -20,6 +20,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -260,5 +261,103 @@ class OrderServiceTest {
         assertThatThrownBy(() -> orderService.cancelOrder(1L, user.getId()))
                 .isInstanceOf(BusinessException.class)
                 .hasMessageContaining(ORDER_CANNOT_BE_CANCELED.getDefaultMessage());
+    }
+
+    @ParameterizedTest
+    @CsvSource({
+            "WAITING,ACCEPTED",
+            "ACCEPTED,COOKING",
+            "COOKING,DELIVERING",
+            "DELIVERING,DELIVERED",
+            "WAITING,REJECTED"
+    })
+    @DisplayName("주문 상태 변경 성공에 성공한다.")
+    void updateOrderStatus_success(String from, String to) {
+        //given
+        User owner = User.of("test@email.com", "pw", "사장님", "010-1234-5678", UserRole.OWNER);
+        ReflectionTestUtils.setField(owner,"id",2L);
+        ReflectionTestUtils.setField(store, "user", owner);
+
+        Order order = Order.builder().user(user).store(store).requestComment(REQUEST_COMMENT).build();
+        ReflectionTestUtils.setField(order, "id", 1L);
+        ReflectionTestUtils.setField(order, "orderStatus", OrderStatus.valueOf(from));
+
+        given(orderRepository.findByIdWithStoreOrElseThrow(1L)).willReturn(order);
+
+        //when
+        orderService.updateOrderStatus(1L, OrderStatus.valueOf(to), owner.getId());
+
+        //then
+        assertThat(order.getOrderStatus()).isEqualTo(OrderStatus.valueOf(to));
+    }
+
+    @ParameterizedTest
+    @CsvSource({
+            "WAITING,COOKING",
+            "DELIVERING,ACCEPTED"
+    })
+    @DisplayName("잘못된 상태 흐름은 예외가 발생한다.")
+    void updateOrderStatus_fail_dueToInvalidTransition(String from, String to) {
+        //given
+        User owner = User.of("test@email.com", "pw", "사장님", "010-1234-5678", UserRole.OWNER);
+        ReflectionTestUtils.setField(owner, "id", 2L);
+        ReflectionTestUtils.setField(store, "user", owner);
+
+        Order order = Order.builder().user(user).store(store).requestComment(REQUEST_COMMENT).build();
+        ReflectionTestUtils.setField(order, "id", 1L);
+        ReflectionTestUtils.setField(order, "orderStatus", OrderStatus.valueOf(from));
+
+        given(orderRepository.findByIdWithStoreOrElseThrow(1L)).willReturn(order);
+
+        // when & then
+        assertThatThrownBy(() -> orderService.updateOrderStatus(1L, OrderStatus.valueOf(to), owner.getId()))
+                .isInstanceOf(BusinessException.class)
+                .hasMessageContaining(ORDER_STATUS_FLOW_INVALID.getDefaultMessage());
+    }
+
+    @ParameterizedTest
+    @CsvSource({
+            "REJECTED,COOKING",
+            "DELIVERED,REJECTED",
+            "CANCELED,ACCEPTED"
+    })
+    @DisplayName("REJECTED 혹은 CANCELED 혹은 DELIVERED 이후에는 상태 변경 시 예외가 발생한다.")
+    void updateOrderStatus_fail_dueToTerminalStates(String from, String to) {
+        //given
+        User owner = User.of("test@email.com", "pw", "사장님", "010-1234-5678", UserRole.OWNER);
+        ReflectionTestUtils.setField(owner, "id", 2L);
+        ReflectionTestUtils.setField(store, "user", owner);
+
+        Order order = Order.builder().user(new User()).store(store).requestComment(REQUEST_COMMENT).build();
+        ReflectionTestUtils.setField(order, "id", 1L);
+        ReflectionTestUtils.setField(order, "orderStatus", OrderStatus.valueOf(from));
+
+        given(orderRepository.findByIdWithStoreOrElseThrow(1L)).willReturn(order);
+
+        // when & then
+        assertThatThrownBy(() -> orderService.updateOrderStatus(1L, OrderStatus.valueOf(to), owner.getId()))
+                .isInstanceOf(BusinessException.class)
+                .hasMessageContaining(ORDER_ALREADY_TERMINATED.getDefaultMessage());
+    }
+
+    @Test
+    @DisplayName("가게 소유자가 아닌 경우 주문 상태 변경 시 예외가 발생한다.")
+    void updateOrderStatus_fail_dueToWrongOwner() {
+        //given
+        User owner = User.of("test@email.com", "pw", "사장님", "010-1234-5678", UserRole.OWNER);
+        User other = User.of("other@email.com", "pw", "다른사람", "010-0000-1111", UserRole.OWNER);
+        ReflectionTestUtils.setField(owner, "id", 2L);
+        ReflectionTestUtils.setField(other, "id", 3L);
+        ReflectionTestUtils.setField(store, "user", owner);
+
+        Order order = Order.builder().user(user).store(store).requestComment(REQUEST_COMMENT).build();
+        ReflectionTestUtils.setField(order, "id", 1L);
+        ReflectionTestUtils.setField(order, "orderStatus", OrderStatus.WAITING);
+
+        given(orderRepository.findByIdWithStoreOrElseThrow(1L)).willReturn(order);
+
+        assertThatThrownBy(() -> orderService.updateOrderStatus(1L, OrderStatus.ACCEPTED, other.getId()))
+                .isInstanceOf(BusinessException.class)
+                .hasMessageContaining(STORE_OWNER_MISMATCH.getDefaultMessage());
     }
 }
