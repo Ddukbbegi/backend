@@ -7,7 +7,7 @@ public class TimeRangeFormatter {
 
     private static final DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern("HH:mm");
 
-    public static String formatTimeRange(LocalTime startTime, LocalTime endTime) {
+    public static String format(LocalTime startTime, LocalTime endTime) {
         return startTime.format(TIME_FORMATTER) + "-" + endTime.format(TIME_FORMATTER);
     }
 

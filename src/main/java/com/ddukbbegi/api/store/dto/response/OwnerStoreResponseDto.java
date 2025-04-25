@@ -31,7 +31,7 @@ public record OwnerStoreResponseDto(
                 store.getName(),
                 store.getCategory().name(),
                 store.getStatus(),
-                TimeRangeFormatter.formatTimeRange(startTime, endTime),
+                TimeRangeFormatter.format(startTime, endTime),
                 store.isTemporarilyClosed(),
                 store.isPermanentlyClosed()
         );
