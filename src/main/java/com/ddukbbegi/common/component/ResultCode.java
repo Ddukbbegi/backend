@@ -24,7 +24,9 @@ public enum ResultCode {
     LOGIN_FAILED(HttpStatus.UNAUTHORIZED, "E101", "아이디(로그인 이메일) 또는 비밀번호가 잘못 되었습니다. 아이디와 비밀번호를 정확히 입력해 주세요."),
     AUTHENTICATION_FAILED(HttpStatus.UNAUTHORIZED, "E102", "비밀번호가 일치하지 않습니다."),
     ACCESS_DENIED(HttpStatus.FORBIDDEN, "E103", "Access Denied."),
-    WITHDRAWN_USER_ACCESS(HttpStatus.FORBIDDEN, "104", "탈퇴한 유저는 접근할 수 없습니다."),
+    WITHDRAWN_USER_ACCESS(HttpStatus.FORBIDDEN, "E104", "탈퇴한 유저는 접근할 수 없습니다."),
+    TOKEN_INVALID(HttpStatus.UNAUTHORIZED, "E105", "유효하지 않은 토큰입니다."),
+    TOKEN_BLACKLISTED(HttpStatus.FORBIDDEN, "E106", "다시 로그인 해주세요."),
 
     /* 서버 */
     UNKNOWN_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "E999", "알 수 없는 오류"),
@@ -33,10 +35,10 @@ public enum ResultCode {
     STORE_LIMIT_EXCEEDED(HttpStatus.BAD_REQUEST, "E301", "가게 등록 가능 개수를 초과했습니다. 최대 3개까지만 등록할 수 있습니다."),
 
     /* 주문 도메인 */
-    CONTAIN_DIFFERENT_STORE_MENU(HttpStatus.BAD_REQUEST,"E201","서로 다른 가게의 메뉴가 포함되어 있습니다."),
-    STORE_NOT_WORKING(HttpStatus.BAD_REQUEST,"E202" ,"가게 운영중이 아닙니다." ),
+    CONTAIN_DIFFERENT_STORE_MENU(HttpStatus.BAD_REQUEST, "E201", "서로 다른 가게의 메뉴가 포함되어 있습니다."),
+    STORE_NOT_WORKING(HttpStatus.BAD_REQUEST, "E202", "가게 운영중이 아닙니다."),
     MENU_IS_DELETED(HttpStatus.BAD_REQUEST, "E203", "삭제된 메뉴가 포함되어 있습니다."),
-    UNDER_MIN_DELIVERY_PRICE(HttpStatus.BAD_REQUEST, "E204", "최소 주문 금액이 충족되지 않았습니다." );
+    UNDER_MIN_DELIVERY_PRICE(HttpStatus.BAD_REQUEST, "E204", "최소 주문 금액이 충족되지 않았습니다.");
 
     private final HttpStatus status;
     private final String code;

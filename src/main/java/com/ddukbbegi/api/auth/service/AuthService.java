@@ -4,6 +4,7 @@ import com.ddukbbegi.api.auth.dto.request.LoginRequestDto;
 import com.ddukbbegi.api.auth.dto.request.SignupRequestDto;
 import com.ddukbbegi.api.auth.dto.request.UpdatePasswordRequestDto;
 import com.ddukbbegi.api.auth.dto.response.LoginResponseDto;
+import com.ddukbbegi.api.auth.dto.response.ReissueResponseDto;
 import com.ddukbbegi.api.auth.dto.response.SignupResponseDto;
 
 public interface AuthService {
@@ -17,5 +18,7 @@ public interface AuthService {
 
     LoginResponseDto login(LoginRequestDto requestDto);
 
-    void logout(String token);
+    void logout(String accessToken);
+
+    ReissueResponseDto reissue(String refreshToken);
 }
