@@ -7,6 +7,7 @@ import com.ddukbbegi.api.review.dto.ReviewRequestDto;
 import com.ddukbbegi.api.review.dto.ReviewResponseDto;
 import com.ddukbbegi.api.review.dto.ReviewUpdateRequestDto;
 import com.ddukbbegi.api.review.service.ReviewService;
+import com.ddukbbegi.common.auth.CustomUserDetails;
 import com.ddukbbegi.common.component.BaseResponse;
 import com.ddukbbegi.common.component.ResultCode;
 import jakarta.validation.Valid;
@@ -14,6 +15,7 @@ import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 @Validated
@@ -26,10 +28,11 @@ public class ReviewController {
 
     @PostMapping("/reviews")
     public BaseResponse<ReviewResponseDto> saveReview(
+            @AuthenticationPrincipal CustomUserDetails userDetails,
             @Valid @RequestBody ReviewRequestDto requestDto
     ){
 
-        ReviewResponseDto responseDto = reviewService.saveReview(1L, requestDto);
+        ReviewResponseDto responseDto = reviewService.saveReview(userDetails.getUserId(), requestDto);
         return BaseResponse.success(responseDto,ResultCode.CREATED);
     }
 
@@ -37,9 +40,10 @@ public class ReviewController {
     @GetMapping("/users/reviews")
     public BaseResponse<PageResponseDto<ReviewResponseDto>> findAllMyReviews(
             //유저 정보 추후 인증인가 적용후 구현
+            @AuthenticationPrincipal CustomUserDetails userDetails,
             Pageable pageable
     ){
-        Page<ReviewResponseDto> responseDtoPage = reviewService.findAllMyReviews(1L, pageable);
+        Page<ReviewResponseDto> responseDtoPage = reviewService.findAllMyReviews(userDetails.getUserId(), pageable);
         PageResponseDto<ReviewResponseDto> dto = PageResponseDto.toDto(responseDtoPage);
         return BaseResponse.success(dto,ResultCode.OK);
     }
@@ -56,63 +60,67 @@ public class ReviewController {
 
     @PatchMapping("/reviews/{reviewId}")
     public BaseResponse<ReviewResponseDto> updateReview(
+            @AuthenticationPrincipal CustomUserDetails userDetails,
             @Positive @PathVariable Long reviewId,
             @Valid @RequestBody ReviewUpdateRequestDto requestDto
     ){
 
-        ReviewResponseDto responseDto = reviewService.updateReview(1L, reviewId, requestDto);
+        ReviewResponseDto responseDto = reviewService.updateReview(userDetails.getUserId(), reviewId, requestDto);
         return BaseResponse.success(responseDto, ResultCode.OK);
     }
 
     @DeleteMapping("/reviews/{reviewId}")
-    public BaseResponse<Void> deleteReview(@Positive @PathVariable Long reviewId){
-        {   Long userId = 1L;
-            reviewService.deleteReview(userId, reviewId);
+    public BaseResponse<Void> deleteReview(
+            @AuthenticationPrincipal CustomUserDetails userDetails,
+            @Positive @PathVariable Long reviewId
+    ){
+        {
+            reviewService.deleteReview(userDetails.getUserId(), reviewId);
             return BaseResponse.success(ResultCode.NO_CONTENT);
         }
     }
 
     @PostMapping("/owners/reivews/{reviewId}/reply")
     public BaseResponse<ReviewResponseDto> saveReviewReply(
+            @AuthenticationPrincipal CustomUserDetails userDetails,
             @Positive @PathVariable Long reviewId,
             @Valid @RequestBody ReviewOwnerRequestDto requestDto
     ){
-        Long ownerId = 2L;
-        ReviewResponseDto responseDto = reviewService.saveReviewReply(ownerId, reviewId, requestDto);
+        ReviewResponseDto responseDto = reviewService.saveReviewReply(userDetails.getUserId(), reviewId, requestDto);
         return BaseResponse.success(responseDto, ResultCode.OK);
     }
     @PatchMapping("/owners/reivews/{reviewId}/reply-update")
     public BaseResponse<ReviewResponseDto> updateReviewReply(
+            @AuthenticationPrincipal CustomUserDetails userDetails,
             @Positive @PathVariable Long reviewId,
             @Valid @RequestBody ReviewOwnerRequestDto requestDto
     ){
-        Long ownerId = 2L;
-        ReviewResponseDto responseDto = reviewService.updateReviewReply(ownerId, reviewId, requestDto);
+        ReviewResponseDto responseDto = reviewService.updateReviewReply(userDetails.getUserId(),reviewId, requestDto);
         return BaseResponse.success(responseDto, ResultCode.OK);
     }
     @DeleteMapping("/owners/reivews/{reviewId}/reply-delete")
     public BaseResponse<Void> deleteReviewReply(
+            @AuthenticationPrincipal CustomUserDetails userDetails,
             @Positive @PathVariable Long reviewId
     ){
-        Long ownerId = 2L;
-        reviewService.deleteReviewReply(ownerId, reviewId);
+        reviewService.deleteReviewReply(userDetails.getUserId(), reviewId);
         return BaseResponse.success(ResultCode.NO_CONTENT);
     }
 
     @PostMapping("/reviews/{reviewId}/likes")
     public BaseResponse<Void> saveLike(
+            @AuthenticationPrincipal CustomUserDetails userDetails,
             @Positive @PathVariable Long reviewId
     ){
-        Long userId = 1L;
-        reviewService.saveLike(userId, reviewId);
+        reviewService.saveLike(userDetails.getUserId(), reviewId);
         return BaseResponse.success(ResultCode.OK);
     }
     @DeleteMapping("/reviews/{reviewId}/likes")
     public BaseResponse<Void> deleteLike(
+            @AuthenticationPrincipal CustomUserDetails userDetails,
             @Positive @PathVariable Long reviewId
     ){
-        Long userId = 1L;
-        reviewService.deleteLike(userId, reviewId);
+        reviewService.deleteLike(userDetails.getUserId(), reviewId);
         return BaseResponse.success(ResultCode.OK);
     }
 
