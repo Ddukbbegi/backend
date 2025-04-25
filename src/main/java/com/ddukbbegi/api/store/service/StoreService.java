@@ -83,13 +83,12 @@ public class StoreService {
     }
 
     @Transactional
-    public void updateStoreBasicInfo(Long storeId, StoreUpdateBasicInfoRequestDto dto) {
-
-        // TODO: 서비스 레이어에서 dto의 값을 직접 풀어서 entity로 전달하는 것은 좋지 않은 방법이다
-        // 추후 MapStruct 등의 방법을 사용해 대체할 예정
-        StoreBasicInfoDto basicInfoDto = dto.basicInfoDto();
+    public void updateStoreBasicInfo(Long storeId, StoreUpdateBasicInfoRequestDto dto, Long userId) {
 
         Store store = storeRepository.findByIdOrElseThrow(storeId);
+        checkStoreOwnerPermission(store, userId);
+
+        StoreBasicInfoDto basicInfoDto = dto.basicInfoDto();
         store.updateBasicInfo(
                 basicInfoDto.name(),
                 basicInfoDto.getCategory(),
@@ -99,11 +98,14 @@ public class StoreService {
     }
 
     @Transactional
-    public void updateStoreOperationInfo(Long storeId, StoreUpdateOperationInfoRequestDto dto) {
-
-        StoreOperationInfoDto.ParsedOperationInfo parsedData = dto.operationInfo().toParsedData();
+    public void updateStoreOperationInfo(Long storeId, StoreUpdateOperationInfoRequestDto dto, Long userId) {
 
         Store store = storeRepository.findByIdOrElseThrow(storeId);
+        checkStoreOwnerPermission(store, userId);
+
+        // TODO: 서비스 레이어에서 dto의 값을 직접 풀어서 entity로 전달하는 것은 좋지 않은 방법이다
+        // 추후 MapStruct 등의 방법을 사용해 대체할 예정
+        StoreOperationInfoDto.ParsedOperationInfo parsedData = dto.operationInfo().toParsedData();
         store.updateOperationInfo(
                 parsedData.getClosedDays(),
                 parsedData.getWeekdayWorkingTime().getFirst(),
@@ -118,26 +120,45 @@ public class StoreService {
     }
 
     @Transactional
-    public void updateStoreOrderSettings(Long storeId, StoreUpdateOrderSettingsRequestDto dto) {
-
-        StoreOrderSettingsInfo orderSettingsInfo = dto.orderSettingsInfo();
+    public void updateStoreOrderSettings(Long storeId, StoreUpdateOrderSettingsRequestDto dto, Long userId) {
 
         Store store = storeRepository.findByIdOrElseThrow(storeId);
+        checkStoreOwnerPermission(store, userId);
+
+        StoreOrderSettingsInfo orderSettingsInfo = dto.orderSettingsInfo();
         store.updateOrderSettings(
                 orderSettingsInfo.minDeliveryPrice(),
                 orderSettingsInfo.deliveryTip()
         );
     }
 
-    public void updateTemporarilyClosed(Long storeId, StoreUpdateStatusRequest dto) {
+    @Transactional
+    public void updateTemporarilyClosed(Long storeId, StoreUpdateStatusRequest dto, Long userId) {
 
         Store store = storeRepository.findByIdOrElseThrow(storeId);
+        checkStoreOwnerPermission(store, userId);
+
         store.updateTemporarilyClosed(dto.status());
     }
 
-    public void updatePermanentlyClosed(Long storeId, StoreUpdateStatusRequest dto) {
+    @Transactional
+    public void updatePermanentlyClosed(Long storeId, StoreUpdateStatusRequest dto, Long userId) {
 
         Store store = storeRepository.findByIdOrElseThrow(storeId);
+        checkStoreOwnerPermission(store, userId);
+
+        // 폐업 상태의 가게를 활성화하려는데 최대 운영 가게 개수 제한에 걸린다면 예외 발생
+        if (!dto.status() && !storeRepository.isStoreRegistrationAvailable(userId)) {
+            throw new BusinessException(ResultCode.STORE_LIMIT_EXCEEDED);
+        }
+
         store.updatePermanentlyClosed(dto.status());
     }
+
+    private void checkStoreOwnerPermission(Store store, Long userId) {
+        if (!Objects.equals(store.getUser().getId(), userId)) {
+            throw new BusinessException(ResultCode.STORE_FORBIDDEN_ACCESS);
+        }
+    }
+
 }

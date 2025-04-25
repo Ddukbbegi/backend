@@ -55,41 +55,46 @@ public class StoreOwnerController {
 
     @PatchMapping("/{storeId}/basic-info")
     public BaseResponse<Void> updateStoreBasicInfo(@PathVariable Long storeId,
-                                                   @RequestBody @Valid StoreUpdateBasicInfoRequestDto dto) {
+                                                   @RequestBody @Valid StoreUpdateBasicInfoRequestDto dto,
+                                                   @AuthenticationPrincipal CustomUserDetails customUserDetails) {
 
-        storeService.updateStoreBasicInfo(storeId, dto);
+        storeService.updateStoreBasicInfo(storeId, dto, customUserDetails.getUserId());
         return BaseResponse.success(ResultCode.OK);
     }
 
     @PatchMapping("/{storeId}/operation-info")
     public BaseResponse<Void> updateStoreOperationInfo(@PathVariable Long storeId,
-                                                       @RequestBody @Valid StoreUpdateOperationInfoRequestDto dto) {
+                                                       @RequestBody @Valid StoreUpdateOperationInfoRequestDto dto,
+                                                       @AuthenticationPrincipal CustomUserDetails customUserDetails) {
 
-        storeService.updateStoreOperationInfo(storeId, dto);
+        storeService.updateStoreOperationInfo(storeId, dto, customUserDetails.getUserId());
         return BaseResponse.success(ResultCode.OK);
     }
 
     @PatchMapping("/{storeId}/order-settings")
     public BaseResponse<Void> updateStoreOrderSettings(@PathVariable Long storeId,
-                                                       @RequestBody @Valid StoreUpdateOrderSettingsRequestDto dto) {
+                                                       @RequestBody @Valid StoreUpdateOrderSettingsRequestDto dto,
+                                                       @AuthenticationPrincipal CustomUserDetails customUserDetails) {
 
-        storeService.updateStoreOrderSettings(storeId, dto);
+        storeService.updateStoreOrderSettings(storeId, dto, customUserDetails.getUserId());
         return BaseResponse.success(ResultCode.OK);
     }
 
     @PatchMapping("/{storeId}/temporarily-close")
     public BaseResponse<Void> updateTemporarilyClosed(@PathVariable Long storeId,
-                                                      @RequestBody @Valid StoreUpdateStatusRequest dto) {
+                                                      @RequestBody @Valid StoreUpdateStatusRequest dto,
+                                                      @AuthenticationPrincipal CustomUserDetails customUserDetails) {
 
-        storeService.updateTemporarilyClosed(storeId, dto);
+        storeService.updateTemporarilyClosed(storeId, dto, customUserDetails.getUserId());
         return BaseResponse.success(ResultCode.OK);
     }
 
     @PatchMapping("/{storeId}/permanently-close")
     public BaseResponse<Void> updatePermanentlyClosed(@PathVariable Long storeId,
-                                                      @RequestBody @Valid StoreUpdateStatusRequest dto) {
+                                                      @RequestBody @Valid StoreUpdateStatusRequest dto,
+                                                      @AuthenticationPrincipal CustomUserDetails customUserDetails) {
 
-        storeService.updatePermanentlyClosed(storeId, dto);
+        storeService.updatePermanentlyClosed(storeId, dto, customUserDetails.getUserId());
         return BaseResponse.success(ResultCode.OK);
     }
 
