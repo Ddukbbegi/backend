@@ -8,14 +8,14 @@ import org.springframework.data.util.Pair;
 import java.time.LocalTime;
 
 public record StoreRegisterRequestDto(
-        @Valid StoreBasicInfoDto basicInfoDto,
-        @Valid StoreOperationInfoDto operationInfo,
-        @Valid StoreOrderSettingsInfo orderSettingsInfo
+        @Valid RequestStoreBasicInfo basicInfoDto,
+        @Valid RequestStoreOperationInfo operationInfo,
+        @Valid RequestStoreOrderSettings orderSettingsInfo
 ) {
 
     public Store toEntity(User user) {
 
-        StoreOperationInfoDto.ParsedOperationInfo parsedOperationInfo = operationInfo.toParsedData();
+        RequestStoreOperationInfo.ParsedOperationInfo parsedOperationInfo = operationInfo.toParsedData();
 
         Pair<LocalTime, LocalTime> weekdayWorkingTime = parsedOperationInfo.getWeekdayWorkingTime();
         Pair<LocalTime, LocalTime> weekdayBreakTime = parsedOperationInfo.getWeekdayBreakTime();

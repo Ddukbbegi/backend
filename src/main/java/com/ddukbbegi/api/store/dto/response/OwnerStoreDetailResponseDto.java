@@ -5,9 +5,9 @@ import com.ddukbbegi.api.store.enums.StoreStatus;
 
 public record OwnerStoreDetailResponseDto(
         Long storeId,
-        StoreBasicInfoResponse basicInfo,
-        StoreOperationInfoResponse operationInfo,
-        StoreOrderSettingsInfoResponse orderSettings,
+        ResponseStoreBasicInfo basicInfo,
+        ResponseStoreOperationInfo operationInfo,
+        ResponseStoreOrderSettingsInfo orderSettings,
         StoreStatus status,
         boolean isTemporarilyClosed,
         boolean isPermanentlyClosed
@@ -16,9 +16,9 @@ public record OwnerStoreDetailResponseDto(
     public static OwnerStoreDetailResponseDto fromEntity(Store store) {
         return new OwnerStoreDetailResponseDto(
                 store.getId(),
-                StoreBasicInfoResponse.fromEntity(store),
-                StoreOperationInfoResponse.fromEntity(store),
-                StoreOrderSettingsInfoResponse.fromEntity(store),
+                ResponseStoreBasicInfo.fromEntity(store),
+                ResponseStoreOperationInfo.fromEntity(store),
+                ResponseStoreOrderSettingsInfo.fromEntity(store),
                 store.getStatus(),
                 store.isTemporarilyClosed(),
                 store.isPermanentlyClosed()

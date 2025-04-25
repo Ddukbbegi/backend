@@ -6,7 +6,7 @@ import com.ddukbbegi.api.store.util.TimeRangeFormatter;
 
 import java.util.List;
 
-public record StoreOperationInfoResponse(
+public record ResponseStoreOperationInfo(
         List<String> closedDays,
         String weekdayWorkingTime,
         String weekdayBreakTime,
@@ -14,8 +14,8 @@ public record StoreOperationInfoResponse(
         String weekendBreakTime
 ) {
 
-    public static StoreOperationInfoResponse fromEntity(Store store) {
-        return new StoreOperationInfoResponse(
+    public static ResponseStoreOperationInfo fromEntity(Store store) {
+        return new ResponseStoreOperationInfo(
                 store.getClosedDays().stream().map(DayOfWeek::name).toList(),
                 TimeRangeFormatter.format(store.getWeekdayWorkingStartTime(), store.getWeekdayWorkingEndTime()),
                 TimeRangeFormatter.format(store.getWeekdayBreakStartTime(), store.getWeekdayBreakEndTime()),

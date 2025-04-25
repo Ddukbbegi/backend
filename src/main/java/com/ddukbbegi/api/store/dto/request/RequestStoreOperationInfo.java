@@ -11,7 +11,7 @@ import java.time.LocalTime;
 import java.util.Arrays;
 import java.util.List;
 
-public record StoreOperationInfoDto(
+public record RequestStoreOperationInfo(
         @Pattern(
                 regexp = "^(MON|TUE|WED|THU|FRI|SAT|SUN)(,(MON|TUE|WED|THU|FRI|SAT|SUN)){0,6}$",
                 message = "정기 휴무일 형식이 올바르지 않습니다. 예: SUN,MON"

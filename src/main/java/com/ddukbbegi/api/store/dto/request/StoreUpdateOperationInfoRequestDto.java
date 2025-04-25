@@ -2,6 +2,6 @@ package com.ddukbbegi.api.store.dto.request;
 
 import jakarta.validation.Valid;
 
-public record StoreUpdateOperationInfoRequestDto(@Valid StoreOperationInfoDto operationInfo) {
+public record StoreUpdateOperationInfoRequestDto(@Valid RequestStoreOperationInfo operationInfo) {
 
 }

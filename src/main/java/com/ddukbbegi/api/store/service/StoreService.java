@@ -88,7 +88,7 @@ public class StoreService {
         Store store = storeRepository.findByIdOrElseThrow(storeId);
         checkStoreOwnerPermission(store, userId);
 
-        StoreBasicInfoDto basicInfoDto = dto.basicInfoDto();
+        RequestStoreBasicInfo basicInfoDto = dto.basicInfoDto();
         store.updateBasicInfo(
                 basicInfoDto.name(),
                 basicInfoDto.getCategory(),
@@ -105,7 +105,7 @@ public class StoreService {
 
         // TODO: 서비스 레이어에서 dto의 값을 직접 풀어서 entity로 전달하는 것은 좋지 않은 방법이다
         // 추후 MapStruct 등의 방법을 사용해 대체할 예정
-        StoreOperationInfoDto.ParsedOperationInfo parsedData = dto.operationInfo().toParsedData();
+        RequestStoreOperationInfo.ParsedOperationInfo parsedData = dto.operationInfo().toParsedData();
         store.updateOperationInfo(
                 parsedData.getClosedDays(),
                 parsedData.getWeekdayWorkingTime().getFirst(),
@@ -125,7 +125,7 @@ public class StoreService {
         Store store = storeRepository.findByIdOrElseThrow(storeId);
         checkStoreOwnerPermission(store, userId);
 
-        StoreOrderSettingsInfo orderSettingsInfo = dto.orderSettingsInfo();
+        RequestStoreOrderSettings orderSettingsInfo = dto.orderSettingsInfo();
         store.updateOrderSettings(
                 orderSettingsInfo.minDeliveryPrice(),
                 orderSettingsInfo.deliveryTip()

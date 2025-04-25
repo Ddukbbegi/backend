@@ -5,18 +5,18 @@ import com.ddukbbegi.api.store.enums.StoreStatus;
 
 public record StoreDetailResponseDto(
         Long storeId,
-        StoreBasicInfoResponse basicInfo,
-        StoreOperationInfoResponse operationInfo,
-        StoreOrderSettingsInfoResponse orderSettings,
+        ResponseStoreBasicInfo basicInfo,
+        ResponseStoreOperationInfo operationInfo,
+        ResponseStoreOrderSettingsInfo orderSettings,
         StoreStatus status
 ) {
 
     public static StoreDetailResponseDto fromEntity(Store store) {
         return new StoreDetailResponseDto(
                 store.getId(),
-                StoreBasicInfoResponse.fromEntity(store),
-                StoreOperationInfoResponse.fromEntity(store),
-                StoreOrderSettingsInfoResponse.fromEntity(store),
+                ResponseStoreBasicInfo.fromEntity(store),
+                ResponseStoreOperationInfo.fromEntity(store),
+                ResponseStoreOrderSettingsInfo.fromEntity(store),
                 store.getStatus()
         );
     }
