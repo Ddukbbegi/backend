@@ -25,14 +25,25 @@ public class AuthController {
     private final AuthService authService;
     private final JwtUtil jwtUtil;
 
-    // 회원가입
+    /**
+     * 회원가입
+     *
+     * @param requestDto
+     * @return SignupResponseDto : token
+     */
     @PostMapping("/signup")
     public BaseResponse<SignupResponseDto> signup(@Valid @RequestBody SignupRequestDto requestDto) {
         SignupResponseDto signUpResponseDto = authService.signup(requestDto);
         return BaseResponse.success(signUpResponseDto, ResultCode.CREATED);
     }
 
-    // 로그인
+    /**
+     * 로그인
+     *
+     * @param requestDto
+     * @param response
+     * @return LoginResponseDto
+     */
     @PostMapping("/login")
     public BaseResponse<LoginResponseDto> login(@Valid @RequestBody LoginRequestDto requestDto,
                                                 HttpServletResponse response) {
@@ -50,7 +61,12 @@ public class AuthController {
         return BaseResponse.success(loginResponseDto, ResultCode.OK);
     }
 
-    // 로그아웃
+    /**
+     * 로그아웃
+     *
+     * @param authorizationHeader
+     * @return Void
+     */
     @PostMapping("/logout")
     public BaseResponse<Void> logout(@RequestHeader("Authorization") String authorizationHeader) {
 
@@ -62,7 +78,12 @@ public class AuthController {
     }
 
 
-    // 토큰재발급
+    /**
+     * 토큰 재발급
+     *
+     * @param refreshToken
+     * @return
+     */
     @PostMapping("/reissue")
     public BaseResponse<ReissueResponseDto> reissue(@CookieValue(value = "refreshToken") String refreshToken) {
         System.out.println(refreshToken);
