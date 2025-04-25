@@ -1,13 +1,5 @@
 package com.ddukbbegi.api.auth.dto.request;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
+public record UpdatePasswordRequestDto(String oldPassword, String newPassword) {
 
-@Getter
-@AllArgsConstructor
-public class UpdatePasswordRequestDto {
-
-    private final String oldPassword;
-
-    private final String newPassword;
 }

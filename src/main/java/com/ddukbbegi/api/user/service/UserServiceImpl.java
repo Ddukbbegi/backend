@@ -38,25 +38,25 @@ public class UserServiceImpl implements UserService {
     public void updateEmail(Long userId, UpdateEmailRequestDto requestDto) {
         User findUser = userRepository.findByIdOrElseThrow(userId);
 
-        if (userRepository.existsByEmail(requestDto.getEmail())) {
+        if (userRepository.existsByEmail(requestDto.email())) {
             new BusinessException(VALID_FAIL, "이미 존재하는 Email 입니다.");
         }
 
-        findUser.updateEmail(requestDto.getEmail());
+        findUser.updateEmail(requestDto.email());
     }
 
     @Transactional
     public void updateName(Long userId, UpdateNameRequestDto requestDto) {
         User findUser = userRepository.findByIdOrElseThrow(userId);
 
-        findUser.updateName(requestDto.getName());
+        findUser.updateName(requestDto.name());
     }
 
     @Transactional
     public void updatePhone(Long userId, UpdatePhoneRequestDto requestDto) {
         User findUser = userRepository.findByIdOrElseThrow(userId);
 
-        findUser.updatePhone(requestDto.getPhone());
+        findUser.updatePhone(requestDto.phone());
     }
 
     @Transactional
@@ -64,11 +64,11 @@ public class UserServiceImpl implements UserService {
     public void updatePassword(Long userId, UpdatePasswordRequestDto requestDto) {
         User findUser = userRepository.findByIdOrElseThrow(userId);
 
-        if (!passwordEncoder.matches(requestDto.getOldPassword(), findUser.getPassword())) {
+        if (!passwordEncoder.matches(requestDto.oldPassword(), findUser.getPassword())) {
             throw new BusinessException(AUTHENTICATION_FAILED, "비밀번호가 일치하지 않습니다.");
         }
 
-        String newPassword = passwordEncoder.encode(requestDto.getNewPassword());
+        String newPassword = passwordEncoder.encode(requestDto.newPassword());
 
         findUser.updatePassword(newPassword);
     }
@@ -77,8 +77,8 @@ public class UserServiceImpl implements UserService {
     public void deleteUser(Long userId, DeleteUserRequestDto requestDto) {
         User findUser = userRepository.findByIdOrElseThrow(userId);
 
-        if (!passwordEncoder.matches(requestDto.getPassword(), findUser.getPassword())) {
-            throw new BusinessException(AUTHENTICATION_FAILED, "비밀번호가 일치하지 않습니다.");
+        if (!passwordEncoder.matches(requestDto.password(), findUser.getPassword())) {
+            throw new BusinessException(AUTHENTICATION_FAILED);
         }
 
         userRepository.delete(findUser);

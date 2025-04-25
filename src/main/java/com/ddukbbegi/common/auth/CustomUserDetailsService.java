@@ -30,8 +30,8 @@ public class CustomUserDetailsService implements UserDetailsService {
 
         // 사용자 정보를 CustomUserDetails 객체로 반환
         return new CustomUserDetails(
-                userEntity.getId(),  // userId
-                getAuthorities(userEntity) // 권한 설정
+                userEntity.getId(),
+                getAuthorities(userEntity)
         );
     }
 
