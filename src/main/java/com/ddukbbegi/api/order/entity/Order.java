@@ -47,4 +47,8 @@ public class Order extends BaseUserEntity {
     public void cancel() {
         this.orderStatus = OrderStatus.CANCELED;
     }
+
+    public void updateStatus(OrderStatus newStatus) {
+        this.orderStatus = newStatus;
+    }
 }
