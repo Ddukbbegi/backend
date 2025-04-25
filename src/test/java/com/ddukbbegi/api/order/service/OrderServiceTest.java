@@ -92,7 +92,7 @@ class OrderServiceTest {
                 .weekdayWorkingEndTime(LocalTime.of(23, 59))
                 .build();
 
-        given(menuRepository.findAllByIdOrElseThrow(anyList())).willReturn(List.of(menu1, menu2));
+        given(menuRepository.findAllByIdInAndIsDeletedFalse(anyList())).willReturn(List.of(menu1, menu2));
         given(storeRepository.findByIdOrElseThrow(1L)).willReturn(store);
         given(orderRepository.save(any())).willAnswer(invocation -> {
             Order order = invocation.getArgument(0);
@@ -123,7 +123,7 @@ class OrderServiceTest {
         ReflectionTestUtils.setField(menu1,"id",1L);
         menu1.delete();
 
-        given(menuRepository.findAllByIdOrElseThrow(anyList())).willReturn(List.of(menu1));
+        given(menuRepository.findAllByIdInAndIsDeletedFalse(anyList())).willReturn(List.of());
 
         // when & then
         assertThatThrownBy(() -> orderService.createOrder(request, 1L))
@@ -145,7 +145,7 @@ class OrderServiceTest {
         Menu menu1 = Menu.builder().name("짜장면").price(7000).isOption(false).storeId(1L).build();
         Menu menu2 = Menu.builder().name("피자").price(15000).isOption(false).storeId(2L).build();
 
-        given(menuRepository.findAllByIdOrElseThrow(anyList())).willReturn(List.of(menu1, menu2));
+        given(menuRepository.findAllByIdInAndIsDeletedFalse(anyList())).willReturn(List.of(menu1, menu2));
 
         assertThatThrownBy(() -> orderService.createOrder(request, 1L))
                 .isInstanceOf(BusinessException.class)
@@ -170,7 +170,7 @@ class OrderServiceTest {
                 .weekdayWorkingEndTime(LocalTime.of(23, 59))
                 .build();
 
-        given(menuRepository.findAllByIdOrElseThrow(anyList())).willReturn(List.of(menu));
+        given(menuRepository.findAllByIdInAndIsDeletedFalse(anyList())).willReturn(List.of(menu));
         given(storeRepository.findByIdOrElseThrow(1L)).willReturn(store);
 
         // when & then
@@ -196,7 +196,7 @@ class OrderServiceTest {
                 .weekdayWorkingEndTime(LocalTime.of(23, 30))
                 .build();
 
-        given(menuRepository.findAllByIdOrElseThrow(anyList())).willReturn(List.of(menu));
+        given(menuRepository.findAllByIdInAndIsDeletedFalse(anyList())).willReturn(List.of(menu));
         given(storeRepository.findByIdOrElseThrow(1L)).willReturn(store);
 
         // when & then
