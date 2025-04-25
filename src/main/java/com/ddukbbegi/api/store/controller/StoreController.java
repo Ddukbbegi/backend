@@ -1,6 +1,7 @@
 package com.ddukbbegi.api.store.controller;
 
 import com.ddukbbegi.api.common.dto.PageResponseDto;
+import com.ddukbbegi.api.store.dto.response.StoreDetailResponseDto;
 import com.ddukbbegi.api.store.dto.response.StorePageItemResponseDto;
 import com.ddukbbegi.api.store.service.StoreService;
 import com.ddukbbegi.common.component.BaseResponse;
@@ -22,6 +23,13 @@ public class StoreController {
                                                                              @PageableDefault Pageable pageable) {
 
         PageResponseDto<StorePageItemResponseDto> response = storeService.getStores(name, pageable);
+        return BaseResponse.success(response, ResultCode.OK);
+    }
+
+    @GetMapping("/{storeId}")
+    public BaseResponse<StoreDetailResponseDto> getStore(@PathVariable Long storeId) {
+
+        StoreDetailResponseDto response = storeService.getStore(storeId);
         return BaseResponse.success(response, ResultCode.OK);
     }
 
