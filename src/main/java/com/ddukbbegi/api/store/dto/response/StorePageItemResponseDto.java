@@ -1,13 +1,15 @@
 package com.ddukbbegi.api.store.dto.response;
 
 import com.ddukbbegi.api.store.entity.Store;
+import com.ddukbbegi.api.store.enums.StoreStatus;
 
 public record StorePageItemResponseDto(
         String name,
         String description,
         String storeCategory,
         Integer minDeliveryPrice,
-        Integer deliveryTip
+        Integer deliveryTip,
+        StoreStatus status
 ) {
 
     public static StorePageItemResponseDto fromEntity(Store store) {
@@ -17,7 +19,8 @@ public record StorePageItemResponseDto(
                 store.getDescription(),
                 store.getCategory().name(),
                 store.getMinDeliveryPrice(),
-                store.getDeliveryTip()
+                store.getDeliveryTip(),
+                store.getStatus()
         );
     }
 
