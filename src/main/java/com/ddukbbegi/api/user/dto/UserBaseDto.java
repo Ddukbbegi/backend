@@ -1,20 +1,21 @@
 package com.ddukbbegi.api.user.dto;
 
 import com.ddukbbegi.api.user.entity.User;
+import com.ddukbbegi.api.user.enums.UserRole;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 
-@Getter
-@AllArgsConstructor
-public class UserBaseDto {
+@Builder
+public record UserBaseDto(
+        Long userId,
+        UserRole role
+) {
 
-    private Long userId; // user Id
-
-    private String name; // 이름
-
-    @Builder
     public static UserBaseDto fromEntity(User user) {
-        return new UserBaseDto(user.getId(), user.getName());
+        return UserBaseDto.builder()
+                .userId(user.getId())
+                .role(user.getUserRole())
+                .build();
     }
 }

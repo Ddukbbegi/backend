@@ -1,16 +1,15 @@
 package com.ddukbbegi.api.user.dto.response;
 
 import com.ddukbbegi.api.user.entity.User;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
+import lombok.Builder;
 
-@Getter
-@AllArgsConstructor
-public class MyInfoResponseDto {
-    private final String name;
-    private final String email;
-
+@Builder
+public record MyInfoResponseDto(String name, String email) {
     public static MyInfoResponseDto fromEntity(User user) {
-        return new MyInfoResponseDto(user.getName(), user.getEmail());
+        return MyInfoResponseDto
+                .builder()
+                .name(user.getName())
+                .email(user.getEmail())
+                .build();
     }
 }

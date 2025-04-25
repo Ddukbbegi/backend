@@ -1,15 +1,13 @@
 package com.ddukbbegi.api.auth.dto.response;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
+import lombok.Builder;
 
-@Getter
-@AllArgsConstructor
-public class SignupResponseDto {
-
-    private final Long id;
+@Builder
+public record SignupResponseDto(Long id) {
 
     public static SignupResponseDto fromEntity(Long id) {
-        return new SignupResponseDto(id);
+        return SignupResponseDto.builder()
+                .id(id)
+                .build();
     }
 }
