@@ -14,7 +14,15 @@ public interface StoreRepository extends BaseRepository<Store, Long> {
     List<Store> findAllByUser_Id(Long userId);
 
     @EntityGraph(attributePaths = { "user" })
-    @Query("SELECT s FROM Store s WHERE s.name LIKE :name")
+    @Query("""
+        SELECT s
+        FROM Store s
+        WHERE
+            s.name LIKE :name
+            AND s.status != 'PERMANENTLY_CLOSED'
+        ORDER BY
+            CASE WHEN s.status = 'OPEN' THEN 0 ELSE 1 END
+    """)
     Page<Store> findAllOpenedStoreByName(String name, Pageable pageable);
 
     @Query("SELECT COUNT(*) < 3 FROM Store s WHERE s.user.id = :userId AND s.isPermanentlyClosed IS FALSE")

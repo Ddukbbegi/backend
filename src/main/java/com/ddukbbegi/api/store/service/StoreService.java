@@ -2,10 +2,7 @@ package com.ddukbbegi.api.store.service;
 
 import com.ddukbbegi.api.common.dto.PageResponseDto;
 import com.ddukbbegi.api.store.dto.request.*;
-import com.ddukbbegi.api.store.dto.response.OwnerStoreResponseDto;
-import com.ddukbbegi.api.store.dto.response.StoreIdResponseDto;
-import com.ddukbbegi.api.store.dto.response.StorePageItemResponseDto;
-import com.ddukbbegi.api.store.dto.response.StoreRegisterAvailableResponseDto;
+import com.ddukbbegi.api.store.dto.response.*;
 import com.ddukbbegi.api.store.entity.Store;
 import com.ddukbbegi.api.store.repository.StoreRepository;
 import com.ddukbbegi.api.user.entity.User;
@@ -58,11 +55,24 @@ public class StoreService {
     }
 
     @Transactional(readOnly = true)
+    public OwnerStoreDetailResponseDto getOwnerStoreDetail(Long storeId) {
+
+        Store store = storeRepository.findByIdOrElseThrow(storeId);
+        return OwnerStoreDetailResponseDto.fromEntity(store);
+    }
+
+    @Transactional(readOnly = true)
     public PageResponseDto<StorePageItemResponseDto> getStores(String name, Pageable pageable) {
 
         Page<StorePageItemResponseDto> result = storeRepository.findAllOpenedStoreByName("%" + name + "%", pageable)
                 .map(StorePageItemResponseDto::fromEntity);
         return PageResponseDto.toDto(result);
+    }
+
+    @Transactional(readOnly = true)
+    public StoreDetailResponseDto getStore() {
+
+        return null;
     }
 
     @Transactional
