@@ -63,7 +63,8 @@ public class OrderService {
         List<Menu> menus = menuRepository.findAllByIdInAndIsDeletedFalse(menuIds);
         checkIsAllNotDeleted(menuIds.size(),menus.size());
 
-        long storeId = menus.get(0).getStoreId();
+        // long storeId = menus.get(0).getStoreId();
+        long storeId = 1L;
 
         checkIsAllSameStore(menus, storeId);
         Store store = storeRepository.findByIdOrElseThrow(storeId);
@@ -131,7 +132,7 @@ public class OrderService {
 
     private void checkIsAllSameStore(List<Menu> menus,long storeId) {
         boolean allSameStore = menus.stream()
-                .allMatch(menu -> menu.getStoreId()==(storeId));
+                .allMatch(menu -> menu.getStore().getId()==(storeId));
         if (!allSameStore) {
             throw new BusinessException(ResultCode.CONTAIN_DIFFERENT_STORE_MENU);
         }

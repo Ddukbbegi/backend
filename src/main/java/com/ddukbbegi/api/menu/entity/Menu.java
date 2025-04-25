@@ -42,25 +42,25 @@ public class Menu {
 	@Column(name = "is_option")
 	private boolean isOption;
 
-	@Column(name = "store_id")
-	private long storeId;
+	// @Column(name = "store_id")
+	// private long storeId;
 
 	@Column(name = "is_deleted")
 	private boolean isDeleted = false;
 
-	// @ManyToOne(fetch = FetchType.LAZY)
-	// @JoinColumn(name = "store_id", nullable = false)
-	// private Store store;
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "store_id", nullable = false)
+	private Store store;
 
 	@Builder
-	public Menu(String name, int price, String description, Category category, boolean isOption, MenuStatus status, long storeId) {
+	public Menu(String name, int price, String description, Category category, boolean isOption, MenuStatus status, Store store) {
 		this.name = name;
 		this.price = price;
 		this.description = description;
 		this.category = category;
 		this.isOption = isOption;
 		this.status = status;
-		this.storeId = storeId;
+		this.store = store;
 	}
 
 	public void update(String name, int price, String description, Category category) {

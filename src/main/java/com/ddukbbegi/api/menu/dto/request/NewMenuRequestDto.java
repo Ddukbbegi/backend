@@ -3,6 +3,7 @@ package com.ddukbbegi.api.menu.dto.request;
 import com.ddukbbegi.api.menu.entity.Menu;
 import com.ddukbbegi.api.menu.enums.Category;
 import com.ddukbbegi.api.menu.enums.MenuStatus;
+import com.ddukbbegi.api.store.entity.Store;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import jakarta.validation.constraints.Email;
@@ -40,7 +41,7 @@ public record NewMenuRequestDto(
 	MenuStatus status
 
 ) {
-	public Menu toEntity(long storeId) {
+	public Menu toEntity(Store store) {
 		return Menu.builder()
 			.name(name)
 			.price(price)
@@ -48,7 +49,7 @@ public record NewMenuRequestDto(
 			.category(category)
 			.isOption(isOption)
 			.status(status)
-			.storeId(storeId)
+			.store(store)
 			.build();
 	}
 }
