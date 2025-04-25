@@ -1,6 +1,8 @@
 package com.ddukbbegi.api.menu.dto.request;
 
 import com.ddukbbegi.api.menu.entity.Menu;
+import com.ddukbbegi.api.menu.enums.Category;
+import com.ddukbbegi.api.menu.enums.MenuStatus;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import jakarta.validation.constraints.Email;
@@ -28,11 +30,15 @@ public record NewMenuRequestDto(
 	@Size(max = 255, message = "설명은 255자 이내로 입력해주세요.")
 	String description,
 
-	@Size(max = 100, message = "카테고리는 100자 이내로 입력해주세요.")
-	String category,
+	@NotNull(message = "category는 MAIN_MENU, SIDE_MENU, DESSERT, DRINK 중 하나만 선택 가능합니다.")
+	Category category,
 
 	@NotNull(message = "옵션 여부는 true 또는 false로 입력해주세요.")
-	Boolean isOption
+	Boolean isOption,
+
+	@NotNull(message = "status는 ON_SALE, SOLD_OUT, DELETED 중 하나만 선택 가능합니다.")
+	MenuStatus status
+
 ) {
 	public Menu toEntity(long storeId) {
 		return Menu.builder()
@@ -41,6 +47,7 @@ public record NewMenuRequestDto(
 			.description(description)
 			.category(category)
 			.isOption(isOption)
+			.status(status)
 			.storeId(storeId)
 			.build();
 	}
