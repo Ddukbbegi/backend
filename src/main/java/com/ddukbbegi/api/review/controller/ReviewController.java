@@ -43,6 +43,16 @@ public class ReviewController {
         PageResponseDto<ReviewResponseDto> dto = PageResponseDto.toDto(responseDtoPage);
         return BaseResponse.success(dto,ResultCode.OK);
     }
+    //가게리뷰 전체조회
+    @GetMapping("/stores/{storeId}/reviews")
+    public BaseResponse<PageResponseDto<ReviewResponseDto>> findAllStoreReviews(
+            @Positive @PathVariable Long storeId,
+            Pageable pageable
+    ){
+        Page<ReviewResponseDto> responseDtoPage = reviewService.findAllStoreReviews(storeId, pageable);
+        PageResponseDto<ReviewResponseDto> dto = PageResponseDto.toDto(responseDtoPage);
+        return BaseResponse.success(dto, ResultCode.OK);
+    }
 
     @PatchMapping("/reviews/{reviewId}")
     public BaseResponse<ReviewResponseDto> updateReview(
@@ -56,7 +66,8 @@ public class ReviewController {
 
     @DeleteMapping("/reviews/{reviewId}")
     public BaseResponse<Void> deleteReview(@Positive @PathVariable Long reviewId){
-        {   reviewService.deleteReview(reviewId);
+        {   Long userId = 1L;
+            reviewService.deleteReview(userId, reviewId);
             return BaseResponse.success(ResultCode.NO_CONTENT);
         }
     }

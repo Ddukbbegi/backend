@@ -62,7 +62,7 @@ public class JwtUtil {
      * Refresh Token 발행
      *
      * @param userId
-     * @return
+     * @return String : refreshToken
      */
     public String generateRefreshToken(Long userId) {
         return BEARER_PREFIX +
@@ -104,7 +104,7 @@ public class JwtUtil {
     }
 
     /**
-     * 토큰 정보 추출
+     * 토큰 정보 Extract
      *
      * @param token
      * @return
@@ -117,7 +117,7 @@ public class JwtUtil {
     }
 
     /**
-     * 토큰에서 userId 추출
+     * 토큰에서 userId Extract
      *
      * @param token
      * @return
@@ -126,7 +126,7 @@ public class JwtUtil {
         return Long.valueOf(Jwts.parserBuilder()
                 .setSigningKey(createSigningKey(secretKey))
                 .build()
-                .parseClaimsJws(token).getBody().getId());
+                .parseClaimsJws(token).getBody().getSubject());
     }
 
     /**
@@ -150,7 +150,7 @@ public class JwtUtil {
     }
 
     /**
-     * Header 에서 Bearer 제외한 토큰 extract
+     * Header 에서 Bearer 제외한 토큰 Extract
      *
      * @param authorizationHeader
      * @return
@@ -162,17 +162,22 @@ public class JwtUtil {
         return null;
     }
 
+    /**
+     * Token 속 userId 를 가져와 Spring Security 의 인증 정보로 반환
+     *
+     * @param token
+     * @return Authentication : Spring Security 에서 인증된 사용자에 대한 정보
+     */
     public Authentication getAuthentication(String token) {
-        Claims claims = getClaimsFromToken(token);
-        String email = claims.get("email", String.class);
-        Long id = Long.valueOf(claims.getSubject());
-        UserDetails userDetails = userDetailsService.loadUserByUsername(email);
+        Long userId = getUserIdFromToken(token);
 
-        if (userRepository.existsByIdAndIsDeletedTrue(id)) {
+        // 여기서 userDetailsService.loadUserByUsername()는 userId를 username 처럼 사용
+        UserDetails userDetails = userDetailsService.loadUserByUsername(String.valueOf(userId));
+
+        if (userRepository.existsByIdAndIsDeletedTrue(userId)) {
             throw new BusinessException(ResultCode.AUTHENTICATION_FAILED, "탈퇴한 유저는 접근 불가.");
         }
 
         return new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
     }
-
 }
