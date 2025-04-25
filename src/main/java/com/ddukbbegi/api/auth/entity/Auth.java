@@ -15,7 +15,7 @@ public class Auth {
     @Id
     private String id = UUID.randomUUID().toString();
 
-    private Long userId;  // String 타입으로 변경
+    private Long userId;
 
     private String refreshToken;
 
