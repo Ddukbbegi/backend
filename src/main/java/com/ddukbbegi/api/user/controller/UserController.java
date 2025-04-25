@@ -20,8 +20,12 @@ public class UserController {
 
     private final UserService userService;
 
-    // 내 정보 조회
-    // 추후에 PathVariable 대신 토큰 값 이용할 예정.
+    /**
+     * 로그인 중인 회원의 정보 조회
+     *
+     * @param userDetails
+     * @return BaseResponse<MyInfoResponseDto> : 로그인한 유저 정보 조회
+     */
     @GetMapping("/users/me")
     public BaseResponse<MyInfoResponseDto> getUser(@AuthenticationPrincipal CustomUserDetails userDetails) {
         MyInfoResponseDto myInfoResponseDto = userService.getUser(userDetails.getUserId());
@@ -29,7 +33,12 @@ public class UserController {
         return BaseResponse.success(myInfoResponseDto, ResultCode.OK);
     }
 
-    // 다른 유저 조회
+    /**
+     * 다른 회원 정보 조회
+     *
+     * @param userId
+     * @return BaseResponse<UserInfoResponseDto> : Username 만 조회
+     */
     @GetMapping("/users/{userId}")
     public BaseResponse<UserInfoResponseDto> getUserById(@PathVariable Long userId) {
         UserInfoResponseDto userInfoResponseDto = userService.getUserById(userId);
@@ -37,7 +46,13 @@ public class UserController {
         return BaseResponse.success(userInfoResponseDto, ResultCode.OK);
     }
 
-    // 이메일 변경
+    /**
+     * 로그인 중인 회원의 이메일 수정
+     *
+     * @param userDetails
+     * @param requestDto
+     * @return BaseResponse<Void>
+     */
     @PatchMapping("/users/me/email")
     public BaseResponse<Void> updateEmail(@AuthenticationPrincipal CustomUserDetails userDetails,
                                           @Valid @RequestBody UpdateEmailRequestDto requestDto) {
@@ -45,7 +60,13 @@ public class UserController {
         return BaseResponse.success(ResultCode.NO_CONTENT);
     }
 
-    // 이름 변경
+    /**
+     * 로그인 중인 회원의 이름 수정
+     *
+     * @param userDetails
+     * @param requestDto
+     * @return BaseResponse<Void>
+     */
     @PatchMapping("/users/me/name")
     public BaseResponse<Void> updateName(@AuthenticationPrincipal CustomUserDetails userDetails,
                                          @Valid @RequestBody UpdateNameRequestDto requestDto
@@ -54,7 +75,13 @@ public class UserController {
         return BaseResponse.success(ResultCode.NO_CONTENT);
     }
 
-    // 전화번호 변경
+    /**
+     * 로그인 중인 회원의 전화번호 수정
+     *
+     * @param userDetails
+     * @param requestDto
+     * @return
+     */
     @PatchMapping("/users/me/phone")
     public BaseResponse<Void> updatePhone(@AuthenticationPrincipal CustomUserDetails userDetails,
                                           @Valid @RequestBody UpdatePhoneRequestDto requestDto) {
@@ -62,7 +89,13 @@ public class UserController {
         return BaseResponse.success(ResultCode.NO_CONTENT);
     }
 
-    // 비밀번호 수정
+    /**
+     * 로그인 중인 회원의 비밀번호 수정
+     *
+     * @param userDetails
+     * @param requestDto
+     * @return BaseResponse<Void>
+     */
     @PatchMapping("/auth/changePassword")
     public BaseResponse<Void> updatePassword(@AuthenticationPrincipal CustomUserDetails userDetails,
                                              @Valid @RequestBody UpdatePasswordRequestDto requestDto) {
@@ -70,7 +103,13 @@ public class UserController {
         return BaseResponse.success(ResultCode.NO_CONTENT);
     }
 
-    // 회원 탈퇴
+    /**
+     * 로그인 중인 회원의 탈퇴
+     *
+     * @param userDetails
+     * @param requestDto
+     * @return BaseResponse<Void>
+     */
     @DeleteMapping("/users")
     public BaseResponse<Void> deleteUser(@AuthenticationPrincipal CustomUserDetails userDetails,
                                          @RequestBody DeleteUserRequestDto requestDto) {
