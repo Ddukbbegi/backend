@@ -1,5 +1,6 @@
 package com.ddukbbegi.api.menu.dto.request;
 
+import com.ddukbbegi.api.menu.entity.Menu;
 import com.ddukbbegi.api.menu.entity.Option;
 import com.ddukbbegi.api.menu.enums.Category;
 import com.ddukbbegi.api.menu.enums.MenuStatus;
@@ -27,11 +28,12 @@ public record NewOptionRequestDto(
 	@NotNull(message = "status는 ON_SALE, SOLD_OUT, DELETED 중 하나만 선택 가능합니다.")
 	MenuStatus status
 ) {
-	public Option toEntity() {
+	public Option toEntity(Menu menu) {
 		return Option.builder()
 			.name(name)
 			.price(price)
 			.status(status)
+			.menu(menu)
 			.build();
 	}
 }
