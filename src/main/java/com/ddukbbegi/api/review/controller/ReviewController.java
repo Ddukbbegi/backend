@@ -2,10 +2,7 @@ package com.ddukbbegi.api.review.controller;
 
 
 import com.ddukbbegi.api.common.dto.PageResponseDto;
-import com.ddukbbegi.api.review.dto.ReviewOwnerRequestDto;
-import com.ddukbbegi.api.review.dto.ReviewRequestDto;
-import com.ddukbbegi.api.review.dto.ReviewResponseDto;
-import com.ddukbbegi.api.review.dto.ReviewUpdateRequestDto;
+import com.ddukbbegi.api.review.dto.*;
 import com.ddukbbegi.api.review.service.ReviewService;
 import com.ddukbbegi.common.auth.CustomUserDetails;
 import com.ddukbbegi.common.component.BaseResponse;
@@ -122,6 +119,14 @@ public class ReviewController {
     ){
         reviewService.deleteLike(userDetails.getUserId(), reviewId);
         return BaseResponse.success(ResultCode.OK);
+    }
+
+    @GetMapping("/stores/{storeId}/rates")
+    public BaseResponse<RatingPerStarResponseDto> getStoreRate(
+            @Positive @PathVariable Long storeId
+    ){
+        RatingPerStarResponseDto responseDto = reviewService.getStoreRating(storeId);
+        return BaseResponse.success(responseDto, ResultCode.OK);
     }
 
 

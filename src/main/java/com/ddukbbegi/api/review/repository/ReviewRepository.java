@@ -1,6 +1,7 @@
 package com.ddukbbegi.api.review.repository;
 
 import com.ddukbbegi.api.common.repository.BaseRepository;
+import com.ddukbbegi.api.review.dto.RatingPerStarResponseDto;
 import com.ddukbbegi.api.review.dto.ReviewResponseDto;
 import com.ddukbbegi.api.review.entity.Review;
 import com.ddukbbegi.common.component.ResultCode;
@@ -10,6 +11,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface ReviewRepository extends BaseRepository<Review, Long> {
@@ -67,6 +69,41 @@ public interface ReviewRepository extends BaseRepository<Review, Long> {
     GROUP BY r
 """)
     Page<ReviewResponseDto> countLikesByStoreId(@Param("storeId") Long storeId, Pageable pageable);
+
+    @Query(
+            value = """
+        SELECT
+            COALESCE(rc.count, 0) AS rating_count
+        FROM (
+            SELECT 0 AS star UNION ALL
+            SELECT 1 UNION ALL
+            SELECT 2 UNION ALL
+            SELECT 3 UNION ALL
+            SELECT 4 UNION ALL
+            SELECT 5
+        ) s
+        LEFT JOIN (
+            SELECT FLOOR(r.rate) AS star, COUNT(*) AS count
+            FROM reviews r
+            JOIN orders o ON r.order_id = o.id
+            WHERE o.store_id = :storeId
+            GROUP BY FLOOR(r.rate)
+        ) rc ON s.star = rc.star
+        ORDER BY s.star
+        """,
+            nativeQuery = true
+    )
+    List<Long> getRatingCountsByStar(@Param("storeId") Long storeId);
+
+    @Query(value = """
+    SELECT ROUND(AVG(r.rate), 2)
+    FROM reviews r
+    JOIN (
+        SELECT id FROM orders WHERE store_id = :storeId
+    ) o ON r.order_id = o.id
+    """, nativeQuery = true)
+    Float getAverageRatingByStoreId(@Param("storeId") Long storeId);
+
 
 
 }

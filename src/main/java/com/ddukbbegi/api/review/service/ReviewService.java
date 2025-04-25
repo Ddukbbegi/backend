@@ -129,7 +129,13 @@ public class ReviewService {
                 .ifPresent(reviewLikeRepository::delete);
     }
 
+    @Transactional
+    public RatingPerStarResponseDto getStoreRating(Long storeId){
+        List<Long> list = reviewRepository.getRatingCountsByStar(storeId);
+        Float rate = reviewRepository.getAverageRatingByStoreId(storeId);
 
+        return new RatingPerStarResponseDto(storeId,rate,list);
+    }
 
 
 }
