@@ -10,7 +10,7 @@ import org.springframework.data.redis.core.RedisHash;
 import java.util.UUID;
 
 @Getter
-@RedisHash(value = "refreshToken", timeToLive = 14440)
+@RedisHash(value = "refreshToken", timeToLive = 600)
 public class Auth {
     @Id
     private String id = UUID.randomUUID().toString();
