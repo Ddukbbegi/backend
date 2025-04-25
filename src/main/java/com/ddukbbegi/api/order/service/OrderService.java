@@ -4,6 +4,7 @@ import com.ddukbbegi.api.common.dto.PageResponseDto;
 import com.ddukbbegi.api.menu.entity.Menu;
 import com.ddukbbegi.api.menu.repository.MenuRepository;
 import com.ddukbbegi.api.order.dto.request.OrderCreateRequestDto;
+import com.ddukbbegi.api.order.dto.response.OrderCreateResponseDto;
 import com.ddukbbegi.api.order.dto.response.OrderHistoryOwnerResponseDto;
 import com.ddukbbegi.api.order.dto.response.OrderHistoryUserResponseDto;
 import com.ddukbbegi.api.order.entity.Order;
@@ -49,7 +50,7 @@ public class OrderService {
     }
 
     @Transactional
-    public Long createOrder(OrderCreateRequestDto request, long userId) {
+    public OrderCreateResponseDto createOrder(OrderCreateRequestDto request, long userId) {
         User user = userRepository.findByIdOrElseThrow(userId);
 
         List<Long> menuIds = request.menus().stream()
@@ -92,7 +93,7 @@ public class OrderService {
             orderMenuRepository.save(orderMenu);
         }
 
-        return savedOrder.getId();
+        return new OrderCreateResponseDto(savedOrder.getId());
     }
 
     private void checkIsAllNotDeleted(int expectedSize, int realSize) {

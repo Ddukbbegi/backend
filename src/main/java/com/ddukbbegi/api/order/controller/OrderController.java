@@ -2,6 +2,7 @@ package com.ddukbbegi.api.order.controller;
 
 import com.ddukbbegi.api.common.dto.PageResponseDto;
 import com.ddukbbegi.api.order.dto.request.OrderCreateRequestDto;
+import com.ddukbbegi.api.order.dto.response.OrderCreateResponseDto;
 import com.ddukbbegi.api.order.dto.response.OrderHistoryOwnerResponseDto;
 import com.ddukbbegi.api.order.dto.response.OrderHistoryUserResponseDto;
 import com.ddukbbegi.api.order.service.OrderService;
@@ -21,8 +22,8 @@ public class OrderController {
     private final OrderService orderService;
 
     @PostMapping("/orders")
-    public BaseResponse<Long> createOrder(@AuthenticationPrincipal CustomUserDetails userDetails,
-                                          @Validated @RequestBody OrderCreateRequestDto request) {
+    public BaseResponse<OrderCreateResponseDto> createOrder(@AuthenticationPrincipal CustomUserDetails userDetails,
+                                                            @Validated @RequestBody OrderCreateRequestDto request) {
         return BaseResponse.success(orderService.createOrder(request, userDetails.getUserId()), ResultCode.OK);
     }
 

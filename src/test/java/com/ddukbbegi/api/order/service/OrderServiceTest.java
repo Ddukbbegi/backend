@@ -3,6 +3,7 @@ package com.ddukbbegi.api.order.service;
 import com.ddukbbegi.api.menu.entity.Menu;
 import com.ddukbbegi.api.menu.repository.MenuRepository;
 import com.ddukbbegi.api.order.dto.request.OrderCreateRequestDto;
+import com.ddukbbegi.api.order.dto.response.OrderCreateResponseDto;
 import com.ddukbbegi.api.order.entity.Order;
 import com.ddukbbegi.api.order.repository.OrderMenuRepository;
 import com.ddukbbegi.api.order.repository.OrderRepository;
@@ -101,10 +102,10 @@ class OrderServiceTest {
         });
 
         //when
-        Long orderId = orderService.createOrder(request, 1L);
+        OrderCreateResponseDto responseDto = orderService.createOrder(request, 1L);
 
         //then
-        assertThat(orderId).isEqualTo(100L);
+        assertThat(responseDto.id()).isEqualTo(100L);
     }
 
     @Test
