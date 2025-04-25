@@ -1,5 +1,6 @@
 package com.ddukbbegi.common.component;
 
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.ToString;
@@ -21,9 +22,11 @@ public enum ResultCode {
 
     /* 인증, 인가 */
     LOGIN_FAILED(HttpStatus.UNAUTHORIZED, "E101", "아이디(로그인 이메일) 또는 비밀번호가 잘못 되었습니다. 아이디와 비밀번호를 정확히 입력해 주세요."),
-    AUTHENTICATION_FAILED(HttpStatus.UNAUTHORIZED, "E102", "Authentication failed."),
+    AUTHENTICATION_FAILED(HttpStatus.UNAUTHORIZED, "E102", "비밀번호가 일치하지 않습니다."),
     ACCESS_DENIED(HttpStatus.FORBIDDEN, "E103", "Access Denied."),
+    WITHDRAWN_USER_ACCESS(HttpStatus.FORBIDDEN, "104", "탈퇴한 유저는 접근할 수 없습니다."),
 
+    /* 서버 */
     UNKNOWN_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "E999", "알 수 없는 오류"),
 
     /* 가게 도메인 */
