@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -55,9 +56,14 @@ public class StoreService {
     }
 
     @Transactional(readOnly = true)
-    public OwnerStoreDetailResponseDto getOwnerStoreDetail(Long storeId) {
-
+    public OwnerStoreDetailResponseDto getOwnerStoreDetail(Long storeId, Long userId) {
+        User user = userRepository.findByIdOrElseThrow(userId);
         Store store = storeRepository.findByIdOrElseThrow(storeId);
+
+        if (!Objects.equals(store.getUser().getId(), user.getId())) {
+            throw new BusinessException(ResultCode.STORE_FORBIDDEN_ACCESS);
+        }
+
         return OwnerStoreDetailResponseDto.fromEntity(store);
     }
 
@@ -70,9 +76,10 @@ public class StoreService {
     }
 
     @Transactional(readOnly = true)
-    public StoreDetailResponseDto getStore() {
+    public StoreDetailResponseDto getStore(Long storeId) {
 
-        return null;
+        Store store = storeRepository.findByIdOrElseThrow(storeId);
+        return StoreDetailResponseDto.fromEntity(store);
     }
 
     @Transactional
