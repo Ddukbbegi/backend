@@ -80,7 +80,7 @@ public class AuthServiceImpl implements AuthService {
         redisTemplate.opsForValue().set(
                 "userId:" + findUser.getId(),
                 "refreshToken:" + refreshToken,
-                Duration.ofMinutes(10));
+                Duration.ofDays(7));
 
         // 5. Dto 형태로 반환
         return LoginResponseDto.from(accessToken, refreshToken);

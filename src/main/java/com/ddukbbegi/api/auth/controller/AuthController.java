@@ -52,7 +52,7 @@ public class AuthController {
 
         ResponseCookie cookie = ResponseCookie.from("refreshToken", jwtUtil.extractToken(loginResponseDto.refreshToken()))
                 .path("/api/auth")
-                .maxAge(Duration.ofMinutes(10))
+                .maxAge(Duration.ofDays(7))
                 .sameSite("Strict")
                 .build();
 
