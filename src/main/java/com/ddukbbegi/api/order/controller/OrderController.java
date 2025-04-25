@@ -28,9 +28,9 @@ public class OrderController {
     }
 
     @GetMapping("/orders")
-    public BaseResponse<PageResponseDto<OrderHistoryUserResponseDto>> getOrdersForUser(//@AuthenticationPrincipal CustomUserDetails userDetails,
+    public BaseResponse<PageResponseDto<OrderHistoryUserResponseDto>> getOrdersForUser(@AuthenticationPrincipal CustomUserDetails userDetails,
                                                                                        Pageable pageable) {
-        PageResponseDto<OrderHistoryUserResponseDto> result = orderService.getOrdersForUser(1L, pageable);
+        PageResponseDto<OrderHistoryUserResponseDto> result = orderService.getOrdersForUser(userDetails.getUserId(), pageable);
         return BaseResponse.success(result, ResultCode.OK);
     }
 
@@ -40,4 +40,10 @@ public class OrderController {
         return BaseResponse.success(result, ResultCode.OK);
     }
 
+    @PatchMapping("/orders/{orderId}/cancel")
+    public BaseResponse<Void> cancelOrder(@AuthenticationPrincipal CustomUserDetails userDetails,
+                                          @PathVariable("orderId") Long orderId) {
+        orderService.cancelOrder(userDetails.getUserId(), orderId);
+        return BaseResponse.success(ResultCode.OK);
+    }
 }
