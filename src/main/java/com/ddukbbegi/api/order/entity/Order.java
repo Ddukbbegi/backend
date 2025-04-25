@@ -43,4 +43,12 @@ public class Order extends BaseUserEntity {
         this.orderStatus = OrderStatus.WAITING;
         this.requestComment = requestComment;
     }
+
+    public void cancel() {
+        this.orderStatus = OrderStatus.CANCELED;
+    }
+
+    public void updateStatus(OrderStatus newStatus) {
+        this.orderStatus = newStatus;
+    }
 }

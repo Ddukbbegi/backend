@@ -3,7 +3,9 @@ package com.ddukbbegi.api.order.service;
 import com.ddukbbegi.api.menu.entity.Menu;
 import com.ddukbbegi.api.menu.repository.MenuRepository;
 import com.ddukbbegi.api.order.dto.request.OrderCreateRequestDto;
+import com.ddukbbegi.api.order.dto.response.OrderCreateResponseDto;
 import com.ddukbbegi.api.order.entity.Order;
+import com.ddukbbegi.api.order.enums.OrderStatus;
 import com.ddukbbegi.api.order.repository.OrderMenuRepository;
 import com.ddukbbegi.api.order.repository.OrderRepository;
 import com.ddukbbegi.api.review.repository.ReviewRepository;
@@ -17,6 +19,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -54,7 +59,11 @@ class OrderServiceTest {
 
     private User user;
 
+    private Store store;
+
     private OrderService orderService;
+
+    private final String REQUEST_COMMENT = "문 앞에 놔주세요";
 
     @BeforeEach
     void setUp() {
@@ -65,7 +74,13 @@ class OrderServiceTest {
         orderService = new OrderService(orderRepository, userRepository, menuRepository, storeRepository, orderMenuRepository,reviewRepository,fixedClock);
 
         user = User.of("test@email.com", "pw", "홍길동", "010-1234-5678", UserRole.USER);
-        given(userRepository.findByIdOrElseThrow(1L)).willReturn(user);
+        ReflectionTestUtils.setField(user,"id",1L);
+
+        store = Store.builder()
+                .minDeliveryPrice(12000)
+                .weekdayWorkingStartTime(LocalTime.of(0, 0))
+                .weekdayWorkingEndTime(LocalTime.of(23, 59))
+                .build();
     }
 
     @Test
@@ -77,7 +92,7 @@ class OrderServiceTest {
                         new OrderCreateRequestDto.MenuOrderDto(1L, 1),
                         new OrderCreateRequestDto.MenuOrderDto(2L, 1)
                 ),
-                "문 앞에 놔주세요"
+                REQUEST_COMMENT
         );
 
         Menu menu1 = Menu.builder().name("짜장면").price(7000).isOption(false).storeId(1L).build();
@@ -86,13 +101,8 @@ class OrderServiceTest {
         ReflectionTestUtils.setField(menu1,"id",1L);
         ReflectionTestUtils.setField(menu2,"id",2L);
 
-        Store store = Store.builder()
-                .minDeliveryPrice(1000)
-                .weekdayWorkingStartTime(LocalTime.of(0, 0))
-                .weekdayWorkingEndTime(LocalTime.of(23, 59))
-                .build();
-
-        given(menuRepository.findAllByIdOrElseThrow(anyList())).willReturn(List.of(menu1, menu2));
+        given(userRepository.findByIdOrElseThrow(1L)).willReturn(user);
+        given(menuRepository.findAllByIdInAndIsDeletedFalse(anyList())).willReturn(List.of(menu1, menu2));
         given(storeRepository.findByIdOrElseThrow(1L)).willReturn(store);
         given(orderRepository.save(any())).willAnswer(invocation -> {
             Order order = invocation.getArgument(0);
@@ -101,10 +111,10 @@ class OrderServiceTest {
         });
 
         //when
-        Long orderId = orderService.createOrder(request, 1L);
+        OrderCreateResponseDto responseDto = orderService.createOrder(request, 1L);
 
         //then
-        assertThat(orderId).isEqualTo(100L);
+        assertThat(responseDto.id()).isEqualTo(100L);
     }
 
     @Test
@@ -116,14 +126,15 @@ class OrderServiceTest {
                         new OrderCreateRequestDto.MenuOrderDto(1L, 1),
                         new OrderCreateRequestDto.MenuOrderDto(2L, 1)
                 ),
-                "문 앞에 놔주세요"
+                REQUEST_COMMENT
         );
 
         Menu menu1 = Menu.builder().name("짜장면").price(7000).isOption(false).storeId(1L).build();
         ReflectionTestUtils.setField(menu1,"id",1L);
         menu1.delete();
 
-        given(menuRepository.findAllByIdOrElseThrow(anyList())).willReturn(List.of(menu1));
+        given(userRepository.findByIdOrElseThrow(1L)).willReturn(user);
+        given(menuRepository.findAllByIdInAndIsDeletedFalse(anyList())).willReturn(List.of());
 
         // when & then
         assertThatThrownBy(() -> orderService.createOrder(request, 1L))
@@ -139,13 +150,14 @@ class OrderServiceTest {
                         new OrderCreateRequestDto.MenuOrderDto(1L, 1),
                         new OrderCreateRequestDto.MenuOrderDto(2L, 1)
                 ),
-                "문 앞에 놔주세요"
+                REQUEST_COMMENT
         );
 
         Menu menu1 = Menu.builder().name("짜장면").price(7000).isOption(false).storeId(1L).build();
         Menu menu2 = Menu.builder().name("피자").price(15000).isOption(false).storeId(2L).build();
 
-        given(menuRepository.findAllByIdOrElseThrow(anyList())).willReturn(List.of(menu1, menu2));
+        given(userRepository.findByIdOrElseThrow(1L)).willReturn(user);
+        given(menuRepository.findAllByIdInAndIsDeletedFalse(anyList())).willReturn(List.of(menu1, menu2));
 
         assertThatThrownBy(() -> orderService.createOrder(request, 1L))
                 .isInstanceOf(BusinessException.class)
@@ -158,19 +170,14 @@ class OrderServiceTest {
         //given
         OrderCreateRequestDto request = new OrderCreateRequestDto(
                 List.of(new OrderCreateRequestDto.MenuOrderDto(1L, 1)),
-                "적은 금액"
+                REQUEST_COMMENT
         );
 
         Menu menu = Menu.builder().name("미니샐러드").price(1000).isOption(false).storeId(1L).build();
         ReflectionTestUtils.setField(menu,"id",1L);
 
-        Store store = Store.builder()
-                .minDeliveryPrice(12000)
-                .weekdayWorkingStartTime(LocalTime.of(0, 0))
-                .weekdayWorkingEndTime(LocalTime.of(23, 59))
-                .build();
-
-        given(menuRepository.findAllByIdOrElseThrow(anyList())).willReturn(List.of(menu));
+        given(userRepository.findByIdOrElseThrow(1L)).willReturn(user);
+        given(menuRepository.findAllByIdInAndIsDeletedFalse(anyList())).willReturn(List.of(menu));
         given(storeRepository.findByIdOrElseThrow(1L)).willReturn(store);
 
         // when & then
@@ -185,23 +192,172 @@ class OrderServiceTest {
         //given
         OrderCreateRequestDto request = new OrderCreateRequestDto(
                 List.of(new OrderCreateRequestDto.MenuOrderDto(1L, 1)),
-                "닫은 가게"
+                REQUEST_COMMENT
         );
 
         Menu menu = Menu.builder().name("라면").price(6000).isOption(false).storeId(1L).build();
+        ReflectionTestUtils.setField(menu,"id",1L);
 
-        Store store = Store.builder()
-                .minDeliveryPrice(1000)
-                .weekdayWorkingStartTime(LocalTime.of(23, 0))
-                .weekdayWorkingEndTime(LocalTime.of(23, 30))
+        Store closedStore = Store.builder()
+                .minDeliveryPrice(12000)
+                .weekdayWorkingStartTime(LocalTime.of(23, 58))
+                .weekdayWorkingEndTime(LocalTime.of(23, 59))
                 .build();
 
-        given(menuRepository.findAllByIdOrElseThrow(anyList())).willReturn(List.of(menu));
-        given(storeRepository.findByIdOrElseThrow(1L)).willReturn(store);
+        given(menuRepository.findAllByIdInAndIsDeletedFalse(anyList())).willReturn(List.of(menu));
+        given(storeRepository.findByIdOrElseThrow(1L)).willReturn(closedStore);
 
         // when & then
         assertThatThrownBy(() -> orderService.createOrder(request, 1L))
                 .isInstanceOf(BusinessException.class)
                 .hasMessage(STORE_NOT_WORKING.getDefaultMessage());
+    }
+
+    @Test
+    @DisplayName("WAITING 상태의 자신의 주문을 성공적으로 취소한다")
+    void cancelOrder_success() {
+        // given
+        Order order = Order.builder().user(user).store(store).requestComment(REQUEST_COMMENT).build();
+        ReflectionTestUtils.setField(order, "id", 1L);
+        given(orderRepository.findByIdOrElseThrow(1L)).willReturn(order);
+
+        // when
+        orderService.cancelOrder(1L, user.getId());
+
+        // then
+        assertThat(order.getOrderStatus()).isEqualTo(OrderStatus.CANCELED);
+    }
+
+    @Test
+    @DisplayName("본인의 주문이 아닌 경우 취소할 수 없다")
+    void cancelOrder_fail_dueToWrongUser() {
+        //given
+        User otherUser = User.of("other@email.com", "pw", "고길동", "010-0000-0000", UserRole.USER);
+        ReflectionTestUtils.setField(otherUser,"id",2L);
+        Order order = Order.builder().user(otherUser).store(store).requestComment(REQUEST_COMMENT).build();
+        ReflectionTestUtils.setField(order, "id", 1L);
+
+        given(orderRepository.findByIdOrElseThrow(1L)).willReturn(order);
+
+        // when & then
+        assertThatThrownBy(() -> orderService.cancelOrder(1L, user.getId()))
+                .isInstanceOf(BusinessException.class)
+                .hasMessage(ORDER_USER_MISMATCH.getDefaultMessage());
+    }
+
+    @ParameterizedTest
+    @DisplayName("상태가 WAITING이 아닌 주문은 취소할 수 없다")
+    @ValueSource(strings = {"ACCEPTED","COOKING","DELIVERING","DELIVERED","REJECTED", "CANCELED"})
+    void cancelOrder_fail_dueToStatusIsNotWaiting(String status) {
+        //given
+        OrderStatus orderStatus = OrderStatus.valueOf(status);
+        Order order = Order.builder().user(user).store(store).requestComment(REQUEST_COMMENT).build();
+        ReflectionTestUtils.setField(order, "id", 1L);
+        ReflectionTestUtils.setField(order, "orderStatus", orderStatus);
+
+        given(orderRepository.findByIdOrElseThrow(1L)).willReturn(order);
+
+        //when & then
+        assertThatThrownBy(() -> orderService.cancelOrder(1L, user.getId()))
+                .isInstanceOf(BusinessException.class)
+                .hasMessageContaining(ORDER_CANNOT_BE_CANCELED.getDefaultMessage());
+    }
+
+    @ParameterizedTest
+    @CsvSource({
+            "WAITING,ACCEPTED",
+            "ACCEPTED,COOKING",
+            "COOKING,DELIVERING",
+            "DELIVERING,DELIVERED",
+            "WAITING,REJECTED"
+    })
+    @DisplayName("주문 상태 변경 성공에 성공한다.")
+    void updateOrderStatus_success(String from, String to) {
+        //given
+        User owner = User.of("test@email.com", "pw", "사장님", "010-1234-5678", UserRole.OWNER);
+        ReflectionTestUtils.setField(owner,"id",2L);
+        ReflectionTestUtils.setField(store, "user", owner);
+
+        Order order = Order.builder().user(user).store(store).requestComment(REQUEST_COMMENT).build();
+        ReflectionTestUtils.setField(order, "id", 1L);
+        ReflectionTestUtils.setField(order, "orderStatus", OrderStatus.valueOf(from));
+
+        given(orderRepository.findByIdWithStoreOrElseThrow(1L)).willReturn(order);
+
+        //when
+        orderService.updateOrderStatus(1L, OrderStatus.valueOf(to), owner.getId());
+
+        //then
+        assertThat(order.getOrderStatus()).isEqualTo(OrderStatus.valueOf(to));
+    }
+
+    @ParameterizedTest
+    @CsvSource({
+            "WAITING,COOKING",
+            "DELIVERING,ACCEPTED"
+    })
+    @DisplayName("잘못된 상태 흐름은 예외가 발생한다.")
+    void updateOrderStatus_fail_dueToInvalidTransition(String from, String to) {
+        //given
+        User owner = User.of("test@email.com", "pw", "사장님", "010-1234-5678", UserRole.OWNER);
+        ReflectionTestUtils.setField(owner, "id", 2L);
+        ReflectionTestUtils.setField(store, "user", owner);
+
+        Order order = Order.builder().user(user).store(store).requestComment(REQUEST_COMMENT).build();
+        ReflectionTestUtils.setField(order, "id", 1L);
+        ReflectionTestUtils.setField(order, "orderStatus", OrderStatus.valueOf(from));
+
+        given(orderRepository.findByIdWithStoreOrElseThrow(1L)).willReturn(order);
+
+        // when & then
+        assertThatThrownBy(() -> orderService.updateOrderStatus(1L, OrderStatus.valueOf(to), owner.getId()))
+                .isInstanceOf(BusinessException.class)
+                .hasMessageContaining(ORDER_STATUS_FLOW_INVALID.getDefaultMessage());
+    }
+
+    @ParameterizedTest
+    @CsvSource({
+            "REJECTED,COOKING",
+            "DELIVERED,REJECTED",
+            "CANCELED,ACCEPTED"
+    })
+    @DisplayName("REJECTED 혹은 CANCELED 혹은 DELIVERED 이후에는 상태 변경 시 예외가 발생한다.")
+    void updateOrderStatus_fail_dueToTerminalStates(String from, String to) {
+        //given
+        User owner = User.of("test@email.com", "pw", "사장님", "010-1234-5678", UserRole.OWNER);
+        ReflectionTestUtils.setField(owner, "id", 2L);
+        ReflectionTestUtils.setField(store, "user", owner);
+
+        Order order = Order.builder().user(new User()).store(store).requestComment(REQUEST_COMMENT).build();
+        ReflectionTestUtils.setField(order, "id", 1L);
+        ReflectionTestUtils.setField(order, "orderStatus", OrderStatus.valueOf(from));
+
+        given(orderRepository.findByIdWithStoreOrElseThrow(1L)).willReturn(order);
+
+        // when & then
+        assertThatThrownBy(() -> orderService.updateOrderStatus(1L, OrderStatus.valueOf(to), owner.getId()))
+                .isInstanceOf(BusinessException.class)
+                .hasMessageContaining(ORDER_ALREADY_TERMINATED.getDefaultMessage());
+    }
+
+    @Test
+    @DisplayName("가게 소유자가 아닌 경우 주문 상태 변경 시 예외가 발생한다.")
+    void updateOrderStatus_fail_dueToWrongOwner() {
+        //given
+        User owner = User.of("test@email.com", "pw", "사장님", "010-1234-5678", UserRole.OWNER);
+        User other = User.of("other@email.com", "pw", "다른사람", "010-0000-1111", UserRole.OWNER);
+        ReflectionTestUtils.setField(owner, "id", 2L);
+        ReflectionTestUtils.setField(other, "id", 3L);
+        ReflectionTestUtils.setField(store, "user", owner);
+
+        Order order = Order.builder().user(user).store(store).requestComment(REQUEST_COMMENT).build();
+        ReflectionTestUtils.setField(order, "id", 1L);
+        ReflectionTestUtils.setField(order, "orderStatus", OrderStatus.WAITING);
+
+        given(orderRepository.findByIdWithStoreOrElseThrow(1L)).willReturn(order);
+
+        assertThatThrownBy(() -> orderService.updateOrderStatus(1L, OrderStatus.ACCEPTED, other.getId()))
+                .isInstanceOf(BusinessException.class)
+                .hasMessageContaining(STORE_OWNER_MISMATCH.getDefaultMessage());
     }
 }

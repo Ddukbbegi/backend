@@ -39,6 +39,13 @@ public enum ResultCode {
     CONTAIN_DIFFERENT_STORE_MENU(HttpStatus.BAD_REQUEST, "E201", "서로 다른 가게의 메뉴가 포함되어 있습니다."),
     STORE_NOT_WORKING(HttpStatus.BAD_REQUEST, "E202", "가게 운영중이 아닙니다."),
     MENU_IS_DELETED(HttpStatus.BAD_REQUEST, "E203", "삭제된 메뉴가 포함되어 있습니다."),
+    UNDER_MIN_DELIVERY_PRICE(HttpStatus.BAD_REQUEST, "E204", "최소 주문 금액이 충족되지 않았습니다." ),
+    ORDER_USER_MISMATCH(HttpStatus.BAD_REQUEST, "E205", "본인의 주문이 아닙니다."),
+    ORDER_CANNOT_BE_CANCELED(HttpStatus.BAD_REQUEST, "E206","취소할 수 없는 주문입니다."),
+    ORDER_STATUS_FLOW_INVALID(HttpStatus.BAD_REQUEST, "E207", "현재 주문 단계의 다음 상태로만 변경이 가능합니다."),
+    ORDER_ALREADY_TERMINATED(HttpStatus.BAD_REQUEST,"E208" ,"이미 종료된 주문입니다." ),
+    STORE_OWNER_MISMATCH(HttpStatus.BAD_REQUEST, "E209", "본인 가게의 주문이 아닙니다."),
+    ORDER_NOT_FOUND(HttpStatus.BAD_REQUEST,"E210", "존재하지 않는 주문입니다.");
     UNDER_MIN_DELIVERY_PRICE(HttpStatus.BAD_REQUEST, "E204", "최소 주문 금액이 충족되지 않았습니다.");
 
     private final HttpStatus status;

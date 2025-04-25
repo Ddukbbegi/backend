@@ -9,6 +9,7 @@ public class BusinessException extends RuntimeException {
     private final ResultCode resultCode;
 
     public BusinessException(ResultCode resultCode) {
+        super(resultCode.getDefaultMessage());
         this.resultCode = resultCode;
     }
 

@@ -4,10 +4,12 @@ import com.ddukbbegi.api.common.dto.PageResponseDto;
 import com.ddukbbegi.api.menu.entity.Menu;
 import com.ddukbbegi.api.menu.repository.MenuRepository;
 import com.ddukbbegi.api.order.dto.request.OrderCreateRequestDto;
+import com.ddukbbegi.api.order.dto.response.OrderCreateResponseDto;
 import com.ddukbbegi.api.order.dto.response.OrderHistoryOwnerResponseDto;
 import com.ddukbbegi.api.order.dto.response.OrderHistoryUserResponseDto;
 import com.ddukbbegi.api.order.entity.Order;
 import com.ddukbbegi.api.order.entity.OrderMenu;
+import com.ddukbbegi.api.order.enums.OrderStatus;
 import com.ddukbbegi.api.order.repository.OrderMenuRepository;
 import com.ddukbbegi.api.order.repository.OrderRepository;
 import com.ddukbbegi.api.review.repository.ReviewRepository;
@@ -31,6 +33,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static com.ddukbbegi.common.component.ResultCode.*;
+
 @Service
 @RequiredArgsConstructor
 public class OrderService {
@@ -49,7 +53,7 @@ public class OrderService {
     }
 
     @Transactional
-    public Long createOrder(OrderCreateRequestDto request, long userId) {
+    public OrderCreateResponseDto createOrder(OrderCreateRequestDto request, long userId) {
         User user = userRepository.findByIdOrElseThrow(userId);
 
         List<Long> menuIds = request.menus().stream()
@@ -92,7 +96,7 @@ public class OrderService {
             orderMenuRepository.save(orderMenu);
         }
 
-        return savedOrder.getId();
+        return new OrderCreateResponseDto(savedOrder.getId());
     }
 
     private void checkIsAllNotDeleted(int expectedSize, int realSize) {
@@ -184,4 +188,64 @@ public class OrderService {
 
         return PageResponseDto.toDto(result);
     }
+
+    @Transactional
+    public void cancelOrder(long orderId, long userId) {
+        Order order = orderRepository.findByIdOrElseThrow(orderId);
+        checkOrderIsUserOrder(order, userId);
+        checkCancelIsAvailable(order);
+
+        order.cancel();
+    }
+
+    private void checkOrderIsUserOrder(Order order, long userId) {
+        if (!order.getUser().getId().equals(userId)) {
+            throw new BusinessException(ResultCode.ORDER_USER_MISMATCH);
+        }
+    }
+
+    private void checkCancelIsAvailable(Order order) {
+        if (order.getOrderStatus() != OrderStatus.WAITING) {
+            throw new BusinessException(ResultCode.ORDER_CANNOT_BE_CANCELED,
+                    "취소할 수 없는 주문입니다. (주문상태: " + order.getOrderStatus() + ")" );
+        }
+    }
+
+    @Transactional
+    public void updateOrderStatus(Long orderId, OrderStatus newStatus, Long ownerId) {
+        Order order = orderRepository.findByIdWithStoreOrElseThrow(orderId);
+        checkOwnerIsRight(order, ownerId);
+
+        OrderStatus currentStatus = order.getOrderStatus();
+        checkUpdateStatusIsAvailable(currentStatus, newStatus);
+
+        order.updateStatus(newStatus);
+    }
+
+    private void checkUpdateStatusIsAvailable(OrderStatus currentStatus, OrderStatus newStatus) {
+        if (currentStatus == OrderStatus.REJECTED || currentStatus == OrderStatus.CANCELED || currentStatus == OrderStatus.DELIVERED) {
+            throw new BusinessException(ORDER_ALREADY_TERMINATED,"이미 종료된 주문입니다. (주문상태: " + currentStatus + ")");
+        }
+        if (!isValidTransition(currentStatus, newStatus)) {
+            throw new BusinessException(ORDER_STATUS_FLOW_INVALID, "현재 주문 단계의 다음 상태로만 변경이 가능합니다. (주문상태: " + currentStatus + ")");
+        }
+    }
+
+    private void checkOwnerIsRight(Order order, long ownerId) {
+        Store store = order.getStore();
+        if (!store.getUser().getId().equals(ownerId)) {
+            throw new BusinessException(STORE_OWNER_MISMATCH);
+        }
+    }
+
+    private boolean isValidTransition(OrderStatus current, OrderStatus next) {
+        return switch (current) {
+            case WAITING -> next == OrderStatus.ACCEPTED || next == OrderStatus.REJECTED;
+            case ACCEPTED -> next == OrderStatus.COOKING;
+            case COOKING -> next == OrderStatus.DELIVERING;
+            case DELIVERING -> next == OrderStatus.DELIVERED;
+            default -> false;
+        };
+    }
+
 }

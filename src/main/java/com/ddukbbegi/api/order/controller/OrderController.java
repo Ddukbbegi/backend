@@ -2,8 +2,10 @@ package com.ddukbbegi.api.order.controller;
 
 import com.ddukbbegi.api.common.dto.PageResponseDto;
 import com.ddukbbegi.api.order.dto.request.OrderCreateRequestDto;
+import com.ddukbbegi.api.order.dto.response.OrderCreateResponseDto;
 import com.ddukbbegi.api.order.dto.response.OrderHistoryOwnerResponseDto;
 import com.ddukbbegi.api.order.dto.response.OrderHistoryUserResponseDto;
+import com.ddukbbegi.api.order.enums.OrderStatus;
 import com.ddukbbegi.api.order.service.OrderService;
 import com.ddukbbegi.common.auth.CustomUserDetails;
 import com.ddukbbegi.common.component.BaseResponse;
@@ -21,15 +23,15 @@ public class OrderController {
     private final OrderService orderService;
 
     @PostMapping("/orders")
-    public BaseResponse<Long> createOrder(@AuthenticationPrincipal CustomUserDetails userDetails,
-                                          @Validated @RequestBody OrderCreateRequestDto request) {
+    public BaseResponse<OrderCreateResponseDto> createOrder(@AuthenticationPrincipal CustomUserDetails userDetails,
+                                                            @Validated @RequestBody OrderCreateRequestDto request) {
         return BaseResponse.success(orderService.createOrder(request, userDetails.getUserId()), ResultCode.OK);
     }
 
     @GetMapping("/orders")
-    public BaseResponse<PageResponseDto<OrderHistoryUserResponseDto>> getOrdersForUser(//@AuthenticationPrincipal CustomUserDetails userDetails,
+    public BaseResponse<PageResponseDto<OrderHistoryUserResponseDto>> getOrdersForUser(@AuthenticationPrincipal CustomUserDetails userDetails,
                                                                                        Pageable pageable) {
-        PageResponseDto<OrderHistoryUserResponseDto> result = orderService.getOrdersForUser(1L, pageable);
+        PageResponseDto<OrderHistoryUserResponseDto> result = orderService.getOrdersForUser(userDetails.getUserId(), pageable);
         return BaseResponse.success(result, ResultCode.OK);
     }
 
@@ -39,4 +41,18 @@ public class OrderController {
         return BaseResponse.success(result, ResultCode.OK);
     }
 
+    @PatchMapping("/orders/{orderId}/cancel")
+    public BaseResponse<Void> cancelOrder(@AuthenticationPrincipal CustomUserDetails userDetails,
+                                          @PathVariable("orderId") Long orderId) {
+        orderService.cancelOrder(userDetails.getUserId(), orderId);
+        return BaseResponse.success(ResultCode.OK);
+    }
+
+    @PatchMapping("/owner/orders/{orderId}")
+    public BaseResponse<Void> updateOrderStatus(@AuthenticationPrincipal CustomUserDetails userDetails,
+                                                @PathVariable("orderId") Long orderId,
+                                                @RequestParam("status")OrderStatus status) {
+        orderService.updateOrderStatus(orderId, status, userDetails.getUserId());
+        return BaseResponse.success(ResultCode.OK);
+    }
 }
