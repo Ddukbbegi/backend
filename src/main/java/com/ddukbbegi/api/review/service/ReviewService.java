@@ -45,36 +45,34 @@ public class ReviewService {
 
     @Transactional(readOnly = true)
     public Page<ReviewResponseDto> findAllMyReviews(Long userId, Pageable pageable) {
-        List<ReviewWithLikeCountDto> fullList = reviewLikeRepository.countLikesByUserId(userId);
 
-        int total = fullList.size();
+//        int total = fullList.size();
+//
+//        int start = (int) pageable.getOffset();
+//        int end = Math.min(start + pageable.getPageSize(), total);
+//        List<ReviewResponseDto> content = fullList.subList(start, end)
+//                .stream()
+//                .map(ReviewWithLikeCountDto::from)
+//                .toList();
 
-        int start = (int) pageable.getOffset();
-        int end = Math.min(start + pageable.getPageSize(), total);
-        List<ReviewResponseDto> content = fullList.subList(start, end)
-                .stream()
-                .map(ReviewWithLikeCountDto::from)
-                .toList();
-
-        return new PageImpl<>(content, pageable, total);
+        return reviewLikeRepository.countLikesByUserId(userId, pageable);
     }
 
 
 
     @Transactional(readOnly = true)
     public Page<ReviewResponseDto> findAllStoreReviews(Long storeId, Pageable pageable){
-        List<ReviewWithLikeCountDto> fullList = reviewLikeRepository.countLikesByStoreId(storeId);
 
-        int total = fullList.size();
+//        int total = fullList.size();
+//
+//        int start = (int) pageable.getOffset();
+//        int end = Math.min(start + pageable.getPageSize(), total);
+//        List<ReviewResponseDto> content = fullList.subList(start, end)
+//                .stream()
+//                .map(ReviewWithLikeCountDto::from)
+//                .toList();
 
-        int start = (int) pageable.getOffset();
-        int end = Math.min(start + pageable.getPageSize(), total);
-        List<ReviewResponseDto> content = fullList.subList(start, end)
-                .stream()
-                .map(ReviewWithLikeCountDto::from)
-                .toList();
-
-        return new PageImpl<>(content, pageable, total);
+        return reviewLikeRepository.countLikesByStoreId(storeId, pageable);
 
     }
 

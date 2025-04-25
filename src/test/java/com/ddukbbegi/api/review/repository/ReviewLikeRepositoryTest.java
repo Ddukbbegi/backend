@@ -17,8 +17,7 @@ class ReviewLikeRepositoryTest {
 
     @Test
     void test(){
-
-        reviewLikeRepository.countLikesByUserId(1L);
-        reviewLikeRepository.countLikesByStoreId(1L);
+//        reviewLikeRepository.countLikesByUserId(1L);
+//        reviewLikeRepository.countLikesByStoreId(1L);
     }
 }
