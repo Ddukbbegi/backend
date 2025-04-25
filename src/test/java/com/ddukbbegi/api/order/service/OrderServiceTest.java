@@ -6,6 +6,7 @@ import com.ddukbbegi.api.order.dto.request.OrderCreateRequestDto;
 import com.ddukbbegi.api.order.entity.Order;
 import com.ddukbbegi.api.order.repository.OrderMenuRepository;
 import com.ddukbbegi.api.order.repository.OrderRepository;
+import com.ddukbbegi.api.review.repository.ReviewRepository;
 import com.ddukbbegi.api.store.entity.Store;
 import com.ddukbbegi.api.store.repository.StoreRepository;
 import com.ddukbbegi.api.user.entity.User;
@@ -48,6 +49,9 @@ class OrderServiceTest {
     @Mock
     private OrderMenuRepository orderMenuRepository;
 
+    @Mock
+    private ReviewRepository reviewRepository;
+
     private User user;
 
     private OrderService orderService;
@@ -58,7 +62,7 @@ class OrderServiceTest {
                 LocalDateTime.of(2024, 1, 1, 10, 0).toInstant(ZoneOffset.UTC),
                 ZoneId.systemDefault()
         );
-        orderService = new OrderService(orderRepository, userRepository, menuRepository, storeRepository, orderMenuRepository,fixedClock);
+        orderService = new OrderService(orderRepository, userRepository, menuRepository, storeRepository, orderMenuRepository,reviewRepository,fixedClock);
 
         user = User.of("test@email.com", "pw", "홍길동", "010-1234-5678", UserRole.USER);
         given(userRepository.findByIdOrElseThrow(1L)).willReturn(user);

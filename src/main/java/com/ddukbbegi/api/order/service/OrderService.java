@@ -1,12 +1,16 @@
 package com.ddukbbegi.api.order.service;
 
+import com.ddukbbegi.api.common.dto.PageResponseDto;
 import com.ddukbbegi.api.menu.entity.Menu;
 import com.ddukbbegi.api.menu.repository.MenuRepository;
 import com.ddukbbegi.api.order.dto.request.OrderCreateRequestDto;
+import com.ddukbbegi.api.order.dto.response.OrderHistoryOwnerResponseDto;
+import com.ddukbbegi.api.order.dto.response.OrderHistoryUserResponseDto;
 import com.ddukbbegi.api.order.entity.Order;
 import com.ddukbbegi.api.order.entity.OrderMenu;
 import com.ddukbbegi.api.order.repository.OrderMenuRepository;
 import com.ddukbbegi.api.order.repository.OrderRepository;
+import com.ddukbbegi.api.review.repository.ReviewRepository;
 import com.ddukbbegi.api.store.entity.Store;
 import com.ddukbbegi.api.store.repository.StoreRepository;
 import com.ddukbbegi.api.user.entity.User;
@@ -14,12 +18,18 @@ import com.ddukbbegi.api.user.repository.UserRepository;
 import com.ddukbbegi.common.component.ResultCode;
 import com.ddukbbegi.common.exception.BusinessException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Clock;
 import java.time.LocalTime;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -30,6 +40,7 @@ public class OrderService {
     private final MenuRepository menuRepository;
     private final StoreRepository storeRepository;
     private final OrderMenuRepository orderMenuRepository;
+    private final ReviewRepository reviewRepository;
 
     private final Clock clock;
 
@@ -120,5 +131,57 @@ public class OrderService {
         if (!allSameStore) {
             throw new BusinessException(ResultCode.CONTAIN_DIFFERENT_STORE_MENU);
         }
+    }
+
+    @Transactional(readOnly = true)
+    public PageResponseDto<OrderHistoryUserResponseDto> getOrdersForUser(long userId, Pageable pageable) {
+        Page<Order> orders = orderRepository.findAllByUserId(userId, pageable);
+        List<Long> orderIds = orders.getContent().stream()
+                .map(Order::getId)
+                .toList();
+
+        List<OrderMenu> orderMenus = orderMenuRepository.findByOrderIdInWithMenu(orderIds);
+        Map<Long, List<OrderMenu>> orderMenuMap = orderMenus.stream()
+                .collect(Collectors.groupingBy(om -> om.getOrder().getId()));
+
+        Page<OrderHistoryUserResponseDto> result = orders.map(order ->
+                OrderHistoryUserResponseDto.from(
+                        order,
+                        orderMenuMap.getOrDefault(order.getId(), List.of()),
+                        false
+                        //todo: Review에 Order 참조되면 주석 해제
+                        //isReviewed(orderIds, order)
+                )
+        );
+
+        return PageResponseDto.toDto(result);
+    }
+
+//    private boolean isReviewed(List<Long> orderIds, Order order) {
+//        List<Long> reviewedOrderIds = reviewRepository.findReviewedOrderIds(orderIds);
+//        Set<Long> reviewedOrderIdSet = new HashSet<>(reviewedOrderIds);
+//
+//        return reviewedOrderIdSet.contains(order.getId());
+//    }
+
+    @Transactional(readOnly = true)
+    public PageResponseDto<OrderHistoryOwnerResponseDto> getOrdersForOwner(long storeId, Pageable pageable) {
+        Page<Order> orders = orderRepository.findAllByStoreId(storeId, pageable);
+        List<Long> orderIds = orders.getContent().stream()
+                .map(Order::getId)
+                .toList();
+
+        List<OrderMenu> orderMenus = orderMenuRepository.findByOrderIdInWithMenu(orderIds);
+        Map<Long, List<OrderMenu>> orderMenuMap = orderMenus.stream()
+                .collect(Collectors.groupingBy(om -> om.getOrder().getId()));
+
+        Page<OrderHistoryOwnerResponseDto> result = orders.map(order ->
+                OrderHistoryOwnerResponseDto.from(
+                        order,
+                        orderMenuMap.getOrDefault(order.getId(), List.of())
+                )
+        );
+
+        return PageResponseDto.toDto(result);
     }
 }

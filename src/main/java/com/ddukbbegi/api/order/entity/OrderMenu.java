@@ -12,6 +12,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Table(name = "orders_menus")
 public class OrderMenu extends BaseUserEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

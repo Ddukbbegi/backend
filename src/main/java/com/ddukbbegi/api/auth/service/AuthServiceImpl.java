@@ -2,7 +2,6 @@ package com.ddukbbegi.api.auth.service;
 
 import com.ddukbbegi.api.auth.dto.request.LoginRequestDto;
 import com.ddukbbegi.api.auth.dto.request.SignupRequestDto;
-import com.ddukbbegi.api.auth.dto.request.UpdatePasswordRequestDto;
 import com.ddukbbegi.api.auth.dto.response.LoginResponseDto;
 import com.ddukbbegi.api.auth.dto.response.SignupResponseDto;
 import com.ddukbbegi.api.auth.entity.Auth;
@@ -33,19 +32,19 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public SignupResponseDto signup(SignupRequestDto signUpRequestDto) {
 
-        if (userRepository.existsByEmail(signUpRequestDto.getEmail())) {
+        if (userRepository.existsByEmail(signUpRequestDto.email())) {
             throw new BusinessException(VALID_FAIL, "이미 존재하는 Email 입니다.");
         }
 
-        String encodedPassword = passwordEncoder.encode(signUpRequestDto.getPassword());
+        String encodedPassword = passwordEncoder.encode(signUpRequestDto.password());
 
-        UserRole userRole = UserRole.of(signUpRequestDto.getRole());
+        UserRole userRole = UserRole.of(signUpRequestDto.role());
 
         User user = User.of(
-                signUpRequestDto.getEmail(),
+                signUpRequestDto.email(),
                 encodedPassword,
-                signUpRequestDto.getName(),
-                signUpRequestDto.getPhone(),
+                signUpRequestDto.name(),
+                signUpRequestDto.phone(),
                 userRole);
 
         userRepository.save(user);
@@ -57,13 +56,13 @@ public class AuthServiceImpl implements AuthService {
     public LoginResponseDto login(LoginRequestDto requestDto) {
 
         // 1. User Email 일치 여부 확인
-        User findUser = userRepository.findByEmail(requestDto.getEmail())
+        User findUser = userRepository.findByEmail(requestDto.email())
                 .orElseThrow(() ->
-                        new BusinessException(ResultCode.NOT_FOUND, "해당 Entity를 찾을 수 없습니다. email = " + requestDto.getEmail())
+                        new BusinessException(ResultCode.NOT_FOUND, "해당 Entity를 찾을 수 없습니다. email = " + requestDto.email())
                 );
 
         // 2. Pwd 일치 여부
-        if (!passwordEncoder.matches(requestDto.getPassword(), findUser.getPassword())) {
+        if (!passwordEncoder.matches(requestDto.password(), findUser.getPassword())) {
             throw new BusinessException(LOGIN_FAILED);
         }
 
