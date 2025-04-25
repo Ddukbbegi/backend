@@ -73,12 +73,13 @@ class OrderServiceTest {
         orderService = new OrderService(orderRepository, userRepository, menuRepository, storeRepository, orderMenuRepository,reviewRepository,fixedClock);
 
         user = User.of("test@email.com", "pw", "홍길동", "010-1234-5678", UserRole.USER);
+        ReflectionTestUtils.setField(user,"id",1L);
+
         store = Store.builder()
                 .minDeliveryPrice(12000)
                 .weekdayWorkingStartTime(LocalTime.of(0, 0))
                 .weekdayWorkingEndTime(LocalTime.of(23, 59))
                 .build();
-        given(userRepository.findByIdOrElseThrow(1L)).willReturn(user);
     }
 
     @Test
@@ -99,12 +100,7 @@ class OrderServiceTest {
         ReflectionTestUtils.setField(menu1,"id",1L);
         ReflectionTestUtils.setField(menu2,"id",2L);
 
-        Store store = Store.builder()
-                .minDeliveryPrice(1000)
-                .weekdayWorkingStartTime(LocalTime.of(0, 0))
-                .weekdayWorkingEndTime(LocalTime.of(23, 59))
-                .build();
-
+        given(userRepository.findByIdOrElseThrow(1L)).willReturn(user);
         given(menuRepository.findAllByIdInAndIsDeletedFalse(anyList())).willReturn(List.of(menu1, menu2));
         given(storeRepository.findByIdOrElseThrow(1L)).willReturn(store);
         given(orderRepository.save(any())).willAnswer(invocation -> {
@@ -136,6 +132,7 @@ class OrderServiceTest {
         ReflectionTestUtils.setField(menu1,"id",1L);
         menu1.delete();
 
+        given(userRepository.findByIdOrElseThrow(1L)).willReturn(user);
         given(menuRepository.findAllByIdInAndIsDeletedFalse(anyList())).willReturn(List.of());
 
         // when & then
@@ -158,6 +155,7 @@ class OrderServiceTest {
         Menu menu1 = Menu.builder().name("짜장면").price(7000).isOption(false).storeId(1L).build();
         Menu menu2 = Menu.builder().name("피자").price(15000).isOption(false).storeId(2L).build();
 
+        given(userRepository.findByIdOrElseThrow(1L)).willReturn(user);
         given(menuRepository.findAllByIdInAndIsDeletedFalse(anyList())).willReturn(List.of(menu1, menu2));
 
         assertThatThrownBy(() -> orderService.createOrder(request, 1L))
@@ -177,12 +175,7 @@ class OrderServiceTest {
         Menu menu = Menu.builder().name("미니샐러드").price(1000).isOption(false).storeId(1L).build();
         ReflectionTestUtils.setField(menu,"id",1L);
 
-        Store store = Store.builder()
-                .minDeliveryPrice(12000)
-                .weekdayWorkingStartTime(LocalTime.of(0, 0))
-                .weekdayWorkingEndTime(LocalTime.of(23, 59))
-                .build();
-
+        given(userRepository.findByIdOrElseThrow(1L)).willReturn(user);
         given(menuRepository.findAllByIdInAndIsDeletedFalse(anyList())).willReturn(List.of(menu));
         given(storeRepository.findByIdOrElseThrow(1L)).willReturn(store);
 
@@ -202,9 +195,16 @@ class OrderServiceTest {
         );
 
         Menu menu = Menu.builder().name("라면").price(6000).isOption(false).storeId(1L).build();
+        ReflectionTestUtils.setField(menu,"id",1L);
+
+        Store closedStore = Store.builder()
+                .minDeliveryPrice(12000)
+                .weekdayWorkingStartTime(LocalTime.of(23, 58))
+                .weekdayWorkingEndTime(LocalTime.of(23, 59))
+                .build();
 
         given(menuRepository.findAllByIdInAndIsDeletedFalse(anyList())).willReturn(List.of(menu));
-        given(storeRepository.findByIdOrElseThrow(1L)).willReturn(store);
+        given(storeRepository.findByIdOrElseThrow(1L)).willReturn(closedStore);
 
         // when & then
         assertThatThrownBy(() -> orderService.createOrder(request, 1L))
@@ -232,6 +232,7 @@ class OrderServiceTest {
     void cancelOrder_fail_dueToWrongUser() {
         //given
         User otherUser = User.of("other@email.com", "pw", "고길동", "010-0000-0000", UserRole.USER);
+        ReflectionTestUtils.setField(otherUser,"id",2L);
         Order order = Order.builder().user(otherUser).store(store).requestComment(REQUEST_COMMENT).build();
         ReflectionTestUtils.setField(order, "id", 1L);
 
