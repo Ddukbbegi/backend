@@ -3,9 +3,8 @@ package com.ddukbbegi.api.auth.service;
 import com.ddukbbegi.api.auth.dto.request.LoginRequestDto;
 import com.ddukbbegi.api.auth.dto.request.SignupRequestDto;
 import com.ddukbbegi.api.auth.dto.response.LoginResponseDto;
+import com.ddukbbegi.api.auth.dto.response.ReissueResponseDto;
 import com.ddukbbegi.api.auth.dto.response.SignupResponseDto;
-import com.ddukbbegi.api.auth.entity.Auth;
-import com.ddukbbegi.api.auth.repository.AuthRepository;
 import com.ddukbbegi.api.user.entity.User;
 import com.ddukbbegi.api.user.enums.UserRole;
 import com.ddukbbegi.api.user.repository.UserRepository;
@@ -14,11 +13,17 @@ import com.ddukbbegi.common.auth.JwtUtil;
 import com.ddukbbegi.common.config.PasswordEncoder;
 import com.ddukbbegi.common.exception.BusinessException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Duration;
+import java.time.Instant;
+
 import static com.ddukbbegi.common.component.ResultCode.*;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class AuthServiceImpl implements AuthService {
@@ -26,7 +31,7 @@ public class AuthServiceImpl implements AuthService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
-    private final AuthRepository authRepository;
+    private final RedisTemplate<String, Object> redisTemplate;
 
     @Transactional
     @Override
@@ -55,10 +60,10 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public LoginResponseDto login(LoginRequestDto requestDto) {
 
-        // 1. User Email 일치 여부 확인
-        User findUser = userRepository.findByEmail(requestDto.email())
+        // 1. User Email 일치, 탈퇴 여부 확인
+        User findUser = userRepository.findByEmailAndIsDeletedFalse(requestDto.email())
                 .orElseThrow(() ->
-                        new BusinessException(ResultCode.NOT_FOUND, "해당 Entity를 찾을 수 없습니다. email = " + requestDto.email())
+                        new BusinessException(LOGIN_FAILED)
                 );
 
         // 2. Pwd 일치 여부
@@ -70,13 +75,12 @@ public class AuthServiceImpl implements AuthService {
         String accessToken = jwtUtil.generateAccessToken(findUser.getId(), findUser.getEmail(), findUser.getUserRole());
         String refreshToken = jwtUtil.generateRefreshToken(findUser.getId());
 
-        // 4. RefreshToken 저장
-        Auth token = Auth.builder()
-                .userId(findUser.getId())
-                .refreshToken(refreshToken)
-                .build();
 
-        authRepository.save(token);
+        // 4. RefreshToken 저장
+        redisTemplate.opsForValue().set(
+                "userId:" + findUser.getId(),
+                "refreshToken:" + refreshToken,
+                Duration.ofDays(7));
 
         // 5. Dto 형태로 반환
         return LoginResponseDto.from(accessToken, refreshToken);
@@ -85,19 +89,34 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public void logout(String accessToken) {
-        // 1. Access Token 검증 > 추후에 에러코드 변경
-        if (!jwtUtil.isValidToken(accessToken)) {
-            throw new BusinessException(AUTHENTICATION_FAILED);
+        // 1. 이미 로그아웃된
+        try {
+            if (jwtUtil.isValidToken(accessToken)) {
+                Duration duration = Duration.between(Instant.now(), jwtUtil.getExpireDate(accessToken).toInstant());
+                redisTemplate.opsForValue().set("blacklist:" + accessToken, "userId:" + jwtUtil.getUserIdFromToken(accessToken), duration);
+            }
+        } catch (Exception ex) {
+            log.warn("토큰이 유효하지 않거나, 이미 로그아웃 된 상태입니다.");
         }
 
-        // 2. Access Token 에서 userId 을 가져오기
-        Long userIdFromToken = jwtUtil.getUserIdFromToken(accessToken);
+        // 2. DB 에 저장된  제거
+        redisTemplate.delete("userId:" + jwtUtil.getUserIdFromToken(accessToken));
+    }
 
-        // 3. DB 에 저장된 RefreshToken 제거
-        authRepository.deleteByUserId(userIdFromToken);
+    @Override
+    public ReissueResponseDto reissue(String refreshToken) {
+        if (refreshToken == null || refreshToken.isEmpty()) {
+            throw new BusinessException(TOKEN_INVALID, "RefreshToken 쿠키가 없습니다.");
+        }
 
-        // 4. Access Token blacklist 에 등록하여 만료
-        // 미구현.
+        if (!jwtUtil.isValidToken(refreshToken)) {
+            throw new BusinessException(TOKEN_INVALID);
+        }
 
+        User findUser = userRepository.findByIdOrElseThrow(jwtUtil.getUserIdFromToken(refreshToken));
+
+        String accessToken = jwtUtil.generateAccessToken(findUser.getId(), findUser.getEmail(), findUser.getUserRole());
+
+        return ReissueResponseDto.from(accessToken);
     }
 }

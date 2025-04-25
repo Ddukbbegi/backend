@@ -30,8 +30,8 @@ public class JwtUtil {
     private String secretKey;
 
     private final SignatureAlgorithm signatureAlgorithm = SignatureAlgorithm.HS256;
-    private static final Long ACCESS_TOKEN = 60 * 1000 * 5L;  // 5분
-    private static final Long REFRESH_TOKEN = 60 * 1000 * 10L; // 10 분
+    private static final Long ACCESS_TOKEN = 60 * 60 * 2 * 1000L; // 2 시간
+    private static final Long REFRESH_TOKEN = 60 * 60 * 24 * 7 * 1000L; // 1 주일
 
     public JwtUtil(UserDetailsService userDetailsService, UserRepository userRepository) {
         this.userDetailsService = userDetailsService;

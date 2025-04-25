@@ -5,7 +5,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 
-public record StoreBasicInfoDto(
+public record RequestStoreBasicInfo(
         @NotBlank
         @Size(min = 1, max = 20)
         String name,
