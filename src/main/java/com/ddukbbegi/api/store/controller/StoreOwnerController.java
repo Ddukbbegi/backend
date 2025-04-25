@@ -1,6 +1,7 @@
 package com.ddukbbegi.api.store.controller;
 
 import com.ddukbbegi.api.store.dto.request.*;
+import com.ddukbbegi.api.store.dto.response.OwnerStoreDetailResponseDto;
 import com.ddukbbegi.api.store.dto.response.OwnerStoreResponseDto;
 import com.ddukbbegi.api.store.dto.response.StoreIdResponseDto;
 import com.ddukbbegi.api.store.dto.response.StoreRegisterAvailableResponseDto;
@@ -30,7 +31,7 @@ public class StoreOwnerController {
         return BaseResponse.success(response, ResultCode.CREATED);
     }
 
-    @GetMapping("/available")
+    @GetMapping("/me/available")
     public BaseResponse<StoreRegisterAvailableResponseDto> checkStoreRegistrationAvailability(@AuthenticationPrincipal CustomUserDetails customUserDetails) {
 
         StoreRegisterAvailableResponseDto response = storeService.checkStoreRegistrationAvailability(customUserDetails.getUserId());
@@ -41,6 +42,14 @@ public class StoreOwnerController {
     public BaseResponse<List<OwnerStoreResponseDto>> getOwnerStoreList(@AuthenticationPrincipal CustomUserDetails customUserDetails) {
 
         List<OwnerStoreResponseDto> response = storeService.getOwnerStoreList(customUserDetails.getUserId());
+        return BaseResponse.success(response, ResultCode.OK);
+    }
+
+    @GetMapping("/{storeId}")
+    public BaseResponse<OwnerStoreDetailResponseDto> getOwnerStoreDetail(@PathVariable(value = "storeId") Long storeId,
+                                                                         @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+
+        OwnerStoreDetailResponseDto response = storeService.getOwnerStoreDetail(storeId, customUserDetails.getUserId());
         return BaseResponse.success(response, ResultCode.OK);
     }
 
