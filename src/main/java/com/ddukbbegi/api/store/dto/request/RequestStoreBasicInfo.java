@@ -7,10 +7,12 @@ import jakarta.validation.constraints.Size;
 
 public record RequestStoreBasicInfo(
         @NotBlank
-        @Size(min = 1, max = 20)
+        @Size(max = 20, message = "가게 이름은 최대 20자까지 입력할 수 있습니다.")
         String name,
 
+        @NotBlank(message = "카테고리는 필수 입력값입니다.")
         String category,
+
         @Pattern(
                 regexp = "^\\d{2,3}-\\d{3,4}-\\d{4}$",
                 message = "전화번호 형식이 올바르지 않습니다. 예: 010-1234-5678 또는 02-123-4567"
