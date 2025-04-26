@@ -77,7 +77,7 @@ public class ReviewController {
         }
     }
 
-    @PostMapping("/owners/reivews/{reviewId}/reply")
+    @PostMapping("/owners/reviews/{reviewId}/reply")
     public BaseResponse<ReviewResponseDto> saveReviewReply(
             @AuthenticationPrincipal CustomUserDetails userDetails,
             @Positive @PathVariable Long reviewId,
@@ -86,7 +86,7 @@ public class ReviewController {
         ReviewResponseDto responseDto = reviewService.saveReviewReply(userDetails.getUserId(), reviewId, requestDto);
         return BaseResponse.success(responseDto, ResultCode.OK);
     }
-    @PatchMapping("/owners/reivews/{reviewId}/reply-update")
+    @PatchMapping("/owners/reviews/{reviewId}/reply-update")
     public BaseResponse<ReviewResponseDto> updateReviewReply(
             @AuthenticationPrincipal CustomUserDetails userDetails,
             @Positive @PathVariable Long reviewId,
@@ -95,7 +95,7 @@ public class ReviewController {
         ReviewResponseDto responseDto = reviewService.updateReviewReply(userDetails.getUserId(),reviewId, requestDto);
         return BaseResponse.success(responseDto, ResultCode.OK);
     }
-    @DeleteMapping("/owners/reivews/{reviewId}/reply-delete")
+    @DeleteMapping("/owners/reviews/{reviewId}/reply-delete")
     public BaseResponse<Void> deleteReviewReply(
             @AuthenticationPrincipal CustomUserDetails userDetails,
             @Positive @PathVariable Long reviewId
