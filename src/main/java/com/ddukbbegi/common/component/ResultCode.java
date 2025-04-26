@@ -34,6 +34,7 @@ public enum ResultCode {
     /* 가게 도메인 */
     STORE_LIMIT_EXCEEDED(HttpStatus.BAD_REQUEST, "E301", "가게 등록 가능 개수를 초과했습니다. 최대 3개까지만 등록할 수 있습니다."),
     STORE_FORBIDDEN_ACCESS(HttpStatus.FORBIDDEN, "E301", "해당 가게에 접근할 권한이 없습니다."),
+    STORE_INVALID_TIME_RANGE(HttpStatus.BAD_REQUEST, "E301", "올바르지 않은 시간 범위 형식입니다."),
 
     /* 주문 도메인 */
     CONTAIN_DIFFERENT_STORE_MENU(HttpStatus.BAD_REQUEST, "E201", "서로 다른 가게의 메뉴가 포함되어 있습니다."),
