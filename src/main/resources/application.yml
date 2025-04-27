@@ -1,3 +1,23 @@
 spring:
     profiles:
         active: local
+
+    security:
+        oauth2:
+            client:
+                registration:
+                    google:
+                        client-id: 94016094456-seu9l8kmf97ihftb7o80m4rhl4tkajhj.apps.googleusercontent.com
+                        client-secret: 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
+                        scope:
+                            - profile
+                            - email
+                        redirect-uri: "http://localhost:8080/login/oauth2/code/google"
+                        authorization-grant-type: authorization_code
+                        client-name: Google
+                provider:
+                    google:
+                        authorization-uri: https://accounts.google.com/o/oauth2/auth
+                        token-uri: https://oauth2.googleapis.com/token
+                        user-info-uri: https://www.googleapis.com/oauth2/v3/userinfo
+                        user-name-attribute: sub
