@@ -132,7 +132,7 @@ public class OrderService {
 
     private void checkIsAllSameStore(List<Menu> menus,long storeId) {
         boolean allSameStore = menus.stream()
-                .allMatch(menu -> menu.getStore().getId()==(storeId));
+                .allMatch(menu -> menu.getStoreId()==(storeId));
         if (!allSameStore) {
             throw new BusinessException(ResultCode.CONTAIN_DIFFERENT_STORE_MENU);
         }
