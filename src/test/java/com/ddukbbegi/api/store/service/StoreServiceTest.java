@@ -39,8 +39,8 @@ class StoreServiceTest {
     @Mock private StoreRepository storeRepository;
     @Mock private UserRepository userRepository;
 
-    @Nested
     @DisplayName("가게 등록 테스트")
+    @Nested
     class RegisterStoreTest {
 
         @DisplayName("성공 - 활성화된 가게가 3개 미만일 경우 가게 등록 성공")
@@ -113,8 +113,8 @@ class StoreServiceTest {
         assertThat(result.get(0).category()).isEqualTo("한식");
     }
 
-    @Nested
     @DisplayName("사장님 소유 가게 상세 조회")
+    @Nested
     class GetOwnerStoreDetailTest {
 
         @DisplayName("성공 - 가게 상세 조회 (소유주 일치)")
@@ -203,8 +203,8 @@ class StoreServiceTest {
         assertThat(result.basicInfo().category()).isEqualTo("한식");
     }
 
-    @Nested
     @DisplayName("가게 기본 정보 업데이트 테스트")
+    @Nested
     class UpdateStoreBasicInfoTest {
 
         @DisplayName("성공 - 기본 정보 업데이트")
@@ -252,9 +252,9 @@ class StoreServiceTest {
         }
 
     }
-    
-    @Nested
+
     @DisplayName("가게 폐업 테스트")
+    @Nested
     class UpdatePermanentlyClosedTest {
 
         @DisplayName("성공 - 가게의 폐업 상태를 해제하려고 할 때 활성화된 가게가 3개 미만이면 성공")
@@ -306,7 +306,5 @@ class StoreServiceTest {
         }
 
     }
-
-
 
 }

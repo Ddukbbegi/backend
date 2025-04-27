@@ -13,8 +13,8 @@ class DayOfWeekListConverterTest {
 
     private final DayOfWeekListConverter converter = new DayOfWeekListConverter();
 
-    @Nested
     @DisplayName("convertToDatabaseColumn 테스트")
+    @Nested
     class ConvertToDatabaseColumnTest {
 
         @DisplayName("정상 변환 - 중복 및 순서 정리된 문자열 반환")
@@ -52,8 +52,8 @@ class DayOfWeekListConverterTest {
 
     }
 
-    @Nested
     @DisplayName("convertToEntityAttribute 테스트")
+    @Nested
     class ConvertToEntityAttributeTest {
 
         @DisplayName("정상 변환 - 문자열을 List로 반환")

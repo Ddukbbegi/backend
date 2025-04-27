@@ -50,6 +50,7 @@ class StoreCategoryTest {
             "",         // 빈 문자열
             "   ",      // 공백
     })
+
     void givenInvalidCategory_whenFromString_thenThrowsException(String input) {
         // when & then
         assertThatThrownBy(() -> StoreCategory.fromString(input))
