@@ -10,7 +10,6 @@ import com.ddukbbegi.api.order.repository.OrderMenuRepository;
 import com.ddukbbegi.api.order.repository.OrderRepository;
 import com.ddukbbegi.api.review.repository.ReviewRepository;
 import com.ddukbbegi.api.store.entity.Store;
-import com.ddukbbegi.api.store.repository.StoreRepository;
 import com.ddukbbegi.api.user.entity.User;
 import com.ddukbbegi.api.user.enums.UserRole;
 import com.ddukbbegi.api.user.repository.UserRepository;
@@ -28,6 +27,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 
 import java.time.*;
 import java.util.List;
+import java.util.UUID;
 
 import static com.ddukbbegi.common.component.ResultCode.*;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
@@ -49,9 +49,6 @@ class OrderServiceTest {
     private UserRepository userRepository;
 
     @Mock
-    private StoreRepository storeRepository;
-
-    @Mock
     private OrderMenuRepository orderMenuRepository;
 
     @Mock
@@ -60,6 +57,8 @@ class OrderServiceTest {
     private User user;
 
     private Store store;
+
+    private String uuid;
 
     private OrderService orderService;
 
@@ -71,7 +70,7 @@ class OrderServiceTest {
                 LocalDateTime.of(2024, 1, 1, 10, 0).toInstant(ZoneOffset.UTC),
                 ZoneId.systemDefault()
         );
-        orderService = new OrderService(orderRepository, userRepository, menuRepository, storeRepository, orderMenuRepository,reviewRepository,fixedClock);
+        orderService = new OrderService(orderRepository, userRepository, menuRepository, orderMenuRepository,reviewRepository,fixedClock);
 
         user = User.of("test@email.com", "pw", "홍길동", "010-1234-5678", UserRole.USER);
         ReflectionTestUtils.setField(user,"id",1L);
@@ -82,6 +81,8 @@ class OrderServiceTest {
                 .weekdayWorkingEndTime(LocalTime.of(23, 59))
                 .build();
         ReflectionTestUtils.setField(store,"id",1L);
+
+        uuid = UUID.randomUUID().toString();
     }
 
     @Test
@@ -93,7 +94,8 @@ class OrderServiceTest {
                         new OrderCreateRequestDto.MenuOrderDto(1L, 1),
                         new OrderCreateRequestDto.MenuOrderDto(2L, 1)
                 ),
-                REQUEST_COMMENT
+                REQUEST_COMMENT,
+                uuid
         );
 
         Menu menu1 = Menu.builder().name("짜장면").price(7000).isOption(false).store(store).build();
@@ -118,6 +120,27 @@ class OrderServiceTest {
     }
 
     @Test
+    @DisplayName("동일한 requestId로 주문을 생성하면 예외가 발생한다")
+    void createOrder_fail_dueToDuplicateRequestId() {
+        // given
+        OrderCreateRequestDto request = new OrderCreateRequestDto(
+                List.of(
+                        new OrderCreateRequestDto.MenuOrderDto(1L, 1),
+                        new OrderCreateRequestDto.MenuOrderDto(2L, 1)
+                ),
+                REQUEST_COMMENT,
+                uuid
+        );
+
+        given(orderRepository.existsByRequestId(uuid)).willReturn(true);
+
+        // when & then
+        assertThatThrownBy(() -> orderService.createOrder(request, user.getId()))
+                .isInstanceOf(BusinessException.class)
+                .hasMessage(DUPLICATE_REQUEST_ID.getDefaultMessage());
+    }
+
+    @Test
     @DisplayName("삭제된 메뉴가 포함되어 있으면 예외가 발생한다")
     void createOrder_fail_dueToDeletedMenu() {
         //given
@@ -126,7 +149,8 @@ class OrderServiceTest {
                         new OrderCreateRequestDto.MenuOrderDto(1L, 1),
                         new OrderCreateRequestDto.MenuOrderDto(2L, 1)
                 ),
-                REQUEST_COMMENT
+                REQUEST_COMMENT,
+                uuid
         );
 
         Menu menu1 = Menu.builder().name("짜장면").price(7000).isOption(false).store(store).build();
@@ -150,7 +174,8 @@ class OrderServiceTest {
                         new OrderCreateRequestDto.MenuOrderDto(1L, 1),
                         new OrderCreateRequestDto.MenuOrderDto(2L, 1)
                 ),
-                REQUEST_COMMENT
+                REQUEST_COMMENT,
+                uuid
         );
 
         Store anotherStore = Store.builder()
@@ -174,7 +199,8 @@ class OrderServiceTest {
         //given
         OrderCreateRequestDto request = new OrderCreateRequestDto(
                 List.of(new OrderCreateRequestDto.MenuOrderDto(1L, 1)),
-                REQUEST_COMMENT
+                REQUEST_COMMENT,
+                uuid
         );
 
         Menu menu = Menu.builder().name("미니샐러드").price(1000).isOption(false).store(store).build();
@@ -195,7 +221,8 @@ class OrderServiceTest {
         //given
         OrderCreateRequestDto request = new OrderCreateRequestDto(
                 List.of(new OrderCreateRequestDto.MenuOrderDto(1L, 1)),
-                REQUEST_COMMENT
+                REQUEST_COMMENT,
+                uuid
         );
 
         Store closedStore = Store.builder()
