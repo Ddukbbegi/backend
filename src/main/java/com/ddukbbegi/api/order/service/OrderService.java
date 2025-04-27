@@ -14,7 +14,6 @@ import com.ddukbbegi.api.order.repository.OrderMenuRepository;
 import com.ddukbbegi.api.order.repository.OrderRepository;
 import com.ddukbbegi.api.review.repository.ReviewRepository;
 import com.ddukbbegi.api.store.entity.Store;
-import com.ddukbbegi.api.store.repository.StoreRepository;
 import com.ddukbbegi.api.user.entity.User;
 import com.ddukbbegi.api.user.repository.UserRepository;
 import com.ddukbbegi.common.component.ResultCode;
@@ -42,7 +41,6 @@ public class OrderService {
     private final OrderRepository orderRepository;
     private final UserRepository userRepository;
     private final MenuRepository menuRepository;
-    private final StoreRepository storeRepository;
     private final OrderMenuRepository orderMenuRepository;
     private final ReviewRepository reviewRepository;
 
@@ -55,6 +53,7 @@ public class OrderService {
     @Transactional
     public OrderCreateResponseDto createOrder(OrderCreateRequestDto request, long userId) {
         User user = userRepository.findByIdOrElseThrow(userId);
+        checkIsDuplicatedOrder(request.requestId());
 
         List<Long> menuIds = request.menus().stream()
                 .map(OrderCreateRequestDto.MenuOrderDto::menuId)
@@ -75,6 +74,7 @@ public class OrderService {
                 .user(user)
                 .store(store)
                 .requestComment(request.requestComment())
+                .requestId(request.requestId())
                 .build();
 
         Order savedOrder = orderRepository.save(order);
@@ -95,6 +95,12 @@ public class OrderService {
         }
 
         return new OrderCreateResponseDto(savedOrder.getId());
+    }
+
+    private void checkIsDuplicatedOrder(String requestId) {
+        if (orderRepository.existsByRequestId(requestId)) {
+            throw new BusinessException(DUPLICATE_REQUEST_ID);
+        }
     }
 
     private void checkIsAllNotDeleted(int expectedSize, int realSize) {

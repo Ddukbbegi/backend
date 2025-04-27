@@ -37,4 +37,6 @@ public interface OrderRepository extends BaseRepository<Order, Long> {
         return findByIdWithStore(orderId)
                 .orElseThrow(() -> new BusinessException(ORDER_NOT_FOUND));
     }
+
+    boolean existsByRequestId(String requestId);
 }
