@@ -1,7 +1,6 @@
 package com.ddukbbegi.api.review.repository;
 
 import com.ddukbbegi.api.common.repository.BaseRepository;
-import com.ddukbbegi.api.review.dto.RatingPerStarResponseDto;
 import com.ddukbbegi.api.review.dto.ReviewResponseDto;
 import com.ddukbbegi.api.review.entity.Review;
 import com.ddukbbegi.common.component.ResultCode;
@@ -30,45 +29,83 @@ public interface ReviewRepository extends BaseRepository<Review, Long> {
     }
 
 
-    @Query("""
-    SELECT new com.ddukbbegi.api.review.dto.ReviewResponseDto(
-         r.id,
-         r.order.id,
-         r.contents,
-         r.rate,
-         CASE
-             WHEN r.anonymousStatus = 'ANONYMOUS' THEN '익명'
-             ELSE r.user.email
-         END,
-         r.reply,
-         COUNT(rl.id)
-     )
-    FROM Review r
-    LEFT JOIN ReviewLike rl ON rl.review = r
-    WHERE r.user.id = :userId
-    GROUP BY r
-""")
-    Page<ReviewResponseDto> countLikesByUserId(@Param("userId") Long userId, Pageable pageable);
+//    @Query("""
+//    SELECT new com.ddukbbegi.api.review.dto.ReviewResponseDto(
+//         r.id,
+//         r.order.id,
+//         r.contents,
+//         r.rate,
+//         CASE
+//             WHEN r.anonymousStatus = 'ANONYMOUS' THEN '익명'
+//             ELSE r.user.email
+//         END,
+//         r.reply,
+//         COUNT(rl.id)
+//     )
+//    FROM Review r
+//    LEFT JOIN ReviewLike rl ON rl.review = r
+//    WHERE r.user.id = :userId
+//    GROUP BY r
+//""")
+//
+//    Page<ReviewResponseDto> countLikesByUserId(@Param("userId") Long userId, Pageable pageable);
+
+//    @Query("""
+//    SELECT new com.ddukbbegi.api.review.dto.ReviewResponseDto(
+//            r.id,
+//            r.order.id,
+//            r.contents,
+//            r.rate,
+//            CASE
+//                WHEN r.anonymousStatus = 'ANONYMOUS' THEN '익명'
+//                ELSE r.user.email
+//            END,
+//            r.reply,
+//            COUNT(rl.id)
+//        )
+//    FROM Review r
+//    LEFT JOIN ReviewLike rl ON rl.review = r
+//    WHERE r.order.store.id = :storeId
+//    GROUP BY r
+//""")
+//    Page<ReviewResponseDto> countLikesByStoreId(@Param("storeId") Long storeId, Pageable pageable);
+
 
     @Query("""
-    SELECT new com.ddukbbegi.api.review.dto.ReviewResponseDto(
-            r.id, 
-            r.order.id, 
-            r.contents, 
-            r.rate, 
-            CASE 
-                WHEN r.anonymousStatus = 'ANONYMOUS' THEN '익명' 
-                ELSE r.user.email 
-            END, 
-            r.reply, 
-            COUNT(rl.id)
-        )
-    FROM Review r
-    LEFT JOIN ReviewLike rl ON rl.review = r
-    WHERE r.order.store.id = :storeId
-    GROUP BY r
+        SELECT new com.ddukbbegi.api.review.dto.ReviewResponseDto(
+                    r.id,
+                    r.order.id,
+                    r.contents,
+                    r.rate,
+                    CASE
+                    WHEN r.anonymousStatus = 'ANONYMOUS' THEN '익명'
+                    ELSE r.user.email
+                    END,
+                    r.reply,
+                    r.likeCount
+                    ) FROM Review r WHERE r.user.id = :userId
 """)
-    Page<ReviewResponseDto> countLikesByStoreId(@Param("storeId") Long storeId, Pageable pageable);
+    Page<ReviewResponseDto> findReviewsByUserId(@Param("userId") Long userId, Pageable pageable);
+
+
+    @Query("""
+        SELECT new com.ddukbbegi.api.review.dto.ReviewResponseDto(
+                r.id,
+                r.order.id,
+                r.contents,
+                r.rate,
+                CASE
+                    WHEN r.anonymousStatus = 'ANONYMOUS' THEN '익명'
+                    ELSE r.user.email
+                END,
+                r.reply,
+                r.likeCount
+            )
+    FROM Review r
+    LEFT JOIN r.order o
+    WHERE o.store.id = :storeId
+""")
+    Page<ReviewResponseDto> findReviewsByStoreId(@Param("storeId") Long storeId, Pageable pageable);
 
     @Query(
             value = """

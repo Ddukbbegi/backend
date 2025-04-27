@@ -45,7 +45,7 @@ public class ReviewService {
     public Page<ReviewResponseDto> findAllMyReviews(Long userId, Pageable pageable) {
 
 
-        return reviewRepository.countLikesByUserId(userId, pageable);
+        return reviewRepository.findReviewsByUserId(userId, pageable);
     }
 
 
@@ -54,7 +54,7 @@ public class ReviewService {
     public Page<ReviewResponseDto> findAllStoreReviews(Long storeId, Pageable pageable){
 
 
-        return reviewRepository.countLikesByStoreId(storeId, pageable);
+        return reviewRepository.findReviewsByStoreId(storeId, pageable);
 
     }
 
@@ -118,6 +118,7 @@ public class ReviewService {
         if(!reviewLikeRepository.existsReviewLikeByUserAndReview(findUser, findReview)){
             ReviewLike reviewLike = ReviewLike.from(findReview, findUser);
             reviewLikeRepository.save(reviewLike);
+            findReview.LikeCount();
         }
     }
 
@@ -126,7 +127,10 @@ public class ReviewService {
         User findUser = userRepository.findByIdOrElseThrow(userId);
         Review findReview = reviewRepository.findReviewByIdWithUser(reviewId);
         reviewLikeRepository.findByUserAndReview(findUser, findReview)
-                .ifPresent(reviewLikeRepository::delete);
+                .ifPresent(entity -> {
+                    reviewLikeRepository.delete(entity);
+                    findReview.notLikeCount();
+                });
     }
 
     @Transactional

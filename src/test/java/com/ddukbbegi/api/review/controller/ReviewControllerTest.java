@@ -14,10 +14,7 @@ import org.mockito.InjectMocks;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.*;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -106,7 +103,7 @@ class ReviewControllerTest {
     @Test
     void findAllMyReviews() throws Exception {
         //given
-        Pageable pageable = PageRequest.of(0, 20);
+        Pageable pageable = PageRequest.of(0, 10, Sort.by(Sort.Order.desc("createdAt")));
         // Mock 데이터 생성
         ReviewResponseDto reviewResponseDto1 = new ReviewResponseDto(1L, 1L, "맛있어요", 4.5f, "익명", null, 0L);
         ReviewResponseDto reviewResponseDto2 = new ReviewResponseDto(2L, 2L, "별로에요", 2.0f, "익명", null, 0L);
@@ -126,7 +123,7 @@ class ReviewControllerTest {
     @Test
     void findAllStoreReviews() throws Exception {
         //given
-        Pageable pageable = PageRequest.of(0, 20);
+        Pageable pageable = PageRequest.of(0, 10);
         // Mock 데이터 생성
         ReviewResponseDto reviewResponseDto1 = new ReviewResponseDto(1L, 1L, "맛있어요", 4.5f, "익명", null, 0L);
         ReviewResponseDto reviewResponseDto2 = new ReviewResponseDto(2L, 2L, "별로에요", 2.0f, "익명", null, 0L);

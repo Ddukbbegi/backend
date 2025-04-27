@@ -11,7 +11,10 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -38,9 +41,9 @@ public class ReviewController {
     public BaseResponse<PageResponseDto<ReviewResponseDto>> findAllMyReviews(
             //유저 정보 추후 인증인가 적용후 구현
             @AuthenticationPrincipal CustomUserDetails userDetails,
-            Pageable pageable
+            @PageableDefault(page = 0, size = 10, sort = "createdAt",direction = Sort.Direction.DESC) Pageable pageable
     ){
-        Page<ReviewResponseDto> responseDtoPage = reviewService.findAllMyReviews(userDetails.getUserId(), pageable);
+            Page<ReviewResponseDto> responseDtoPage = reviewService.findAllMyReviews(userDetails.getUserId(), pageable);
         PageResponseDto<ReviewResponseDto> dto = PageResponseDto.toDto(responseDtoPage);
         return BaseResponse.success(dto,ResultCode.OK);
     }
@@ -48,8 +51,14 @@ public class ReviewController {
     @GetMapping("/stores/{storeId}/reviews")
     public BaseResponse<PageResponseDto<ReviewResponseDto>> findAllStoreReviews(
             @Positive @PathVariable Long storeId,
-            Pageable pageable
+            @PageableDefault(page = 0, size = 10, direction = Sort.Direction.DESC) Pageable pageable,
+            @RequestParam(value = "sortBy", defaultValue = "createdAt") String sortBy  // 정렬 기준을 동적으로 받기
     ){
+        if ("likeCount".equalsIgnoreCase(sortBy)) {
+            pageable = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(),
+                    Sort.by(Sort.Order.desc("likeCount"), Sort.Order.desc("createdAt")));
+        }
+
         Page<ReviewResponseDto> responseDtoPage = reviewService.findAllStoreReviews(storeId, pageable);
         PageResponseDto<ReviewResponseDto> dto = PageResponseDto.toDto(responseDtoPage);
         return BaseResponse.success(dto, ResultCode.OK);

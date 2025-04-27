@@ -94,7 +94,7 @@ class ReviewServiceTest {
         ReviewResponseDto reviewResponseDto2 = new ReviewResponseDto(2L, 2L, "별로에요", 2.0f, "익명", null, 0L);
         Page<ReviewResponseDto> responseDtoPage = new PageImpl<>(List.of(reviewResponseDto1, reviewResponseDto2), pageable, 2);
 
-        when(reviewRepository.countLikesByUserId(userId, pageable))
+        when(reviewRepository.findReviewsByUserId(userId, pageable))
                 .thenReturn(responseDtoPage);
 
         Page<ReviewResponseDto> res = reviewService.findAllMyReviews(userId, pageable);
@@ -113,7 +113,7 @@ class ReviewServiceTest {
         ReviewResponseDto reviewResponseDto2 = new ReviewResponseDto(2L, 2L, "별로에요", 2.0f, "익명", null, 0L);
         Page<ReviewResponseDto> responseDtoPage = new PageImpl<>(List.of(reviewResponseDto1, reviewResponseDto2), pageable, 2);
 
-        when(reviewRepository.countLikesByStoreId(storeId, pageable))
+        when(reviewRepository.findReviewsByStoreId(storeId, pageable))
                 .thenReturn(responseDtoPage);
 
         Page<ReviewResponseDto> res = reviewService.findAllStoreReviews(storeId, pageable);
@@ -327,8 +327,8 @@ class ReviewServiceTest {
         ReflectionTestUtils.setField(user, "id", 1L);
         Review findReview = Review.builder()
                 .id(1L)
+                .likeCount(0L)
                 .build();
-        ReviewLike findReviewLike = ReviewLike.from(findReview, user);
 
         when(userRepository.findByIdOrElseThrow(user.getId()))
                 .thenReturn(user);
@@ -338,6 +338,7 @@ class ReviewServiceTest {
                 .thenReturn(false);
 
         reviewService.saveLike(1L, 1L);
+        assertThat(findReview.getLikeCount()).isEqualTo(1L);
 
     }
 
@@ -347,6 +348,7 @@ class ReviewServiceTest {
         ReflectionTestUtils.setField(user, "id", 1L);
         Review findReview = Review.builder()
                 .id(1L)
+                .likeCount(1L)
                 .build();
         ReviewLike findReviewLike = ReviewLike.from(findReview, user);
 
@@ -357,6 +359,7 @@ class ReviewServiceTest {
         when(reviewLikeRepository.findByUserAndReview(user, findReview))
                 .thenReturn(Optional.of(findReviewLike));
         reviewService.deleteLike(1L, 1L);
+        assertThat(findReview.getLikeCount()).isEqualTo(0L);
 
     }
 
