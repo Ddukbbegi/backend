@@ -104,7 +104,6 @@ class OrderServiceTest {
 
         given(userRepository.findByIdOrElseThrow(1L)).willReturn(user);
         given(menuRepository.findAllByIdInAndNotDeleted(anyList())).willReturn(List.of(menu1, menu2));
-        given(storeRepository.findByIdOrElseThrow(1L)).willReturn(store);
         given(orderRepository.save(any())).willAnswer(invocation -> {
             Order order = invocation.getArgument(0);
             ReflectionTestUtils.setField(order,"id",100L);
@@ -183,7 +182,6 @@ class OrderServiceTest {
 
         given(userRepository.findByIdOrElseThrow(1L)).willReturn(user);
         given(menuRepository.findAllByIdInAndNotDeleted(anyList())).willReturn(List.of(menu));
-        given(storeRepository.findByIdOrElseThrow(1L)).willReturn(store);
 
         // when & then
         assertThatThrownBy(() -> orderService.createOrder(request, 1L))
@@ -200,17 +198,17 @@ class OrderServiceTest {
                 REQUEST_COMMENT
         );
 
-        Menu menu = Menu.builder().name("라면").price(6000).isOption(false).store(store).build();
-        ReflectionTestUtils.setField(menu,"id",1L);
-
         Store closedStore = Store.builder()
                 .minDeliveryPrice(12000)
                 .weekdayWorkingStartTime(LocalTime.of(23, 58))
                 .weekdayWorkingEndTime(LocalTime.of(23, 59))
                 .build();
+        ReflectionTestUtils.setField(closedStore,"id",2L);
+
+        Menu menu = Menu.builder().name("라면").price(12000).isOption(false).store(closedStore).build();
+        ReflectionTestUtils.setField(menu,"id",1L);
 
         given(menuRepository.findAllByIdInAndNotDeleted(anyList())).willReturn(List.of(menu));
-        given(storeRepository.findByIdOrElseThrow(1L)).willReturn(closedStore);
 
         // when & then
         assertThatThrownBy(() -> orderService.createOrder(request, 1L))
