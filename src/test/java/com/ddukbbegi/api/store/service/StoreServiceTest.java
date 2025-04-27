@@ -8,10 +8,10 @@ import com.ddukbbegi.api.store.enums.StoreCategory;
 import com.ddukbbegi.api.store.enums.StoreStatus;
 import com.ddukbbegi.api.store.repository.StoreRepository;
 import com.ddukbbegi.api.user.entity.User;
-import com.ddukbbegi.api.user.enums.UserRole;
 import com.ddukbbegi.api.user.repository.UserRepository;
 import com.ddukbbegi.common.component.ResultCode;
 import com.ddukbbegi.common.exception.BusinessException;
+import com.ddukbbegi.support.fixture.StoreFixture;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -48,12 +48,8 @@ class StoreServiceTest {
         void givenRegisterDtoAndUserId_whenSave_thenWorksFine() {
             // given
             Long userId = 1L;
-            User user = createUser();
-            StoreRegisterRequestDto dto = new StoreRegisterRequestDto(
-                    createBasicInfo(),
-                    createOperationInfo(),
-                    createOrderSettings()
-            );
+            User user = StoreFixture.createUser();
+            StoreRegisterRequestDto dto = StoreFixture.createStoreRegisterRequestDto();
             Store store = dto.toEntity(user);
             ReflectionTestUtils.setField(store, "id", 1L);
 
@@ -73,11 +69,7 @@ class StoreServiceTest {
         void givenRegistrationUnavailable_whenSave_thenThrowsException() {
             // given
             Long userId = 1L;
-            StoreRegisterRequestDto dto = new StoreRegisterRequestDto(
-                    createBasicInfo(),
-                    createOperationInfo(),
-                    createOrderSettings()
-            );
+            StoreRegisterRequestDto dto = StoreFixture.createStoreRegisterRequestDto();
 
             given(storeRepository.isStoreRegistrationAvailable(userId)).willReturn(false);
 
@@ -109,7 +101,7 @@ class StoreServiceTest {
     void givenUserId_whenGetOwnerStoreList_thenReturnStoreList() {
         // given
         long userId = 1L;
-        Store store = createStore(mock(User.class));
+        Store store = StoreFixture.createStore(mock(User.class));
 
         given(storeRepository.findAllByUser_Id(userId)).willReturn(List.of(store));
 
@@ -133,7 +125,7 @@ class StoreServiceTest {
             Long storeId = 2L;
 
             User user = mock(User.class);
-            Store store = createStore(user);
+            Store store = StoreFixture.createStore(user);
 
             ReflectionTestUtils.setField(store, "user", user);
             ReflectionTestUtils.setField(user, "id", userId);
@@ -158,7 +150,7 @@ class StoreServiceTest {
             Long wrongUserId = 99L;
             User owner = mock(User.class);
             User otherUser = mock(User.class);
-            Store store = createStore(owner);
+            Store store = StoreFixture.createStore(owner);
 
             ReflectionTestUtils.setField(store, "user", owner);
 
@@ -178,7 +170,7 @@ class StoreServiceTest {
     @Test
     void givenNameAndPageable_whenGetStores_thenReturnPageResponse() {
         // given
-        Store store = createStore(mock(User.class));
+        Store store = StoreFixture.createStore(mock(User.class));
         PageRequest pageable = PageRequest.of(0, 10);
 
         given(storeRepository.findAllStoreByName(any(), eq(pageable)))
@@ -199,7 +191,7 @@ class StoreServiceTest {
     void givenStoreId_whenGetStore_thenReturnStoreDetail() {
         // given
         Long userId = 1L;
-        Store store = createStore(mock(User.class));
+        Store store = StoreFixture.createStore(mock(User.class));
 
         given(storeRepository.findByIdOrElseThrow(userId)).willReturn(store);
 
@@ -220,8 +212,8 @@ class StoreServiceTest {
         void givenDto_whenUpdateStoreBasicInfo_thenUpdateSuccess() {
             // given
             User user = mock(User.class);
-            Store store = createStore(user);
-            StoreUpdateBasicInfoRequestDto dto = new StoreUpdateBasicInfoRequestDto(createBasicInfo());
+            Store store = StoreFixture.createStore(user);
+            StoreUpdateBasicInfoRequestDto dto = new StoreUpdateBasicInfoRequestDto(StoreFixture.createBasicInfo());
 
             ReflectionTestUtils.setField(store, "user", user);
             ReflectionTestUtils.setField(store, "name", "청화성");
@@ -247,7 +239,7 @@ class StoreServiceTest {
             Long otherId = 99L;
             User owner = mock(User.class);
             Store store = mock(Store.class);
-            StoreUpdateBasicInfoRequestDto dto = new StoreUpdateBasicInfoRequestDto(createBasicInfo());
+            StoreUpdateBasicInfoRequestDto dto = new StoreUpdateBasicInfoRequestDto(StoreFixture.createBasicInfo());
 
             given(storeRepository.findByIdOrElseThrow(1L)).willReturn(store);
             given(store.getUser()).willReturn(owner);
@@ -274,7 +266,7 @@ class StoreServiceTest {
 
             StoreUpdateStatusRequest dto = new StoreUpdateStatusRequest(false);
             User user = mock(User.class);
-            Store store = createStore(user);
+            Store store = StoreFixture.createStore(user);
             
             ReflectionTestUtils.setField(store, "user", user);
             ReflectionTestUtils.setField(store, "isPermanentlyClosed", true); // 값 바뀌는지 확인하기 위해 설정
@@ -299,7 +291,7 @@ class StoreServiceTest {
 
             StoreUpdateStatusRequest dto = new StoreUpdateStatusRequest(false);
             User user = mock(User.class);
-            Store store = createStore(user);
+            Store store = StoreFixture.createStore(user);
 
             ReflectionTestUtils.setField(store, "user", user);
 
@@ -315,49 +307,6 @@ class StoreServiceTest {
 
     }
 
-    private Store createStore(User user) {
-        StoreRegisterRequestDto dto = new StoreRegisterRequestDto(
-                createBasicInfo(),
-                createOperationInfo(),
-                createOrderSettings()
-        );
-        return dto.toEntity(user);
-    }
 
-    private User createUser() {
-        return User.of(
-                "test@email.com",
-                "pw",
-                "사장님",
-                "010-1234-5678",
-                UserRole.OWNER
-        );
-    }
-
-    private RequestStoreBasicInfo createBasicInfo() {
-        return new RequestStoreBasicInfo(
-                "맛있는김밥",
-                "한식",
-                "010-1234-5678",
-                "신선한 재료로 매일 준비합니다."
-        );
-    }
-
-    private RequestStoreOperationInfo createOperationInfo() {
-        return new RequestStoreOperationInfo(
-                "SUN,MON",
-                "10:00-18:00",
-                "13:00-14:00",
-                "11:00-17:00",
-                "12:00-13:00"
-        );
-    }
-
-    private RequestStoreOrderSettings createOrderSettings() {
-        return new RequestStoreOrderSettings(
-                15000,
-                3000
-        );
-    }
 
 }
