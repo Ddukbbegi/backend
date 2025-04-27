@@ -17,6 +17,7 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.regex.Pattern;
 
 @Component
@@ -33,11 +34,20 @@ public class JwtFilter extends OncePerRequestFilter {
             "/api/stores/.+/menus"
     };
 
+    private static final List<String> WHITELIST_URLS = List.of(
+            "/oauth2/", "/login/oauth2/", "/oauth2/success"
+    );
+
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         String url = request.getRequestURI();
 
         if (url.startsWith("/api/auth")) {
+            filterChain.doFilter(request, response);
+            return;
+        }
+
+        if (WHITELIST_URLS.stream().anyMatch(url::startsWith)) {
             filterChain.doFilter(request, response);
             return;
         }
