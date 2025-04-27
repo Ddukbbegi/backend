@@ -3,9 +3,13 @@ package com.ddukbbegi.api.order.repository;
 import com.ddukbbegi.api.common.repository.BaseRepository;
 import com.ddukbbegi.api.order.entity.Order;
 import com.ddukbbegi.common.exception.BusinessException;
+import jakarta.persistence.LockModeType;
+import jakarta.persistence.QueryHint;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.jpa.repository.QueryHints;
 import org.springframework.data.repository.query.Param;
 
 import java.util.Optional;
@@ -30,13 +34,25 @@ public interface OrderRepository extends BaseRepository<Order, Long> {
     )
     Page<Order> findAllByStoreId(@Param(value = "storeId") long storeId, Pageable pageable);
 
-    @Query("SELECT o FROM Order o JOIN FETCH o.store WHERE o.id = :orderId")
-    Optional<Order> findByIdWithStore(@Param("orderId") Long orderId);
+    boolean existsByRequestId(String requestId);
 
-    default Order findByIdWithStoreOrElseThrow(Long orderId) {
-        return findByIdWithStore(orderId)
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    @QueryHints(@QueryHint(name = "jakarta.persistence.lock.timeout", value = "5000"))
+    @Query("SELECT o FROM Order o JOIN FETCH o.store WHERE o.id = :orderId")
+    Optional<Order> findByIdWithStoreForUpdate(Long orderId);
+
+    default Order findByIdWithStoreForUpdateOrElseThrow(Long orderId) {
+        return findByIdWithStoreForUpdate(orderId)
                 .orElseThrow(() -> new BusinessException(ORDER_NOT_FOUND));
     }
 
-    boolean existsByRequestId(String requestId);
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    @QueryHints(@QueryHint(name = "jakarta.persistence.lock.timeout", value = "5000"))
+    @Query("SELECT o FROM Order o WHERE o.id = :orderId")
+    Optional<Order> findByIdForUpdate(long orderId);
+
+    default Order findByIdForUpdateOrElseThrow(Long orderId) {
+        return findByIdForUpdate(orderId)
+                .orElseThrow(() -> new BusinessException(ORDER_NOT_FOUND));
+    }
 }

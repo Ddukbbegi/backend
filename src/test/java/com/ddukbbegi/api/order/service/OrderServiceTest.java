@@ -249,7 +249,7 @@ class OrderServiceTest {
         // given
         Order order = Order.builder().user(user).store(store).requestComment(REQUEST_COMMENT).build();
         ReflectionTestUtils.setField(order, "id", 1L);
-        given(orderRepository.findByIdOrElseThrow(1L)).willReturn(order);
+        given(orderRepository.findByIdForUpdateOrElseThrow(1L)).willReturn(order);
 
         // when
         orderService.cancelOrder(1L, user.getId());
@@ -267,7 +267,7 @@ class OrderServiceTest {
         Order order = Order.builder().user(otherUser).store(store).requestComment(REQUEST_COMMENT).build();
         ReflectionTestUtils.setField(order, "id", 1L);
 
-        given(orderRepository.findByIdOrElseThrow(1L)).willReturn(order);
+        given(orderRepository.findByIdForUpdateOrElseThrow(1L)).willReturn(order);
 
         // when & then
         assertThatThrownBy(() -> orderService.cancelOrder(1L, user.getId()))
@@ -285,7 +285,7 @@ class OrderServiceTest {
         ReflectionTestUtils.setField(order, "id", 1L);
         ReflectionTestUtils.setField(order, "orderStatus", orderStatus);
 
-        given(orderRepository.findByIdOrElseThrow(1L)).willReturn(order);
+        given(orderRepository.findByIdForUpdateOrElseThrow(1L)).willReturn(order);
 
         //when & then
         assertThatThrownBy(() -> orderService.cancelOrder(1L, user.getId()))
@@ -312,7 +312,7 @@ class OrderServiceTest {
         ReflectionTestUtils.setField(order, "id", 1L);
         ReflectionTestUtils.setField(order, "orderStatus", OrderStatus.valueOf(from));
 
-        given(orderRepository.findByIdWithStoreOrElseThrow(1L)).willReturn(order);
+        given(orderRepository.findByIdWithStoreForUpdateOrElseThrow(1L)).willReturn(order);
 
         //when
         orderService.updateOrderStatus(1L, OrderStatus.valueOf(to), owner.getId());
@@ -337,7 +337,7 @@ class OrderServiceTest {
         ReflectionTestUtils.setField(order, "id", 1L);
         ReflectionTestUtils.setField(order, "orderStatus", OrderStatus.valueOf(from));
 
-        given(orderRepository.findByIdWithStoreOrElseThrow(1L)).willReturn(order);
+        given(orderRepository.findByIdWithStoreForUpdateOrElseThrow(1L)).willReturn(order);
 
         // when & then
         assertThatThrownBy(() -> orderService.updateOrderStatus(1L, OrderStatus.valueOf(to), owner.getId()))
@@ -362,7 +362,7 @@ class OrderServiceTest {
         ReflectionTestUtils.setField(order, "id", 1L);
         ReflectionTestUtils.setField(order, "orderStatus", OrderStatus.valueOf(from));
 
-        given(orderRepository.findByIdWithStoreOrElseThrow(1L)).willReturn(order);
+        given(orderRepository.findByIdWithStoreForUpdateOrElseThrow(1L)).willReturn(order);
 
         // when & then
         assertThatThrownBy(() -> orderService.updateOrderStatus(1L, OrderStatus.valueOf(to), owner.getId()))
@@ -384,7 +384,7 @@ class OrderServiceTest {
         ReflectionTestUtils.setField(order, "id", 1L);
         ReflectionTestUtils.setField(order, "orderStatus", OrderStatus.WAITING);
 
-        given(orderRepository.findByIdWithStoreOrElseThrow(1L)).willReturn(order);
+        given(orderRepository.findByIdWithStoreForUpdateOrElseThrow(1L)).willReturn(order);
 
         assertThatThrownBy(() -> orderService.updateOrderStatus(1L, OrderStatus.ACCEPTED, other.getId()))
                 .isInstanceOf(BusinessException.class)
