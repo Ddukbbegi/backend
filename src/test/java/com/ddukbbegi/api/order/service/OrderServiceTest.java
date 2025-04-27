@@ -1,6 +1,7 @@
 package com.ddukbbegi.api.order.service;
 
 import com.ddukbbegi.api.menu.entity.Menu;
+import com.ddukbbegi.api.menu.enums.MenuStatus;
 import com.ddukbbegi.api.menu.repository.MenuRepository;
 import com.ddukbbegi.api.order.dto.request.OrderCreateRequestDto;
 import com.ddukbbegi.api.order.dto.response.OrderCreateResponseDto;
@@ -32,8 +33,7 @@ import java.util.UUID;
 import static com.ddukbbegi.common.component.ResultCode.*;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
 
 @ExtendWith(MockitoExtension.class)
@@ -98,14 +98,14 @@ class OrderServiceTest {
                 uuid
         );
 
-        Menu menu1 = Menu.builder().name("짜장면").price(7000).isOption(false).store(store).build();
-        Menu menu2 = Menu.builder().name("짬뽕").price(8000).isOption(false).store(store).build();
+        Menu menu1 = Menu.builder().name("짜장면").price(7000).isOption(false).store(store).status(MenuStatus.ON_SALE).build();
+        Menu menu2 = Menu.builder().name("짬뽕").price(8000).isOption(false).store(store).status(MenuStatus.ON_SALE).build();
 
         ReflectionTestUtils.setField(menu1,"id",1L);
         ReflectionTestUtils.setField(menu2,"id",2L);
 
         given(userRepository.findByIdOrElseThrow(1L)).willReturn(user);
-        given(menuRepository.findAllByIdInAndNotDeleted(anyList())).willReturn(List.of(menu1, menu2));
+        given(menuRepository.findAllByIdInAndStatusNot(anyList(), eq(MenuStatus.DELETED))).willReturn(List.of(menu1, menu2));
         given(orderRepository.save(any())).willAnswer(invocation -> {
             Order order = invocation.getArgument(0);
             ReflectionTestUtils.setField(order,"id",100L);
@@ -158,7 +158,7 @@ class OrderServiceTest {
         menu1.delete();
 
         given(userRepository.findByIdOrElseThrow(1L)).willReturn(user);
-        given(menuRepository.findAllByIdInAndNotDeleted(anyList())).willReturn(List.of());
+        given(menuRepository.findAllByIdInAndStatusNot(anyList(), eq(MenuStatus.DELETED))).willReturn(List.of());
 
         // when & then
         assertThatThrownBy(() -> orderService.createOrder(request, 1L))
@@ -186,7 +186,7 @@ class OrderServiceTest {
         Menu menu2 = Menu.builder().name("피자").price(15000).isOption(false).store(anotherStore).build();
 
         given(userRepository.findByIdOrElseThrow(1L)).willReturn(user);
-        given(menuRepository.findAllByIdInAndNotDeleted(anyList())).willReturn(List.of(menu1, menu2));
+        given(menuRepository.findAllByIdInAndStatusNot(anyList(), eq(MenuStatus.DELETED))).willReturn(List.of(menu1, menu2));
 
         assertThatThrownBy(() -> orderService.createOrder(request, 1L))
                 .isInstanceOf(BusinessException.class)
@@ -207,7 +207,7 @@ class OrderServiceTest {
         ReflectionTestUtils.setField(menu,"id",1L);
 
         given(userRepository.findByIdOrElseThrow(1L)).willReturn(user);
-        given(menuRepository.findAllByIdInAndNotDeleted(anyList())).willReturn(List.of(menu));
+        given(menuRepository.findAllByIdInAndStatusNot(anyList(), eq(MenuStatus.DELETED))).willReturn(List.of(menu));
 
         // when & then
         assertThatThrownBy(() -> orderService.createOrder(request, 1L))
@@ -235,7 +235,7 @@ class OrderServiceTest {
         Menu menu = Menu.builder().name("라면").price(12000).isOption(false).store(closedStore).build();
         ReflectionTestUtils.setField(menu,"id",1L);
 
-        given(menuRepository.findAllByIdInAndNotDeleted(anyList())).willReturn(List.of(menu));
+        given(menuRepository.findAllByIdInAndStatusNot(anyList(), eq(MenuStatus.DELETED))).willReturn(List.of(menu));
 
         // when & then
         assertThatThrownBy(() -> orderService.createOrder(request, 1L))

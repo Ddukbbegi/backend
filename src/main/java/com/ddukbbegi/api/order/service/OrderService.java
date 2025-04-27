@@ -2,6 +2,7 @@ package com.ddukbbegi.api.order.service;
 
 import com.ddukbbegi.api.common.dto.PageResponseDto;
 import com.ddukbbegi.api.menu.entity.Menu;
+import com.ddukbbegi.api.menu.enums.MenuStatus;
 import com.ddukbbegi.api.menu.repository.MenuRepository;
 import com.ddukbbegi.api.order.dto.request.OrderCreateRequestDto;
 import com.ddukbbegi.api.order.dto.response.OrderCreateResponseDto;
@@ -59,7 +60,7 @@ public class OrderService {
                 .map(OrderCreateRequestDto.MenuOrderDto::menuId)
                 .toList();
 
-        List<Menu> menus = menuRepository.findAllByIdInAndNotDeleted(menuIds);
+        List<Menu> menus = menuRepository.findAllByIdInAndStatusNot(menuIds, MenuStatus.DELETED);
         checkIsAllNotDeleted(menuIds.size(),menus.size());
 
         Store store = menus.get(0).getStore();
