@@ -103,7 +103,7 @@ class OrderServiceTest {
         ReflectionTestUtils.setField(menu2,"id",2L);
 
         given(userRepository.findByIdOrElseThrow(1L)).willReturn(user);
-        given(menuRepository.findAllByIdInAndIsDeletedFalse(anyList())).willReturn(List.of(menu1, menu2));
+        given(menuRepository.findAllByIdInAndNotDeleted(anyList())).willReturn(List.of(menu1, menu2));
         given(storeRepository.findByIdOrElseThrow(1L)).willReturn(store);
         given(orderRepository.save(any())).willAnswer(invocation -> {
             Order order = invocation.getArgument(0);
@@ -135,7 +135,7 @@ class OrderServiceTest {
         menu1.delete();
 
         given(userRepository.findByIdOrElseThrow(1L)).willReturn(user);
-        given(menuRepository.findAllByIdInAndIsDeletedFalse(anyList())).willReturn(List.of());
+        given(menuRepository.findAllByIdInAndNotDeleted(anyList())).willReturn(List.of());
 
         // when & then
         assertThatThrownBy(() -> orderService.createOrder(request, 1L))
@@ -162,7 +162,7 @@ class OrderServiceTest {
         Menu menu2 = Menu.builder().name("피자").price(15000).isOption(false).store(anotherStore).build();
 
         given(userRepository.findByIdOrElseThrow(1L)).willReturn(user);
-        given(menuRepository.findAllByIdInAndIsDeletedFalse(anyList())).willReturn(List.of(menu1, menu2));
+        given(menuRepository.findAllByIdInAndNotDeleted(anyList())).willReturn(List.of(menu1, menu2));
 
         assertThatThrownBy(() -> orderService.createOrder(request, 1L))
                 .isInstanceOf(BusinessException.class)
@@ -182,7 +182,7 @@ class OrderServiceTest {
         ReflectionTestUtils.setField(menu,"id",1L);
 
         given(userRepository.findByIdOrElseThrow(1L)).willReturn(user);
-        given(menuRepository.findAllByIdInAndIsDeletedFalse(anyList())).willReturn(List.of(menu));
+        given(menuRepository.findAllByIdInAndNotDeleted(anyList())).willReturn(List.of(menu));
         given(storeRepository.findByIdOrElseThrow(1L)).willReturn(store);
 
         // when & then
@@ -209,7 +209,7 @@ class OrderServiceTest {
                 .weekdayWorkingEndTime(LocalTime.of(23, 59))
                 .build();
 
-        given(menuRepository.findAllByIdInAndIsDeletedFalse(anyList())).willReturn(List.of(menu));
+        given(menuRepository.findAllByIdInAndNotDeleted(anyList())).willReturn(List.of(menu));
         given(storeRepository.findByIdOrElseThrow(1L)).willReturn(closedStore);
 
         // when & then
