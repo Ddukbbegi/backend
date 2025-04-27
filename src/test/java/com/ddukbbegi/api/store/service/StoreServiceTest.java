@@ -181,7 +181,7 @@ class StoreServiceTest {
         Store store = createStore(mock(User.class));
         PageRequest pageable = PageRequest.of(0, 10);
 
-        given(storeRepository.findAllOpenedStoreByName(any(), eq(pageable)))
+        given(storeRepository.findAllStoreByName(any(), eq(pageable)))
                 .willReturn(new PageImpl<>(List.of(store)));
 
         // when

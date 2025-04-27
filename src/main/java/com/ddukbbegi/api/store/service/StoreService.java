@@ -71,7 +71,7 @@ public class StoreService {
     @Transactional(readOnly = true)
     public PageResponseDto<StorePageItemResponseDto> getStores(String name, Pageable pageable) {
 
-        Page<StorePageItemResponseDto> result = storeRepository.findAllOpenedStoreByName("%" + name + "%", pageable)
+        Page<StorePageItemResponseDto> result = storeRepository.findAllStoreByName("%" + name + "%", pageable)
                 .map(StorePageItemResponseDto::fromEntity);
         return PageResponseDto.toDto(result);
     }
