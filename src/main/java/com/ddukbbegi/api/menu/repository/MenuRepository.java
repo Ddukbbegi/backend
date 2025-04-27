@@ -24,7 +24,7 @@ public interface MenuRepository extends BaseRepository<Menu, Long> {
 	@Query("UPDATE Menu m SET m.status = :status WHERE m.id = :id")
 	void updateMenuStatusById(@Param("id") long id, @Param("status") MenuStatus status);
 
-	List<Menu> findAllByIdInAndIsDeletedFalse(List<Long> menuIds);
+	List<Menu> findAllByIdInAndStatusNot(List<Long> ids, MenuStatus menuStatus);
 
 	// @Query("SELECT COUNT(s) > 0 FROM Store s WHERE s.id = :storeId AND s.user.id = :userId")
 	// boolean checkOwnerTest(@Param("storeId") Long storeId, @Param("userId") Long userId);

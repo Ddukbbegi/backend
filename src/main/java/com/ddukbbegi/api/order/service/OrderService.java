@@ -2,6 +2,7 @@ package com.ddukbbegi.api.order.service;
 
 import com.ddukbbegi.api.common.dto.PageResponseDto;
 import com.ddukbbegi.api.menu.entity.Menu;
+import com.ddukbbegi.api.menu.enums.MenuStatus;
 import com.ddukbbegi.api.menu.repository.MenuRepository;
 import com.ddukbbegi.api.order.dto.request.OrderCreateRequestDto;
 import com.ddukbbegi.api.order.dto.response.OrderCreateResponseDto;
@@ -14,7 +15,6 @@ import com.ddukbbegi.api.order.repository.OrderMenuRepository;
 import com.ddukbbegi.api.order.repository.OrderRepository;
 import com.ddukbbegi.api.review.repository.ReviewRepository;
 import com.ddukbbegi.api.store.entity.Store;
-import com.ddukbbegi.api.store.repository.StoreRepository;
 import com.ddukbbegi.api.user.entity.User;
 import com.ddukbbegi.api.user.repository.UserRepository;
 import com.ddukbbegi.common.component.ResultCode;
@@ -42,7 +42,6 @@ public class OrderService {
     private final OrderRepository orderRepository;
     private final UserRepository userRepository;
     private final MenuRepository menuRepository;
-    private final StoreRepository storeRepository;
     private final OrderMenuRepository orderMenuRepository;
     private final ReviewRepository reviewRepository;
 
@@ -55,19 +54,17 @@ public class OrderService {
     @Transactional
     public OrderCreateResponseDto createOrder(OrderCreateRequestDto request, long userId) {
         User user = userRepository.findByIdOrElseThrow(userId);
+        checkIsDuplicatedOrder(request.requestId());
 
         List<Long> menuIds = request.menus().stream()
                 .map(OrderCreateRequestDto.MenuOrderDto::menuId)
                 .toList();
 
-        List<Menu> menus = menuRepository.findAllByIdInAndIsDeletedFalse(menuIds);
+        List<Menu> menus = menuRepository.findAllByIdInAndStatusNot(menuIds, MenuStatus.DELETED);
         checkIsAllNotDeleted(menuIds.size(),menus.size());
 
-        // long storeId = menus.get(0).getStoreId();
-        long storeId = 1L;
-
-        checkIsAllSameStore(menus, storeId);
-        Store store = storeRepository.findByIdOrElseThrow(storeId);
+        Store store = menus.get(0).getStore();
+        checkIsAllSameStore(menus, store.getId());
 
         LocalTime now = now();
         checkStoreIsWorking(now,store);
@@ -78,6 +75,7 @@ public class OrderService {
                 .user(user)
                 .store(store)
                 .requestComment(request.requestComment())
+                .requestId(request.requestId())
                 .build();
 
         Order savedOrder = orderRepository.save(order);
@@ -98,6 +96,12 @@ public class OrderService {
         }
 
         return new OrderCreateResponseDto(savedOrder.getId());
+    }
+
+    private void checkIsDuplicatedOrder(String requestId) {
+        if (orderRepository.existsByRequestId(requestId)) {
+            throw new BusinessException(DUPLICATE_REQUEST_ID);
+        }
     }
 
     private void checkIsAllNotDeleted(int expectedSize, int realSize) {
@@ -153,21 +157,19 @@ public class OrderService {
                 OrderHistoryUserResponseDto.from(
                         order,
                         orderMenuMap.getOrDefault(order.getId(), List.of()),
-                        false
-                        //todo: Review에 Order 참조되면 주석 해제
-                        //isReviewed(orderIds, order)
+                        isReviewed(orderIds, order)
                 )
         );
 
         return PageResponseDto.toDto(result);
     }
 
-//    private boolean isReviewed(List<Long> orderIds, Order order) {
-//        List<Long> reviewedOrderIds = reviewRepository.findReviewedOrderIds(orderIds);
-//        Set<Long> reviewedOrderIdSet = new HashSet<>(reviewedOrderIds);
-//
-//        return reviewedOrderIdSet.contains(order.getId());
-//    }
+    private boolean isReviewed(List<Long> orderIds, Order order) {
+        List<Long> reviewedOrderIds = reviewRepository.findReviewedOrderIds(orderIds);
+        Set<Long> reviewedOrderIdSet = new HashSet<>(reviewedOrderIds);
+
+        return reviewedOrderIdSet.contains(order.getId());
+    }
 
     @Transactional(readOnly = true)
     public PageResponseDto<OrderHistoryOwnerResponseDto> getOrdersForOwner(long storeId, Pageable pageable) {
