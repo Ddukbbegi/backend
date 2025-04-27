@@ -18,6 +18,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
@@ -47,6 +48,8 @@ class ReviewControllerTest {
     private JwtUtil jwtUtil;
     @Autowired
     private ObjectMapper objectMapper;
+    @MockitoBean
+    private RedisTemplate<String, Object> redisTemplate;
     @MockitoBean
     private ReviewService reviewService;
     @InjectMocks
