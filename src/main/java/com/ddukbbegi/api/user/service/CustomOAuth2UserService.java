@@ -35,8 +35,6 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         com.ddukbbegi.api.user.entity.User user = userRepository.findByEmail(email)
                 .orElseGet(() -> createUser(userInfo));
 
-
-        // 2. 기존에 가입된 유저인데, provider 정보가 다르면 에러
         if (user.getProvider() == null) {
             throw new OAuth2AuthenticationException("이미 일반 회원가입된 이메일입니다. 소셜 로그인 불가합니다.");
         }
@@ -58,6 +56,13 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         return customOAuth2User;
     }
 
+    /**
+     * OAuth2 가 어떤 Provider 에 따라 UserInfo 반환
+     *
+     * @param oAuth2User
+     * @param provider
+     * @return OAuth2UserInfo
+     */
     private OAuth2UserInfo getUserInfo(OAuth2User oAuth2User, String provider) {
         switch (provider) {
             case "google":
@@ -67,6 +72,12 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         }
     }
 
+    /**
+     * User Repository 에 저장
+     *
+     * @param userInfo
+     * @return User
+     */
     private User createUser(OAuth2UserInfo userInfo) {
         User user = User.builder()
                 .email(userInfo.getEmail())

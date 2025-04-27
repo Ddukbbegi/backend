@@ -41,8 +41,6 @@ public class CustomOAuth2User extends org.springframework.security.core.userdeta
         return (String) attributes.get("name");
     }
 
-
-    // 이메일
     public String getEmail() {
         return (String) attributes.get("email");
     }
