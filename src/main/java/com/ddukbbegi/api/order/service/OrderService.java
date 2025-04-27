@@ -194,7 +194,7 @@ public class OrderService {
 
     @Transactional
     public void cancelOrder(long orderId, long userId) {
-        Order order = orderRepository.findByIdForUpdateOrElseThrow(orderId);
+        Order order = orderRepository.findByIdOrElseThrow(orderId);
         checkOrderIsUserOrder(order, userId);
         checkCancelIsAvailable(order);
 
@@ -216,7 +216,7 @@ public class OrderService {
 
     @Transactional
     public void updateOrderStatus(Long orderId, OrderStatus newStatus, Long ownerId) {
-        Order order = orderRepository.findByIdWithStoreForUpdateOrElseThrow(orderId);
+        Order order = orderRepository.findByIdWithStoreOrElseThrow(orderId);
         checkOwnerIsRight(order, ownerId);
 
         OrderStatus currentStatus = order.getOrderStatus();

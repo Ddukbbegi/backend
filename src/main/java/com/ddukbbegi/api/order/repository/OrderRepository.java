@@ -36,6 +36,14 @@ public interface OrderRepository extends BaseRepository<Order, Long> {
 
     boolean existsByRequestId(String requestId);
 
+    @Query("SELECT o FROM Order o JOIN FETCH o.store WHERE o.id = :orderId")
+    Optional<Order> findByIdWithStore(@Param("orderId") Long orderId);
+
+    default Order findByIdWithStoreOrElseThrow(Long orderId) {
+        return findByIdWithStore(orderId)
+                .orElseThrow(() -> new BusinessException(ORDER_NOT_FOUND));
+    }
+
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     @QueryHints(@QueryHint(name = "jakarta.persistence.lock.timeout", value = "5000"))
     @Query("SELECT o FROM Order o JOIN FETCH o.store WHERE o.id = :orderId")
