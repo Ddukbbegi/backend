@@ -17,9 +17,9 @@ class StoreStatusResolveServiceTest {
 
     private final StoreStatusResolveService service = new StoreStatusResolveService();
 
+    @DisplayName("가게 상태 판단 테스트")
     @ParameterizedTest(name = "{index}: 현재시간 {1} => 예상 상태: {2}")
     @MethodSource("provideStoreStatusTestCases")
-    @DisplayName("가게 상태 판단 테스트")
     void resolveStoreStatus_worksAsExpected(Store store, LocalDateTime now, StoreStatus expectedStatus) {
         StoreStatus result = service.resolveStoreStatus(store, now);
         assertThat(result).isEqualTo(expectedStatus);

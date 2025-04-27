@@ -12,7 +12,7 @@ public record ResponseStoreBasicInfo(
     public static ResponseStoreBasicInfo fromEntity(Store store) {
         return new ResponseStoreBasicInfo(
                 store.getName(),
-                store.getCategory().name(),
+                store.getCategory().getDesc(),
                 store.getPhoneNumber(),
                 store.getDescription()
         );

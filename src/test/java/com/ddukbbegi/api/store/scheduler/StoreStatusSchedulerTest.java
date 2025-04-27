@@ -25,8 +25,8 @@ class StoreStatusSchedulerTest {
     @Mock private StoreRepository storeRepository;
     @Mock private StoreStatusResolveService storeStatusResolveService;
 
-    @Test
     @DisplayName("상태가 변경된 경우 updateStatus가 호출된다")
+    @Test
     void givenChangedStatus_whenUpdateStoreStatuses_thenStatusIsUpdated() {
         // given
         Store store = mock(Store.class);
@@ -42,8 +42,8 @@ class StoreStatusSchedulerTest {
         verify(store).updateStatus(StoreStatus.OPEN);
     }
 
-    @Test
     @DisplayName("상태가 동일하면 updateStatus가 호출되지 않는다")
+    @Test
     void givenUnchangedStatus_whenUpdateStoreStatuses_thenStatusIsNotUpdated() {
         // given
         Store store = mock(Store.class);

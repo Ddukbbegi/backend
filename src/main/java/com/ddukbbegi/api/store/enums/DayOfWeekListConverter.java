@@ -22,7 +22,7 @@ public class DayOfWeekListConverter implements AttributeConverter<List<DayOfWeek
     // List<DayOfWeek> -> "SUN,MON"
     @Override
     public String convertToDatabaseColumn(List<DayOfWeek> attribute) {
-        if (attribute == null) {
+        if (attribute == null || attribute.isEmpty()) {
             return "";
         }
 
@@ -38,7 +38,7 @@ public class DayOfWeekListConverter implements AttributeConverter<List<DayOfWeek
     // "SUN,MON" -> List<DayOfWeek>
     @Override
     public List<DayOfWeek> convertToEntityAttribute(String dbData) {
-        if (dbData == null || dbData.isEmpty()) {
+        if (dbData == null || dbData.isBlank()) {
             return new ArrayList<>();
         }
         return Arrays.stream(dbData.split(","))
