@@ -39,7 +39,7 @@ public interface OrderRepository extends BaseRepository<Order, Long> {
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     @QueryHints(@QueryHint(name = "jakarta.persistence.lock.timeout", value = "5000"))
     @Query("SELECT o FROM Order o JOIN FETCH o.store WHERE o.id = :orderId")
-    Optional<Order> findByIdWithStoreForUpdate(Long orderId);
+    Optional<Order> findByIdWithStoreForUpdate(@Param(value = "orderId") Long orderId);
 
     default Order findByIdWithStoreForUpdateOrElseThrow(Long orderId) {
         return findByIdWithStoreForUpdate(orderId)
@@ -49,7 +49,7 @@ public interface OrderRepository extends BaseRepository<Order, Long> {
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     @QueryHints(@QueryHint(name = "jakarta.persistence.lock.timeout", value = "5000"))
     @Query("SELECT o FROM Order o WHERE o.id = :orderId")
-    Optional<Order> findByIdForUpdate(long orderId);
+    Optional<Order> findByIdForUpdate(@Param(value = "orderId") long orderId);
 
     default Order findByIdForUpdateOrElseThrow(Long orderId) {
         return findByIdForUpdate(orderId)
