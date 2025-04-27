@@ -60,14 +60,11 @@ public class OrderService {
                 .map(OrderCreateRequestDto.MenuOrderDto::menuId)
                 .toList();
 
-        List<Menu> menus = menuRepository.findAllByIdInAndIsDeletedFalse(menuIds);
+        List<Menu> menus = menuRepository.findAllByIdInAndNotDeleted(menuIds);
         checkIsAllNotDeleted(menuIds.size(),menus.size());
 
-        // long storeId = menus.get(0).getStoreId();
-        long storeId = 1L;
-
-        checkIsAllSameStore(menus, storeId);
-        Store store = storeRepository.findByIdOrElseThrow(storeId);
+        Store store = menus.get(0).getStore();
+        checkIsAllSameStore(menus, store.getId());
 
         LocalTime now = now();
         checkStoreIsWorking(now,store);
@@ -132,7 +129,7 @@ public class OrderService {
 
     private void checkIsAllSameStore(List<Menu> menus,long storeId) {
         boolean allSameStore = menus.stream()
-                .allMatch(menu -> menu.getStoreId()==(storeId));
+                .allMatch(menu -> menu.getStore().getId()==(storeId));
         if (!allSameStore) {
             throw new BusinessException(ResultCode.CONTAIN_DIFFERENT_STORE_MENU);
         }

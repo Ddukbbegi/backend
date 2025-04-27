@@ -81,6 +81,7 @@ class OrderServiceTest {
                 .weekdayWorkingStartTime(LocalTime.of(0, 0))
                 .weekdayWorkingEndTime(LocalTime.of(23, 59))
                 .build();
+        ReflectionTestUtils.setField(store,"id",1L);
     }
 
     @Test
@@ -95,8 +96,8 @@ class OrderServiceTest {
                 REQUEST_COMMENT
         );
 
-        Menu menu1 = Menu.builder().name("짜장면").price(7000).isOption(false).storeId(1L).build();
-        Menu menu2 = Menu.builder().name("짬뽕").price(8000).isOption(false).storeId(1L).build();
+        Menu menu1 = Menu.builder().name("짜장면").price(7000).isOption(false).store(store).build();
+        Menu menu2 = Menu.builder().name("짬뽕").price(8000).isOption(false).store(store).build();
 
         ReflectionTestUtils.setField(menu1,"id",1L);
         ReflectionTestUtils.setField(menu2,"id",2L);
@@ -129,7 +130,7 @@ class OrderServiceTest {
                 REQUEST_COMMENT
         );
 
-        Menu menu1 = Menu.builder().name("짜장면").price(7000).isOption(false).storeId(1L).build();
+        Menu menu1 = Menu.builder().name("짜장면").price(7000).isOption(false).store(store).build();
         ReflectionTestUtils.setField(menu1,"id",1L);
         menu1.delete();
 
@@ -153,8 +154,12 @@ class OrderServiceTest {
                 REQUEST_COMMENT
         );
 
-        Menu menu1 = Menu.builder().name("짜장면").price(7000).isOption(false).storeId(1L).build();
-        Menu menu2 = Menu.builder().name("피자").price(15000).isOption(false).storeId(2L).build();
+        Store anotherStore = Store.builder()
+                .build();
+        ReflectionTestUtils.setField(anotherStore,"id",2L);
+
+        Menu menu1 = Menu.builder().name("짜장면").price(7000).isOption(false).store(store).build();
+        Menu menu2 = Menu.builder().name("피자").price(15000).isOption(false).store(anotherStore).build();
 
         given(userRepository.findByIdOrElseThrow(1L)).willReturn(user);
         given(menuRepository.findAllByIdInAndIsDeletedFalse(anyList())).willReturn(List.of(menu1, menu2));
@@ -173,7 +178,7 @@ class OrderServiceTest {
                 REQUEST_COMMENT
         );
 
-        Menu menu = Menu.builder().name("미니샐러드").price(1000).isOption(false).storeId(1L).build();
+        Menu menu = Menu.builder().name("미니샐러드").price(1000).isOption(false).store(store).build();
         ReflectionTestUtils.setField(menu,"id",1L);
 
         given(userRepository.findByIdOrElseThrow(1L)).willReturn(user);
@@ -195,7 +200,7 @@ class OrderServiceTest {
                 REQUEST_COMMENT
         );
 
-        Menu menu = Menu.builder().name("라면").price(6000).isOption(false).storeId(1L).build();
+        Menu menu = Menu.builder().name("라면").price(6000).isOption(false).store(store).build();
         ReflectionTestUtils.setField(menu,"id",1L);
 
         Store closedStore = Store.builder()
