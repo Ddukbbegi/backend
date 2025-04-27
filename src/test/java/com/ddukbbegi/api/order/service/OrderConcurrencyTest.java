@@ -4,6 +4,8 @@ import com.ddukbbegi.api.menu.entity.Menu;
 import com.ddukbbegi.api.menu.enums.MenuStatus;
 import com.ddukbbegi.api.menu.repository.MenuRepository;
 import com.ddukbbegi.api.order.dto.request.OrderCreateRequestDto;
+import com.ddukbbegi.api.order.entity.Order;
+import com.ddukbbegi.api.order.enums.OrderStatus;
 import com.ddukbbegi.api.order.repository.OrderRepository;
 import com.ddukbbegi.api.store.entity.Store;
 import com.ddukbbegi.api.store.enums.StoreCategory;
@@ -24,6 +26,7 @@ import java.util.UUID;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
@@ -55,6 +58,10 @@ public class OrderConcurrencyTest {
     private String uuid;
 
     private Menu menu;
+
+    private Order order;
+
+    private AtomicInteger count;
 
     private int threadCount;
 
@@ -89,9 +96,14 @@ public class OrderConcurrencyTest {
 
         uuid = UUID.randomUUID().toString();
 
+        order = Order.builder().user(user).store(store).requestId(UUID.randomUUID().toString()).build();
+        orderRepository.save(order);
+
         threadCount = 100;
         executorService = Executors.newFixedThreadPool(threadCount);
         latch = new CountDownLatch(threadCount);
+
+        count = new AtomicInteger(0);
     }
 
 
@@ -123,7 +135,43 @@ public class OrderConcurrencyTest {
 
         //then
         long reservationCount = orderRepository.count();
-        assertThat(reservationCount).isEqualTo(1);
+        assertThat(reservationCount).isEqualTo(2);
     }
 
+    @Test
+    @DisplayName("동시에 주문 상태 변경 시 하나만 성공한다.")
+    void changeOrderStatus_concurrencyIssue() throws InterruptedException {
+        // when
+        for (int i = 0; i < threadCount/2; i++) {
+            executorService.execute(() -> {
+                try {
+                    orderService.cancelOrder(order.getId(), user.getId());
+                    count.incrementAndGet();
+                    System.out.println("주문 취소 성공");
+                } catch (Exception e) {
+                    System.err.println("주문 취소 실패: " + e.getMessage());
+                } finally {
+                    latch.countDown();
+                }
+            });
+        }
+
+        for (int i = 0; i < threadCount/2; i++) {
+            executorService.execute(() -> {
+                try {
+                    orderService.updateOrderStatus(order.getId(), OrderStatus.ACCEPTED, owner.getId());
+                    count.incrementAndGet();
+                    System.out.println("주문 상태 변경 성공");
+                } catch (Exception e) {
+                    System.err.println("주문 상태 변경 실패: " + e.getMessage());
+                } finally {
+                    latch.countDown();
+                }
+            });
+        }
+        latch.await();
+
+        // then
+        assertThat(count.get()).isEqualTo(1);
+    }
 }
