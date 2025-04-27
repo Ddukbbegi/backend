@@ -46,7 +46,6 @@ public enum ResultCode {
     ORDER_ALREADY_TERMINATED(HttpStatus.BAD_REQUEST,"E208" ,"이미 종료된 주문입니다." ),
     STORE_OWNER_MISMATCH(HttpStatus.BAD_REQUEST, "E209", "본인 가게의 주문이 아닙니다."),
     ORDER_NOT_FOUND(HttpStatus.BAD_REQUEST,"E210", "존재하지 않는 주문입니다.");
-    UNDER_MIN_DELIVERY_PRICE(HttpStatus.BAD_REQUEST, "E204", "최소 주문 금액이 충족되지 않았습니다.");
 
     private final HttpStatus status;
     private final String code;
