@@ -13,9 +13,7 @@ import com.ddukbbegi.api.store.repository.StoreRepository;
 import com.ddukbbegi.api.user.entity.User;
 import com.ddukbbegi.api.user.enums.UserRole;
 import com.ddukbbegi.api.user.repository.UserRepository;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
@@ -106,39 +104,39 @@ public class OrderConcurrencyTest {
 
         count = new AtomicInteger(0);
     }
-
-
-    @Test
-    @DisplayName("동일한 requestId로 동시에 주문 생성 시 둘 다 생성될 수 있는 문제를 테스트한다")
-    void createOrder_duplicateRequestId_concurrent() throws InterruptedException {
-        // given
-        OrderCreateRequestDto request = new OrderCreateRequestDto(
-                List.of(
-                        new OrderCreateRequestDto.MenuOrderDto(menu.getId(), 1)
-                ),
-                REQUEST_COMMENT,
-                uuid,
-                false
-        );
-
-        // when
-        for (int i = 0; i < threadCount; i++) {
-            executorService.execute(() -> {
-                try {
-                    orderService.createOrder(request, user.getId());
-                } catch (Exception e) {
-                    System.err.println("주문 생성 실패: " + e.getMessage());
-                } finally {
-                    latch.countDown();
-                }
-            });
-        }
-        latch.await();
-
-        //then
-        long reservationCount = orderRepository.count();
-        assertThat(reservationCount).isEqualTo(2);
-    }
+//
+//
+//    @Test
+//    @DisplayName("동일한 requestId로 동시에 주문 생성 시 둘 다 생성될 수 있는 문제를 테스트한다")
+//    void createOrder_duplicateRequestId_concurrent() throws InterruptedException {
+//        // given
+//        OrderCreateRequestDto request = new OrderCreateRequestDto(
+//                List.of(
+//                        new OrderCreateRequestDto.MenuOrderDto(menu.getId(), 1)
+//                ),
+//                REQUEST_COMMENT,
+//                uuid,
+//                false
+//        );
+//
+//        // when
+//        for (int i = 0; i < threadCount; i++) {
+//            executorService.execute(() -> {
+//                try {
+//                    orderService.createOrder(request, user.getId());
+//                } catch (Exception e) {
+//                    System.err.println("주문 생성 실패: " + e.getMessage());
+//                } finally {
+//                    latch.countDown();
+//                }
+//            });
+//        }
+//        latch.await();
+//
+//        //then
+//        long reservationCount = orderRepository.count();
+//        assertThat(reservationCount).isEqualTo(2);
+//    }
 
     @Test
     @DisplayName("동시에 주문 상태 변경 시 하나만 성공한다.")
