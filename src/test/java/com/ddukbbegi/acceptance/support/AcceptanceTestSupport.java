@@ -2,9 +2,12 @@ package com.ddukbbegi.acceptance.support;
 
 import com.ddukbbegi.api.auth.dto.request.LoginRequestDto;
 import com.ddukbbegi.api.auth.dto.request.SignupRequestDto;
+import com.ddukbbegi.api.menu.dto.request.NewMenuRequestDto;
+import com.ddukbbegi.api.menu.repository.MenuRepository;
 import com.ddukbbegi.api.store.repository.StoreRepository;
 import com.ddukbbegi.api.user.enums.UserRole;
 import com.ddukbbegi.api.user.repository.UserRepository;
+import com.ddukbbegi.support.fixture.MenuFixture;
 import com.ddukbbegi.support.fixture.StoreFixture;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
@@ -13,26 +16,23 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.transaction.annotation.Transactional;
 
 import static io.restassured.RestAssured.given;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("test")
-@Transactional
 public abstract class AcceptanceTestSupport {//extends TestContainersConfig {
 
-    @Autowired
-    protected StoreRepository storeRepository;
-
-    @Autowired
-    protected UserRepository userRepository;
+    @Autowired protected UserRepository userRepository;
+    @Autowired protected StoreRepository storeRepository;
+    @Autowired protected MenuRepository menuRepository;
 
     @LocalServerPort
     protected int port;
 
     @BeforeEach
-    void deleteAll() {
+    void cleanUp() {
+        menuRepository.deleteAll();
         storeRepository.deleteAll();
         userRepository.deleteAll();
     }
@@ -81,6 +81,20 @@ public abstract class AcceptanceTestSupport {//extends TestContainersConfig {
                 .extract()
                 .jsonPath()
                 .getLong("data.storeId");
+    }
+
+    protected Long 사장_메뉴등록(String accessToken, Long storeId, String menuName) {
+        return given()
+                .header("Authorization", accessToken)
+                .contentType(ContentType.JSON)
+                .body(MenuFixture.createNewMenuRequestDto(menuName))
+            .when()
+                .post("/api/owner/stores/{storeId}/menus", storeId)
+            .then()
+                .statusCode(200)
+                .extract()
+                .jsonPath()
+                .getLong("data");
     }
 
 }
