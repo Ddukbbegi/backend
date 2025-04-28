@@ -1,0 +1,11 @@
+spring:
+    datasource:
+        driver-class-name: com.mysql.cj.jdbc.Driver
+    jpa:
+        hibernate:
+            ddl-auto: create
+        show-sql: true
+        
+jwt:
+    secret:
+        key: ry0zFKeOas8RVd8CmmmDytMCgj4Xp7Qm8kVOh2SmV+k=
