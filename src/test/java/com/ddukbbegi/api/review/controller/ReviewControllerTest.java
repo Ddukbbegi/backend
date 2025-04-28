@@ -1,12 +1,10 @@
 package com.ddukbbegi.api.review.controller;
 
-import com.ddukbbegi.api.common.dto.PageResponseDto;
 import com.ddukbbegi.api.review.dto.*;
 import com.ddukbbegi.api.review.service.ReviewService;
 import com.ddukbbegi.api.user.enums.UserRole;
-import com.ddukbbegi.common.auth.CustomUserDetails;
-import com.ddukbbegi.common.auth.JwtUtil;
-import com.fasterxml.jackson.core.JsonProcessingException;
+import com.ddukbbegi.api.user.entity.CustomUserDetails;
+import com.ddukbbegi.common.jwt.JwtUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -24,7 +22,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;

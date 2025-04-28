@@ -2,7 +2,6 @@ package com.ddukbbegi.api.auth.service;
 
 import com.ddukbbegi.api.auth.dto.request.LoginRequestDto;
 import com.ddukbbegi.api.auth.dto.request.SignupRequestDto;
-import com.ddukbbegi.api.auth.dto.request.UpdatePasswordRequestDto;
 import com.ddukbbegi.api.auth.dto.response.LoginResponseDto;
 import com.ddukbbegi.api.auth.dto.response.ReissueResponseDto;
 import com.ddukbbegi.api.auth.dto.response.SignupResponseDto;

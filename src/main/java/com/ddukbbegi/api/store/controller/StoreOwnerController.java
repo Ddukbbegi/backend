@@ -6,7 +6,7 @@ import com.ddukbbegi.api.store.dto.response.OwnerStoreResponseDto;
 import com.ddukbbegi.api.store.dto.response.StoreIdResponseDto;
 import com.ddukbbegi.api.store.dto.response.StoreRegisterAvailableResponseDto;
 import com.ddukbbegi.api.store.service.StoreService;
-import com.ddukbbegi.common.auth.CustomUserDetails;
+import com.ddukbbegi.api.user.entity.CustomUserDetails;
 import com.ddukbbegi.common.component.BaseResponse;
 import com.ddukbbegi.common.component.ResultCode;
 import jakarta.validation.Valid;

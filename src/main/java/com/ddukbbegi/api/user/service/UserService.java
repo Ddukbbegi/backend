@@ -1,10 +1,8 @@
 package com.ddukbbegi.api.user.service;
 
-import com.ddukbbegi.api.auth.dto.request.SignupRequestDto;
-import com.ddukbbegi.api.auth.dto.request.UpdatePasswordRequestDto;
+import com.ddukbbegi.api.user.dto.request.UpdatePasswordRequestDto;
 import com.ddukbbegi.api.user.dto.request.*;
 import com.ddukbbegi.api.user.dto.response.MyInfoResponseDto;
-import com.ddukbbegi.api.auth.dto.response.SignupResponseDto;
 import com.ddukbbegi.api.user.dto.response.UserInfoResponseDto;
 
 public interface UserService {
@@ -52,12 +50,12 @@ public interface UserService {
      * @param userId
      * @param requestDto
      */
-    void deleteUser(Long userId, DeleteUserRequestDto requestDto);
+    void updatePassword(Long userId, UpdatePasswordRequestDto requestDto);
 
     /**
      * 로그인 중인 회원의 탈퇴
      * @param userId
      * @param requestDto
      */
-    void updatePassword(Long userId, UpdatePasswordRequestDto requestDto);
+    void deleteUser(Long userId, DeleteUserRequestDto requestDto, String accessToken);
 }

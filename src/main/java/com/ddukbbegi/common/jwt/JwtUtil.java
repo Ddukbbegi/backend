@@ -1,4 +1,4 @@
-package com.ddukbbegi.common.auth;
+package com.ddukbbegi.common.jwt;
 
 import com.ddukbbegi.api.user.enums.UserRole;
 import com.ddukbbegi.api.user.repository.UserRepository;

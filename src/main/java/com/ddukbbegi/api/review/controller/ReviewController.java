@@ -4,7 +4,7 @@ package com.ddukbbegi.api.review.controller;
 import com.ddukbbegi.api.common.dto.PageResponseDto;
 import com.ddukbbegi.api.review.dto.*;
 import com.ddukbbegi.api.review.service.ReviewService;
-import com.ddukbbegi.common.auth.CustomUserDetails;
+import com.ddukbbegi.api.user.entity.CustomUserDetails;
 import com.ddukbbegi.common.component.BaseResponse;
 import com.ddukbbegi.common.component.ResultCode;
 import jakarta.validation.Valid;

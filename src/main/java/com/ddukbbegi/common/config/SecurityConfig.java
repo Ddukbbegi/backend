@@ -1,6 +1,9 @@
-package com.ddukbbegi.common.auth;
+package com.ddukbbegi.common.config;
 
 import com.ddukbbegi.api.user.service.CustomOAuth2UserService;
+import com.ddukbbegi.api.user.service.CustomUserDetailsService;
+import com.ddukbbegi.common.jwt.JwtFilter;
+import com.ddukbbegi.common.oauth.OAuth2AuthenticationSuccessHandler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
