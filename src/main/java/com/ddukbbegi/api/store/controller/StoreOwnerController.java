@@ -9,6 +9,7 @@ import com.ddukbbegi.api.store.service.StoreService;
 import com.ddukbbegi.api.user.entity.CustomUserDetails;
 import com.ddukbbegi.common.component.BaseResponse;
 import com.ddukbbegi.common.component.ResultCode;
+import com.ddukbbegi.common.config.aop.Owner;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -23,6 +24,7 @@ public class StoreOwnerController {
 
     private final StoreService storeService;
 
+    @Owner
     @PostMapping
     public BaseResponse<StoreIdResponseDto> registerStore(@RequestBody @Valid StoreRegisterRequestDto dto,
                                                           @AuthenticationPrincipal CustomUserDetails customUserDetails) {
