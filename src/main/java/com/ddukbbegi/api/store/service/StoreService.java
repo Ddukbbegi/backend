@@ -93,7 +93,7 @@ public class StoreService {
         RequestStoreBasicInfo basicInfoDto = dto.basicInfoDto();
         store.updateBasicInfo(
                 basicInfoDto.name(),
-                basicInfoDto.getCategory(),
+                basicInfoDto.toCategory(),
                 basicInfoDto.phoneNumber(),
                 basicInfoDto.description()
         );
