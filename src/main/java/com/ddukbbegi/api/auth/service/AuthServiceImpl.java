@@ -56,6 +56,7 @@ public class AuthServiceImpl implements AuthService {
         return SignupResponseDto.fromEntity(user.getId());
     }
 
+    @Transactional
     @Override
     public LoginResponseDto login(LoginRequestDto requestDto) {
 
@@ -83,10 +84,10 @@ public class AuthServiceImpl implements AuthService {
         return LoginResponseDto.from(accessToken, refreshToken);
     }
 
-
+    @Transactional
     @Override
     public void logout(String accessToken) {
-        // 1. 이미 로그아웃된
+
         try {
             if (jwtUtil.isValidToken(accessToken)) {
                 Duration duration = Duration.between(Instant.now(), jwtUtil.getExpireDate(accessToken).toInstant());
@@ -96,12 +97,13 @@ public class AuthServiceImpl implements AuthService {
             log.warn("토큰이 유효하지 않거나, 이미 로그아웃 된 상태입니다.");
         }
 
-        // 2. DB 에 저장된  제거
         redisTemplate.delete("userId:" + jwtUtil.getUserIdFromToken(accessToken));
     }
 
+    @Transactional
     @Override
     public ReissueResponseDto reissue(String refreshToken) {
+
         if (refreshToken == null || refreshToken.isEmpty()) {
             throw new BusinessException(TOKEN_INVALID, "RefreshToken 쿠키가 없습니다.");
         }
