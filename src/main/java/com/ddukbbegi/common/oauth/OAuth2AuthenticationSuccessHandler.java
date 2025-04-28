@@ -1,8 +1,8 @@
-package com.ddukbbegi.common.auth;
+package com.ddukbbegi.common.oauth;
 
 import com.ddukbbegi.api.user.entity.CustomOAuth2User;
-import com.ddukbbegi.api.user.entity.User;
 import com.ddukbbegi.api.user.enums.UserRole;
+import com.ddukbbegi.common.jwt.JwtUtil;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -40,7 +40,6 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
         // Token 발행
         String accessToken = jwtUtil.generateAccessToken(customOAuth2User.getId(), customOAuth2User.getEmail(), UserRole.USER);
         String refreshToken = jwtUtil.generateRefreshToken(customOAuth2User.getId());
-        System.out.println(customOAuth2User.getId());
 
         // 4. RefreshToken 저장
         redisTemplate.opsForValue().set(

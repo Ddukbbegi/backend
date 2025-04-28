@@ -1,5 +1,6 @@
-package com.ddukbbegi.common.auth;
+package com.ddukbbegi.api.user.service;
 
+import com.ddukbbegi.api.user.entity.CustomUserDetails;
 import com.ddukbbegi.api.user.entity.User;
 import com.ddukbbegi.api.user.repository.UserRepository;
 import com.ddukbbegi.common.component.ResultCode;
