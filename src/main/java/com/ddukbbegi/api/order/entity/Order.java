@@ -7,10 +7,7 @@ import com.ddukbbegi.api.user.entity.User;
 import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Entity
 @Getter
@@ -50,6 +47,11 @@ public class Order extends BaseUserEntity {
         this.requestComment = requestComment;
         this.requestId = requestId;
     }
+
+    @Column(nullable = false)
+    @Setter
+    private Long totalPrice;
+
 
     public void cancel() {
         this.orderStatus = OrderStatus.CANCELED;

@@ -11,7 +11,8 @@ public record OrderCreateRequestDto(
         List<@Valid MenuOrderDto> menus,
 
         String requestComment,
-        String requestId
+        String requestId,
+        Boolean pointUsage
 
 ) {
     public record MenuOrderDto(

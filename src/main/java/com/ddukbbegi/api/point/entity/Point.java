@@ -26,7 +26,7 @@ public class Point {
     public void usagePoint(){
         this.myPoint = 0L;
     }
-    public void addPoint(Long point){
+    public void refreshPoint(Long point){
         this.myPoint += point;
     }
 

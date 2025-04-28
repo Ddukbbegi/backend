@@ -27,6 +27,6 @@ public class PointUsage extends BaseTimeEntity {
     @JoinColumn(name = "order_id")
     private Order order;
 
-    @Column(nullable = false)
+    @Column(nullable = false, name = "usage_history")
     private Long usageHistory;
 }

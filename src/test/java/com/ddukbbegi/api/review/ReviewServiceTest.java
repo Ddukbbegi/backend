@@ -66,7 +66,7 @@ public class ReviewServiceTest {
         user = new User("a@a.com", "pw", "닉", "010-1234-5678", UserRole.USER);
         owner = new User("a@a.com", "pw", "닉", "010-1234-5678", UserRole.OWNER);
         store = Store.builder().build();
-        order = new Order(user, store, "ord123");
+        order = new Order(user, store, "ord123", "1");
         dto = new ReviewRequestDto(1L, "맛있어요!", 4.0f, AnonymousStatus.NON_ANONYMOUS);
         ReflectionTestUtils.setField(user, "id", 1L);
         ReflectionTestUtils.setField(owner, "id", 2L);

@@ -1,6 +1,5 @@
 package com.ddukbbegi.api.point.controller;
 
-import com.ddukbbegi.api.point.component.PointEventListener;
 import com.ddukbbegi.api.point.service.PointService;
 import com.ddukbbegi.common.auth.CustomUserDetails;
 import com.ddukbbegi.common.component.BaseResponse;
