@@ -8,14 +8,12 @@ import com.ddukbbegi.api.review.entity.Review;
 import com.ddukbbegi.api.review.entity.ReviewLike;
 import com.ddukbbegi.api.review.repository.ReviewLikeRepository;
 import com.ddukbbegi.api.review.repository.ReviewRepository;
-import com.ddukbbegi.api.store.repository.StoreRepository;
 import com.ddukbbegi.api.user.entity.User;
 import com.ddukbbegi.api.user.repository.UserRepository;
 import com.ddukbbegi.common.component.ResultCode;
 import com.ddukbbegi.common.exception.BusinessException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,7 +29,7 @@ public class ReviewService {
     private final UserRepository userRepository;
     private final ReviewLikeRepository reviewLikeRepository;
     private final OrderRepository orderRepository;
-    private final StoreRepository storeRepository;
+
 
     public ReviewResponseDto saveReview(Long userId, ReviewRequestDto requestDto){
         Order findOrder = orderRepository.findByIdOrElseThrow(requestDto.orderId());
@@ -46,16 +44,8 @@ public class ReviewService {
     @Transactional(readOnly = true)
     public Page<ReviewResponseDto> findAllMyReviews(Long userId, Pageable pageable) {
 
-//        int total = fullList.size();
-//
-//        int start = (int) pageable.getOffset();
-//        int end = Math.min(start + pageable.getPageSize(), total);
-//        List<ReviewResponseDto> content = fullList.subList(start, end)
-//                .stream()
-//                .map(ReviewWithLikeCountDto::from)
-//                .toList();
 
-        return reviewLikeRepository.countLikesByUserId(userId, pageable);
+        return reviewRepository.findReviewsByUserId(userId, pageable);
     }
 
 
@@ -63,16 +53,8 @@ public class ReviewService {
     @Transactional(readOnly = true)
     public Page<ReviewResponseDto> findAllStoreReviews(Long storeId, Pageable pageable){
 
-//        int total = fullList.size();
-//
-//        int start = (int) pageable.getOffset();
-//        int end = Math.min(start + pageable.getPageSize(), total);
-//        List<ReviewResponseDto> content = fullList.subList(start, end)
-//                .stream()
-//                .map(ReviewWithLikeCountDto::from)
-//                .toList();
 
-        return reviewLikeRepository.countLikesByStoreId(storeId, pageable);
+        return reviewRepository.findReviewsByStoreId(storeId, pageable);
 
     }
 
@@ -136,6 +118,7 @@ public class ReviewService {
         if(!reviewLikeRepository.existsReviewLikeByUserAndReview(findUser, findReview)){
             ReviewLike reviewLike = ReviewLike.from(findReview, findUser);
             reviewLikeRepository.save(reviewLike);
+            findReview.LikeCount();
         }
     }
 
@@ -144,10 +127,19 @@ public class ReviewService {
         User findUser = userRepository.findByIdOrElseThrow(userId);
         Review findReview = reviewRepository.findReviewByIdWithUser(reviewId);
         reviewLikeRepository.findByUserAndReview(findUser, findReview)
-                .ifPresent(reviewLikeRepository::delete);
+                .ifPresent(entity -> {
+                    reviewLikeRepository.delete(entity);
+                    findReview.notLikeCount();
+                });
     }
 
+    @Transactional
+    public RatingPerStarResponseDto getStoreRating(Long storeId){
+        List<Long> list = reviewRepository.getRatingCountsByStar(storeId);
+        Float rate = reviewRepository.getAverageRatingByStoreId(storeId);
 
+        return new RatingPerStarResponseDto(storeId,rate,list);
+    }
 
 
 }

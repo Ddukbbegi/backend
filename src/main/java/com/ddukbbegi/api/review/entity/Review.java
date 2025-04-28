@@ -52,6 +52,18 @@ public class Review extends BaseUserEntity {
     @JoinColumn(name = "order_id")
     private Order order;
 
+    @Column(nullable = false)
+    private Long likeCount;
+
+
+
+    public void LikeCount(){
+        this.likeCount++;
+    }
+    public void notLikeCount(){
+        this.likeCount--;
+    }
+
     public void updateReview(ReviewUpdateRequestDto requestDto){
 
         this.contents = requestDto.contents();
@@ -80,6 +92,9 @@ public class Review extends BaseUserEntity {
     public void prePersist() {
         if (anonymousStatus == null) {
             anonymousStatus = AnonymousStatus.NON_ANONYMOUS;
+        }
+        if (this.likeCount == null) {
+            this.likeCount = 0L;
         }
     }
 
