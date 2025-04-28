@@ -2,6 +2,8 @@ package com.ddukbbegi.common.config;
 
 import com.ddukbbegi.api.user.service.CustomOAuth2UserService;
 import com.ddukbbegi.api.user.service.CustomUserDetailsService;
+import com.ddukbbegi.common.exception.CustomAccessDeniedHandler;
+import com.ddukbbegi.common.exception.CustomAuthenticationEntryPoint;
 import com.ddukbbegi.common.jwt.JwtFilter;
 import com.ddukbbegi.common.oauth.OAuth2AuthenticationSuccessHandler;
 import lombok.RequiredArgsConstructor;
@@ -17,17 +19,17 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
-
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
 public class SecurityConfig {
 
-
     private final JwtFilter jwtFilter;
     private final CustomUserDetailsService customUserDetailsService;
     private final CustomOAuth2UserService customOAuth2UserService;
     private final OAuth2AuthenticationSuccessHandler oAuth2AuthenticationSuccessHandler;
+    private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
+    private final CustomAccessDeniedHandler customAccessDeniedHandler;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -35,13 +37,19 @@ public class SecurityConfig {
                 .sessionManagement(c -> c.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(c -> c
                         .requestMatchers(
-                                "/api/auth/**"
+                                "/api/auth/**", "/api/stores/*/menus"
                         ).permitAll()
                         .requestMatchers(
                                 "/api/owner/**"
                         ).hasRole("OWNER")
-                        .requestMatchers("/api/stores/*/menus").permitAll()
+                        .requestMatchers(
+                                "/api/admin/**", "/api/owner/**"
+                        ).hasRole("ADMIN")
                         .anyRequest().authenticated()
+                )
+                .exceptionHandling(c -> c
+                        .authenticationEntryPoint(customAuthenticationEntryPoint)
+                        .accessDeniedHandler(customAccessDeniedHandler)
                 )
                 .formLogin(AbstractHttpConfigurer::disable)
                 .httpBasic(AbstractHttpConfigurer::disable)

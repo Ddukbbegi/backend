@@ -66,15 +66,13 @@ class OrderServiceTest {
 
     private final String REQUEST_COMMENT = "문 앞에 놔주세요";
 
-    private PointService pointService;
-
     @BeforeEach
     void setUp() {
         Clock fixedClock = Clock.fixed(
                 LocalDateTime.of(2024, 1, 1, 10, 0).toInstant(ZoneOffset.UTC),
                 ZoneId.systemDefault()
         );
-        orderService = new OrderService(orderRepository, userRepository, menuRepository, orderMenuRepository,reviewRepository,fixedClock, pointService);
+        orderService = new OrderService(orderRepository, userRepository, menuRepository, orderMenuRepository,reviewRepository,fixedClock);
 
         user = User.of("test@email.com", "pw", "홍길동", "010-1234-5678", UserRole.USER);
         ReflectionTestUtils.setField(user,"id",1L);
@@ -173,6 +171,7 @@ class OrderServiceTest {
                 .hasMessage(MENU_IS_DELETED.getDefaultMessage());;
     }
 
+
     @Test
     @DisplayName("서로 다른 가게의 메뉴가 섞여 있으면 예외가 발생한다")
     void createOrder_fail_dueToMixedStoreMenus() {
@@ -183,15 +182,15 @@ class OrderServiceTest {
                 ),
                 REQUEST_COMMENT,
                 uuid,
-                false
+                true
         );
 
         Store anotherStore = Store.builder()
                 .build();
         ReflectionTestUtils.setField(anotherStore,"id",2L);
 
-        Menu menu1 = Menu.builder().name("짜장면").price(7000).description("리베이스스으으으").category(Category.MAIN_MENU).status(MenuStatus.ON_SALE).store(store).build();
-        Menu menu2 = Menu.builder().name("짬뽕").price(8000).description("리베이스스으으으").category(Category.DESSERT).status(MenuStatus.ON_SALE).store(store).build();
+        Menu menu1 = Menu.builder().name("짜장면").price(7000).store(store).build();
+        Menu menu2 = Menu.builder().name("피자").price(15000).store(anotherStore).build();
 
         given(userRepository.findByIdOrElseThrow(1L)).willReturn(user);
         given(menuRepository.findAllByIdInAndStatusNot(anyList(), eq(MenuStatus.DELETED))).willReturn(List.of(menu1, menu2));

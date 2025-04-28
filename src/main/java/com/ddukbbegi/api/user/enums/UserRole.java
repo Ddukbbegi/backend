@@ -11,12 +11,12 @@ import static com.ddukbbegi.common.component.ResultCode.VALID_FAIL;
  */
 
 public enum UserRole {
-    USER, OWNER;
+    USER, OWNER, ADMIN;
 
     public static UserRole of(String role) {
         return Arrays.stream(UserRole.values())
                 .filter(r -> r.name().equalsIgnoreCase(role))
                 .findFirst()
-                .orElseThrow(() -> new BusinessException(VALID_FAIL, "[USER], [OWNER] 값만 가능합니다."));
+                .orElseThrow(() -> new BusinessException(VALID_FAIL, "[USER], [OWNER], [ADMIN] 값만 가능합니다."));
     }
 }

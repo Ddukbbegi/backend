@@ -12,6 +12,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.jpa.repository.QueryHints;
 import org.springframework.data.repository.query.Param;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 import static com.ddukbbegi.common.component.ResultCode.ORDER_NOT_FOUND;
@@ -63,4 +64,12 @@ public interface OrderRepository extends BaseRepository<Order, Long> {
         return findByIdForUpdate(orderId)
                 .orElseThrow(() -> new BusinessException(ORDER_NOT_FOUND));
     }
+
+    // 특정 날짜별로 Order 수 카운트
+    @Query("SELECT COUNT(o) FROM Order o WHERE o.createdAt = :date")
+    Long countOrdersByDate(@Param("date") LocalDateTime date);
+
+    // 한달 범위 내 Order 수 카운트
+    @Query("SELECT COUNT(o) FROM Order o WHERE o.createdAt BETWEEN :startDate AND :endDate")
+    Long countOrdersBetweenDates(@Param("startDate") LocalDateTime startDate, @Param("endDate") LocalDateTime endDate);
 }
