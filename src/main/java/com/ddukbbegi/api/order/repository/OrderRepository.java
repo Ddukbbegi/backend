@@ -66,10 +66,6 @@ public interface OrderRepository extends BaseRepository<Order, Long> {
     }
 
     // 특정 날짜별로 Order 수 카운트
-    @Query("SELECT COUNT(o) FROM Order o WHERE o.createdAt = :date")
-    Long countOrdersByDate(@Param("date") LocalDateTime date);
-
-    // 한달 범위 내 Order 수 카운트
     @Query("SELECT COUNT(o) FROM Order o WHERE o.createdAt BETWEEN :startDate AND :endDate")
-    Long countOrdersBetweenDates(@Param("startDate") LocalDateTime startDate, @Param("endDate") LocalDateTime endDate);
+    Long countOrdersByDateRange(@Param("startDate") LocalDateTime startDate, @Param("endDate") LocalDateTime endDate);
 }
