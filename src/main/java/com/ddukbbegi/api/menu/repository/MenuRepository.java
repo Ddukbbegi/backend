@@ -9,6 +9,8 @@ import org.springframework.data.repository.query.Param;
 import com.ddukbbegi.api.common.repository.BaseRepository;
 import com.ddukbbegi.api.menu.entity.Menu;
 import com.ddukbbegi.api.menu.enums.MenuStatus;
+import com.ddukbbegi.api.store.entity.Store;
+import com.ddukbbegi.api.menu.enums.MenuStatus;
 
 public interface MenuRepository extends BaseRepository<Menu, Long> {
 	@Query("SELECT m FROM Menu m WHERE m.id = :id AND m.store.id = :storeId")
