@@ -7,7 +7,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@DisplayName("Admin 인수 테스트")
+@DisplayName("인수 테스트 - Admin")
 public class AdminAcceptanceTest extends AcceptanceTestSupport {
 
     private final String email = "admin@test.com";

@@ -17,7 +17,7 @@ import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 
-@DisplayName("Store 인수 테스트")
+@DisplayName("인수 테스트 - Store")
 public class StoreAcceptanceTest extends AcceptanceTestSupport {
 
     private final String email = "owner@test.com";

@@ -17,7 +17,7 @@ import java.util.Map;
 import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
 
-@DisplayName("Menu 인수 테스트")
+@DisplayName("인수 테스트 - Menu")
 public class MenuAcceptanceTest extends AcceptanceTestSupport {
 
     @DisplayName("1. (사장) 메뉴를 등록하고 수정한다.")

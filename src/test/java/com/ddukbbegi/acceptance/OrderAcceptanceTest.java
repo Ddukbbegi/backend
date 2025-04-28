@@ -16,7 +16,7 @@ import java.util.List;
 import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
 
-@DisplayName("Order 인수 테스트")
+@DisplayName("인수 테스트 - Order")
 public class OrderAcceptanceTest extends AcceptanceTestSupport {
 
     @DisplayName("1. (사장) 메뉴 등록 후 주문 요청이 들어오면 내용을 확인하고 수락한다.")
