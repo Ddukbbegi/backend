@@ -18,7 +18,6 @@ public interface ReviewRepository extends BaseRepository<Review, Long> {
 
     Page<Review> findAllByUser(User user, Pageable pageable);
 
-
     @Query("select r from Review r join fetch r.user where r.id = :reviewId")
     Optional<Review> findByIdWithUser(@Param("reviewId") Long reviewId);
 
@@ -26,10 +25,11 @@ public interface ReviewRepository extends BaseRepository<Review, Long> {
 //        todo: 리뷰 엔티티에 주문 참조되면 주석 해제
 //        @Query("SELECT r.order.id FROM Review r WHERE r.order.id IN :orderIds")
 //        List<Long> findReviewedOrderIds(@Param("orderIds") List<Long> orderIds);
-
     @Query("SELECT r.order.id FROM Review r WHERE r.order.id IN :orderIds")
     List<Long> findReviewedOrderIds(@Param("orderIds") List<Long> orderIds);
 
+    @Query("SELECT r.order.id FROM Review r WHERE r.order.id IN :orderIds")
+    List<Long> findReviewedOrderIds(@Param("orderIds") List<Long> orderIds);
 
     default Review findReviewByIdWithUser(Long reviewId){
         return findByIdWithUser(reviewId).orElseThrow(()->new BusinessException(ResultCode.NOT_FOUND));
