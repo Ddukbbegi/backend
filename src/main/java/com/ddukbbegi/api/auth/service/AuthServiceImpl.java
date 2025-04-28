@@ -8,8 +8,7 @@ import com.ddukbbegi.api.auth.dto.response.SignupResponseDto;
 import com.ddukbbegi.api.user.entity.User;
 import com.ddukbbegi.api.user.enums.UserRole;
 import com.ddukbbegi.api.user.repository.UserRepository;
-import com.ddukbbegi.common.component.ResultCode;
-import com.ddukbbegi.common.auth.JwtUtil;
+import com.ddukbbegi.common.jwt.JwtUtil;
 import com.ddukbbegi.common.config.PasswordEncoder;
 import com.ddukbbegi.common.exception.BusinessException;
 import lombok.RequiredArgsConstructor;
@@ -57,14 +56,13 @@ public class AuthServiceImpl implements AuthService {
         return SignupResponseDto.fromEntity(user.getId());
     }
 
+    @Transactional
     @Override
     public LoginResponseDto login(LoginRequestDto requestDto) {
 
         // 1. User Email 일치, 탈퇴 여부 확인
         User findUser = userRepository.findByEmailAndIsDeletedFalse(requestDto.email())
-                .orElseThrow(() ->
-                        new BusinessException(LOGIN_FAILED)
-                );
+                .orElseThrow(() -> new BusinessException(LOGIN_FAILED));
 
         // 2. Pwd 일치 여부
         if (!passwordEncoder.matches(requestDto.password(), findUser.getPassword())) {
@@ -86,10 +84,10 @@ public class AuthServiceImpl implements AuthService {
         return LoginResponseDto.from(accessToken, refreshToken);
     }
 
-
+    @Transactional
     @Override
     public void logout(String accessToken) {
-        // 1. 이미 로그아웃된
+
         try {
             if (jwtUtil.isValidToken(accessToken)) {
                 Duration duration = Duration.between(Instant.now(), jwtUtil.getExpireDate(accessToken).toInstant());
@@ -99,12 +97,13 @@ public class AuthServiceImpl implements AuthService {
             log.warn("토큰이 유효하지 않거나, 이미 로그아웃 된 상태입니다.");
         }
 
-        // 2. DB 에 저장된  제거
         redisTemplate.delete("userId:" + jwtUtil.getUserIdFromToken(accessToken));
     }
 
+    @Transactional
     @Override
     public ReissueResponseDto reissue(String refreshToken) {
+
         if (refreshToken == null || refreshToken.isEmpty()) {
             throw new BusinessException(TOKEN_INVALID, "RefreshToken 쿠키가 없습니다.");
         }

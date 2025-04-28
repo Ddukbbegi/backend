@@ -6,7 +6,7 @@ import com.ddukbbegi.api.auth.dto.response.ReissueResponseDto;
 import com.ddukbbegi.api.auth.service.AuthService;
 import com.ddukbbegi.api.auth.dto.request.SignupRequestDto;
 import com.ddukbbegi.api.auth.dto.response.SignupResponseDto;
-import com.ddukbbegi.common.auth.JwtUtil;
+import com.ddukbbegi.common.jwt.JwtUtil;
 import com.ddukbbegi.common.component.BaseResponse;
 import com.ddukbbegi.common.component.ResultCode;
 import jakarta.servlet.http.HttpServletResponse;
@@ -86,7 +86,6 @@ public class AuthController {
      */
     @PostMapping("/reissue")
     public BaseResponse<ReissueResponseDto> reissue(@CookieValue(value = "refreshToken") String refreshToken) {
-        System.out.println(refreshToken);
         return BaseResponse.success(authService.reissue(refreshToken), ResultCode.OK);
     }
 }

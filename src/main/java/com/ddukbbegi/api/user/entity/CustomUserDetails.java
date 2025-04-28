@@ -1,7 +1,6 @@
-package com.ddukbbegi.common.auth;
+package com.ddukbbegi.api.user.entity;
 
 
-import com.ddukbbegi.api.user.enums.UserRole;
 import lombok.Getter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;

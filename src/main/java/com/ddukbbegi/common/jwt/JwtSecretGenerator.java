@@ -1,4 +1,4 @@
-package com.ddukbbegi.common.auth;
+package com.ddukbbegi.common.jwt;
 
 import io.jsonwebtoken.security.Keys;
 
