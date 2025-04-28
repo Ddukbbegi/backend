@@ -18,7 +18,9 @@ import com.ddukbbegi.api.menu.dto.request.UpdatingMenuRequestDto;
 import com.ddukbbegi.api.menu.dto.request.UpdatingMenuStatusRequestDto;
 import com.ddukbbegi.api.menu.dto.response.AllMenuResponseDto;
 import com.ddukbbegi.api.menu.service.MenuService;
-import com.ddukbbegi.common.auth.CustomUserDetails;
+import com.ddukbbegi.api.user.entity.CustomUserDetails;
+import com.ddukbbegi.common.component.BaseResponse;
+import com.ddukbbegi.common.component.ResultCode;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
