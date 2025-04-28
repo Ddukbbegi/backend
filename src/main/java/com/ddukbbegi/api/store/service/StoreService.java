@@ -39,6 +39,7 @@ public class StoreService {
         User user = userRepository.findByIdOrElseThrow(userId);
 
         Store store = dto.toEntity(user);
+        store.updateStatus(storeStatusResolveService.resolveStoreStatus(store, LocalDateTime.now()));
         Store savedStore = storeRepository.save(store);
 
         return StoreIdResponseDto.of(savedStore.getId());
@@ -144,8 +145,7 @@ public class StoreService {
         checkStoreOwnerPermission(store, userId);
 
         store.updateTemporarilyClosed(dto.status());
-        StoreStatus storeStatus = storeStatusResolveService.resolveStoreStatus(store, LocalDateTime.now());
-        store.updateStatus(storeStatus);
+        store.updateStatus(storeStatusResolveService.resolveStoreStatus(store, LocalDateTime.now()));
     }
 
     @Transactional
@@ -160,8 +160,7 @@ public class StoreService {
         }
 
         store.updatePermanentlyClosed(dto.status());
-        StoreStatus storeStatus = storeStatusResolveService.resolveStoreStatus(store, LocalDateTime.now());
-        store.updateStatus(storeStatus);
+        store.updateStatus(storeStatusResolveService.resolveStoreStatus(store, LocalDateTime.now()));
     }
 
     private void checkStoreOwnerPermission(Store store, Long userId) {

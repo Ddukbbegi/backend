@@ -15,18 +15,26 @@ import com.ddukbbegi.api.user.enums.UserRole;
 public class StoreFixture {
 
     public static Store createStore(User user) {
-        StoreRegisterRequestDto dto = new StoreRegisterRequestDto(
+        return new StoreRegisterRequestDto(
                 createBasicInfo(),
                 createOperationInfo(),
                 createOrderSettings()
-        );
-        return dto.toEntity(user);
+        ).toEntity(user);
     }
 
     public static StoreRegisterRequestDto createStoreRegisterRequestDto() {
         return new StoreRegisterRequestDto(
                 createBasicInfo(),
                 createOperationInfo(),
+                createOrderSettings()
+        );
+
+    }
+    // 연중무휴 24시간 운영하는 가게. 항상 OPEN인 상태를 유지함
+    public static StoreRegisterRequestDto create24StoreRegisterRequestDto() {
+        return new StoreRegisterRequestDto(
+                createBasicInfo(),
+                create24OperationInfo(),
                 createOrderSettings()
         );
     }
@@ -60,9 +68,19 @@ public class StoreFixture {
         );
     }
 
+    public static RequestStoreOperationInfo create24OperationInfo() {
+        return new RequestStoreOperationInfo(
+                "",
+                "00:00-00:00",
+                "00:00-00:00",
+                "00:00-00:00",
+                "00:00-00:00"
+        );
+    }
+
     public static RequestStoreOrderSettings createOrderSettings() {
         return new RequestStoreOrderSettings(
-                15000,
+                10000,
                 3000
         );
     }

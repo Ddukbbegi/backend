@@ -31,6 +31,10 @@ public class StoreStatusResolveService {
         LocalTime breakStart = isWeekend ? store.getWeekendBreakStartTime() : store.getWeekdayBreakStartTime();
         LocalTime breakEnd = isWeekend ? store.getWeekendBreakEndTime() : store.getWeekdayBreakEndTime();
 
+        // 24시간 영업 표시용
+        if (openTime.equals(closeTime)) {
+            return StoreStatus.OPEN;
+        }
 
         if (isWithin(time, breakStart, breakEnd)) {
             return StoreStatus.BREAK;

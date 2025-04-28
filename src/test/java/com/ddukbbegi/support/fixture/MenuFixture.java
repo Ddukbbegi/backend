@@ -9,7 +9,7 @@ public class MenuFixture {
     public static NewMenuRequestDto createNewMenuRequestDto(String menuName) {
         return new NewMenuRequestDto(
                 menuName,
-                1000,
+                10000,
                 "description",
                 Category.MAIN_MENU,
                 MenuStatus.ON_SALE

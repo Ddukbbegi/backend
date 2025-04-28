@@ -3,10 +3,12 @@ package com.ddukbbegi.acceptance.support;
 import com.ddukbbegi.api.auth.dto.request.LoginRequestDto;
 import com.ddukbbegi.api.auth.dto.request.SignupRequestDto;
 import com.ddukbbegi.api.menu.repository.MenuRepository;
+import com.ddukbbegi.api.order.repository.OrderRepository;
 import com.ddukbbegi.api.store.repository.StoreRepository;
 import com.ddukbbegi.api.user.enums.UserRole;
 import com.ddukbbegi.api.user.repository.UserRepository;
 import com.ddukbbegi.support.fixture.MenuFixture;
+import com.ddukbbegi.support.fixture.OrderFixture;
 import com.ddukbbegi.support.fixture.StoreFixture;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
@@ -14,10 +16,16 @@ import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.ActiveProfiles;
+
+import java.util.List;
 
 import static io.restassured.RestAssured.given;
 
+/**
+ * 인수 테스트 시 필요한 설정과 공통 메서드를 모아둔 추상 클래스
+ */
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("test")
 public abstract class AcceptanceTestSupport {//extends TestContainersConfig {
@@ -25,6 +33,9 @@ public abstract class AcceptanceTestSupport {//extends TestContainersConfig {
     @Autowired protected UserRepository userRepository;
     @Autowired protected StoreRepository storeRepository;
     @Autowired protected MenuRepository menuRepository;
+    @Autowired protected OrderRepository orderRepository;
+
+    @Autowired private JdbcTemplate jdbcTemplate;
 
     @LocalServerPort
     protected int port;
@@ -39,6 +50,11 @@ public abstract class AcceptanceTestSupport {//extends TestContainersConfig {
         ownerAccessToken = null;
         userAccessToken = null;
 
+        // 1) 조인 테이블 먼저 삭제
+        jdbcTemplate.execute("DELETE FROM orders_menus");
+
+        // 2) 엔티티 테이블 삭제 (참조 관계 역순)
+        orderRepository.deleteAll();
         menuRepository.deleteAll();
         storeRepository.deleteAll();
         userRepository.deleteAll();
@@ -95,6 +111,20 @@ public abstract class AcceptanceTestSupport {//extends TestContainersConfig {
                 .getLong("data.storeId");
     }
 
+    protected Long 사장_24시운영_가게등록() {
+        return given()
+                .header("Authorization", ownerAccessToken)
+                .contentType(ContentType.JSON)
+                .body(StoreFixture.create24StoreRegisterRequestDto())
+            .when()
+                .post("/api/owner/stores")
+            .then()
+                .statusCode(200)
+                .extract()
+                .jsonPath()
+                .getLong("data.storeId");
+    }
+
     protected Long 사장_메뉴등록(Long storeId, String menuName) {
         return given()
                 .header("Authorization", ownerAccessToken)
@@ -107,6 +137,20 @@ public abstract class AcceptanceTestSupport {//extends TestContainersConfig {
                 .extract()
                 .jsonPath()
                 .getLong("data");
+    }
+
+    protected Long 유저_주문요청(List<Long> menuIds) {
+        return given()
+                .header("Authorization", userAccessToken)
+                .contentType(ContentType.JSON)
+                .body(OrderFixture.createOrderCreateRequestDto(menuIds))
+            .when()
+                .post("/api/orders")
+            .then()
+                .statusCode(200)
+                .extract()
+                .jsonPath()
+                .getLong("data.id");
     }
 
 }

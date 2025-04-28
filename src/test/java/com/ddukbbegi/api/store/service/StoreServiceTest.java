@@ -60,6 +60,7 @@ class StoreServiceTest {
             given(storeRepository.isStoreRegistrationAvailable(userId)).willReturn(true);
             given(userRepository.findByIdOrElseThrow(userId)).willReturn(user);
             given(storeRepository.save(any(Store.class))).willReturn(store);
+            given(storeStatusResolveService.resolveStoreStatus(any(Store.class), any(LocalDateTime.class))).willReturn(StoreStatus.OPEN);
 
             // when
             StoreIdResponseDto storeIdResponseDto = storeService.registerStore(dto, userId);
