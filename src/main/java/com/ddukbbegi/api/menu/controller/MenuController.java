@@ -31,7 +31,7 @@ public class MenuController {
 	private final MenuService menuService;
 
 	// 모든 유저가 한 가게의 품절된 메뉴와 판매중인 메뉴를 확인 할 때
-	@GetMapping()
+	@GetMapping
 	public BaseResponse<List<AllMenuResponseDto>> findVisibleMenus(@PathVariable long storeId) {
 		return BaseResponse.success(menuService.findAllMenusForCustomer(storeId), ResultCode.OK);
 	}

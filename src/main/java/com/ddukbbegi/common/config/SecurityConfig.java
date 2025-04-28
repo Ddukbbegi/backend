@@ -40,6 +40,7 @@ public class SecurityConfig {
                         .requestMatchers(
                                 "/api/owner/**"
                         ).hasRole("OWNER")
+                        .requestMatchers("/api/stores/*/menus").permitAll()
                         .anyRequest().authenticated()
                 )
                 .formLogin(AbstractHttpConfigurer::disable)

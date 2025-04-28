@@ -34,9 +34,6 @@ public record NewMenuRequestDto(
 	@NotNull(message = "category는 MAIN_MENU, SIDE_MENU, DESSERT, DRINK 중 하나만 선택 가능합니다.")
 	Category category,
 
-	@NotNull(message = "옵션 여부는 true 또는 false로 입력해주세요.")
-	Boolean isOption,
-
 	@NotNull(message = "status는 ON_SALE, SOLD_OUT, DELETED 중 하나만 선택 가능합니다.")
 	MenuStatus status
 
@@ -47,7 +44,6 @@ public record NewMenuRequestDto(
 			.price(price)
 			.description(description)
 			.category(category)
-			.isOption(isOption)
 			.status(status)
 			.store(store)
 			.build();

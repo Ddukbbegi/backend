@@ -33,7 +33,7 @@ public class MenuServiceImpl implements MenuService{
 		};
 
 		return menuRepository.findAllByStoreId(storeId).stream()
-			.map(menu -> AllMenuResponseDto.toDto(menu))
+			.map(AllMenuResponseDto::toDto)
 			.collect(Collectors.toList());
 	}
 
@@ -41,7 +41,7 @@ public class MenuServiceImpl implements MenuService{
 	@Transactional(readOnly = true)
 	public List<AllMenuResponseDto> findAllMenusForCustomer(long storeId){
 		return menuRepository.findAllByStoreIdAndStatusNot(storeId, MenuStatus.DELETED).stream()
-			.map(menu -> AllMenuResponseDto.toDto(menu))
+			.map(AllMenuResponseDto::toDto)
 			.collect(Collectors.toList());
 	}
 
