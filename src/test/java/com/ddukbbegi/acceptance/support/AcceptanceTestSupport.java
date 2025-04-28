@@ -4,6 +4,7 @@ import com.ddukbbegi.api.auth.dto.request.LoginRequestDto;
 import com.ddukbbegi.api.auth.dto.request.SignupRequestDto;
 import com.ddukbbegi.api.menu.repository.MenuRepository;
 import com.ddukbbegi.api.order.repository.OrderRepository;
+import com.ddukbbegi.api.review.repository.ReviewRepository;
 import com.ddukbbegi.api.store.repository.StoreRepository;
 import com.ddukbbegi.api.user.enums.UserRole;
 import com.ddukbbegi.api.user.repository.UserRepository;
@@ -34,6 +35,7 @@ public abstract class AcceptanceTestSupport {//extends TestContainersConfig {
     @Autowired protected StoreRepository storeRepository;
     @Autowired protected MenuRepository menuRepository;
     @Autowired protected OrderRepository orderRepository;
+    @Autowired protected ReviewRepository reviewRepository;
 
     @Autowired private JdbcTemplate jdbcTemplate;
 
@@ -54,6 +56,7 @@ public abstract class AcceptanceTestSupport {//extends TestContainersConfig {
         jdbcTemplate.execute("DELETE FROM orders_menus");
 
         // 2) 엔티티 테이블 삭제 (참조 관계 역순)
+        reviewRepository.deleteAll();
         orderRepository.deleteAll();
         menuRepository.deleteAll();
         storeRepository.deleteAll();
@@ -151,6 +154,17 @@ public abstract class AcceptanceTestSupport {//extends TestContainersConfig {
                 .extract()
                 .jsonPath()
                 .getLong("data.id");
+    }
+
+    protected void 사장_주문수락(Long orderId) {
+        given()
+                .header("Authorization", ownerAccessToken)
+                .contentType(ContentType.JSON)
+                .queryParam("status", "ACCEPTED")
+                .when()
+                .patch("/api/owner/orders/{orderId}", orderId)
+                .then()
+                .statusCode(200);
     }
 
 }

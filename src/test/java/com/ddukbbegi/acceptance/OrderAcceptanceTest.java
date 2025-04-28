@@ -81,17 +81,6 @@ public class OrderAcceptanceTest extends AcceptanceTestSupport {
                 .getList("data.data", OrderHistoryOwnerResponseDto.class);
     }
 
-    private void 사장_주문수락(Long orderId) {
-        given()
-                .header("Authorization", ownerAccessToken)
-                .contentType(ContentType.JSON)
-                .queryParam("status", "ACCEPTED")
-            .when()
-                .patch("/api/owner/orders/{orderId}", orderId)
-            .then()
-                .statusCode(200);
-    }
-
     private void 유저_주문취소(Long orderId) {
         given()
                 .header("Authorization", userAccessToken)
