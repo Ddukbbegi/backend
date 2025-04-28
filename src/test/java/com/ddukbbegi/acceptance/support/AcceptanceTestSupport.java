@@ -8,6 +8,7 @@ import com.ddukbbegi.api.review.repository.ReviewRepository;
 import com.ddukbbegi.api.store.repository.StoreRepository;
 import com.ddukbbegi.api.user.enums.UserRole;
 import com.ddukbbegi.api.user.repository.UserRepository;
+import com.ddukbbegi.support.config.TestContainersConfig;
 import com.ddukbbegi.support.fixture.MenuFixture;
 import com.ddukbbegi.support.fixture.OrderFixture;
 import com.ddukbbegi.support.fixture.StoreFixture;
@@ -18,7 +19,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.test.context.ActiveProfiles;
 
 import java.util.List;
 
@@ -28,8 +28,7 @@ import static io.restassured.RestAssured.given;
  * 인수 테스트 시 필요한 설정과 공통 메서드를 모아둔 추상 클래스
  */
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@ActiveProfiles("test")
-public abstract class AcceptanceTestSupport {//extends TestContainersConfig {
+public abstract class AcceptanceTestSupport extends TestContainersConfig {
 
     @Autowired protected UserRepository userRepository;
     @Autowired protected StoreRepository storeRepository;
@@ -48,19 +47,15 @@ public abstract class AcceptanceTestSupport {//extends TestContainersConfig {
 
     @BeforeEach
     void cleanUp() {
-        adminAccessToken = null;
-        ownerAccessToken = null;
-        userAccessToken = null;
+        jdbcTemplate.execute("SET FOREIGN_KEY_CHECKS = 0");
 
-        // 1) 조인 테이블 먼저 삭제
-        jdbcTemplate.execute("DELETE FROM orders_menus");
+        // DB에 있는 모든 테이블을 동적으로 조회해서 TRUNCATE
+        jdbcTemplate.queryForList("SHOW TABLES", String.class)
+                .forEach(table -> {
+                    jdbcTemplate.execute("TRUNCATE TABLE " + table);
+                });
 
-        // 2) 엔티티 테이블 삭제 (참조 관계 역순)
-        reviewRepository.deleteAll();
-        orderRepository.deleteAll();
-        menuRepository.deleteAll();
-        storeRepository.deleteAll();
-        userRepository.deleteAll();
+        jdbcTemplate.execute("SET FOREIGN_KEY_CHECKS = 1");
     }
 
     @BeforeEach
