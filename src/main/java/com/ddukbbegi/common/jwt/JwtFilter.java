@@ -23,40 +23,13 @@ public class JwtFilter extends OncePerRequestFilter {
     private final JwtUtil jwtUtil;
     private final RedisTemplate<String, Object> redisTemplate;
 
-    // 화이트리스트에 포함될 URL 경로들
-    // 동적으로 바뀌는 경우 -> .+ 이런식 표기
-    // 비회원일 때 접근 가능한 경로 추가
-    private static final String[] DYNAMIC_WHITELIST_URLS = {
-            "/api/stores/.+/menus"
-    };
-
-    private static final List<String> WHITELIST_URLS = List.of(
-            "/oauth2/", "/login/oauth2/", "/oauth2/success"
-    );
-
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        String url = request.getRequestURI();
-
-        if (url.startsWith("/api/auth")) {
-            filterChain.doFilter(request, response);
-            return;
-        }
-
-        if (WHITELIST_URLS.stream().anyMatch(url::startsWith)) {
-            filterChain.doFilter(request, response);
-            return;
-        }
-
-        if (isDynamicWhitelisted(url)) {
-            filterChain.doFilter(request, response);
-            return;
-        }
 
         String bearerJwt = request.getHeader("Authorization");
 
         if (bearerJwt == null) {
-            sendErrorResponse(response, ResultCode.TOKEN_INVALID);
+            filterChain.doFilter(request, response);
             return;
         }
 
@@ -76,19 +49,6 @@ public class JwtFilter extends OncePerRequestFilter {
         SecurityContextHolder.getContext().setAuthentication(auth);
 
         filterChain.doFilter(request, response);
-    }
-
-    /**
-     * 동적 경로 패턴 체크
-     */
-    private boolean isDynamicWhitelisted(String url) {
-        for (String dynamicUrl : DYNAMIC_WHITELIST_URLS) {
-            Pattern pattern = Pattern.compile(dynamicUrl);
-            if (pattern.matcher(url).matches()) {
-                return true;
-            }
-        }
-        return false;
     }
 
     /**

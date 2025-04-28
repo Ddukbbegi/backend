@@ -35,7 +35,7 @@ public class SecurityConfig {
                 .sessionManagement(c -> c.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(c -> c
                         .requestMatchers(
-                                "/api/auth/**"
+                                "/api/auth/**", "/api/stores/*/menus"
                         ).permitAll()
                         .requestMatchers(
                                 "/api/owner/**"
