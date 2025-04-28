@@ -62,9 +62,7 @@ public class AuthServiceImpl implements AuthService {
 
         // 1. User Email 일치, 탈퇴 여부 확인
         User findUser = userRepository.findByEmailAndIsDeletedFalse(requestDto.email())
-                .orElseThrow(() ->
-                        new BusinessException(LOGIN_FAILED)
-                );
+                .orElseThrow(() -> new BusinessException(LOGIN_FAILED));
 
         // 2. Pwd 일치 여부
         if (!passwordEncoder.matches(requestDto.password(), findUser.getPassword())) {

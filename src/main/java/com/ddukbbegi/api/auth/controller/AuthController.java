@@ -86,7 +86,6 @@ public class AuthController {
      */
     @PostMapping("/reissue")
     public BaseResponse<ReissueResponseDto> reissue(@CookieValue(value = "refreshToken") String refreshToken) {
-        System.out.println(refreshToken);
         return BaseResponse.success(authService.reissue(refreshToken), ResultCode.OK);
     }
 }

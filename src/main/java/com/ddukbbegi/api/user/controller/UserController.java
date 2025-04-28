@@ -1,11 +1,12 @@
 package com.ddukbbegi.api.user.controller;
 
-import com.ddukbbegi.api.auth.dto.request.UpdatePasswordRequestDto;
+import com.ddukbbegi.api.user.dto.request.UpdatePasswordRequestDto;
 import com.ddukbbegi.api.user.dto.request.*;
 import com.ddukbbegi.api.user.dto.response.MyInfoResponseDto;
 import com.ddukbbegi.api.user.dto.response.UserInfoResponseDto;
 import com.ddukbbegi.api.user.service.UserService;
 import com.ddukbbegi.common.auth.CustomUserDetails;
+import com.ddukbbegi.common.auth.JwtUtil;
 import com.ddukbbegi.common.component.BaseResponse;
 import com.ddukbbegi.common.component.ResultCode;
 import jakarta.validation.Valid;
@@ -96,7 +97,7 @@ public class UserController {
      * @param requestDto
      * @return BaseResponse<Void>
      */
-    @PatchMapping("/auth/changePassword")
+    @PatchMapping("/users/changePassword")
     public BaseResponse<Void> updatePassword(@AuthenticationPrincipal CustomUserDetails userDetails,
                                              @Valid @RequestBody UpdatePasswordRequestDto requestDto) {
         userService.updatePassword(userDetails.getUserId(), requestDto);
@@ -111,9 +112,11 @@ public class UserController {
      * @return BaseResponse<Void>
      */
     @DeleteMapping("/users")
-    public BaseResponse<Void> deleteUser(@AuthenticationPrincipal CustomUserDetails userDetails,
+    public BaseResponse<Void> deleteUser(@RequestHeader("Authorization") String authorizationHeader,
+                                         @AuthenticationPrincipal CustomUserDetails userDetails,
                                          @RequestBody DeleteUserRequestDto requestDto) {
-        userService.deleteUser(userDetails.getUserId(), requestDto);
+        String accessToken = JwtUtil.extractToken(authorizationHeader);
+        userService.deleteUser(userDetails.getUserId(), requestDto, accessToken);
         return BaseResponse.success(ResultCode.NO_CONTENT);
     }
 }
