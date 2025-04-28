@@ -26,26 +26,25 @@ public class StoreAcceptanceTest extends AcceptanceTestSupport {
     @Test
     void registerStoreAndGet() {
         // given
-        String accessToken = 회원가입하고_로그인("owner1@test.com", UserRole.OWNER);
+        회원가입하고_로그인("owner11@test.com", UserRole.OWNER);
 
         // when
-        Long storeId = 사장_가게등록(accessToken);
+        Long storeId = 사장_가게등록();
 
         // then
-        사장_가게상세_조회_검증(accessToken, storeId, "맛있는김밥");
+        사장_가게상세_조회_검증(storeId, "맛있는김밥");
     }
-
 
     @DisplayName("2. (사장) 등록된 가게 기본 정보 및 상태 수정")
     @Test
     void updateStoreInfo() {
         // given
-        String accessToken = 회원가입하고_로그인("owner2@test.com", UserRole.OWNER);
-        Long storeId = 사장_가게등록(accessToken);
+        회원가입하고_로그인("owner12@test.com", UserRole.OWNER);
+        Long storeId = 사장_가게등록();
 
         // when
-        가게_기본정보_수정(accessToken, storeId);
-        가게_임시영업중지_수정(accessToken, storeId);
+        가게_기본정보_수정(storeId);
+        가게_임시영업중지_수정(storeId);
         
         // then
         Store store = storeRepository.findByIdOrElseThrow(storeId);
@@ -57,17 +56,17 @@ public class StoreAcceptanceTest extends AcceptanceTestSupport {
     @Test
     void getStoreListAndDetails() {
         // given
-        String ownerAccessToken = 회원가입하고_로그인("owner3@test.com", UserRole.OWNER);
-        사장_가게등록(ownerAccessToken);
-        사장_가게등록(ownerAccessToken);
-        사장_가게등록(ownerAccessToken);
+        회원가입하고_로그인("owner13@test.com", UserRole.OWNER);
+        사장_가게등록();
+        사장_가게등록();
+        사장_가게등록();
 
-        String userAccessToken = 회원가입하고_로그인("user@test.com", UserRole.USER);
+        회원가입하고_로그인("user@test.com", UserRole.USER);
+        List<StorePageItemResponseDto> responseDtoList = 유저_가게목록_조회("김밥");
+        Long storeId = responseDtoList.get(0).storeId();
 
         // when
-        List<StorePageItemResponseDto> responseDtoList = 고객_가게목록_조회(userAccessToken, "김밥");
-        Long storeId = responseDtoList.get(0).storeId();
-        StoreDetailResponseDto detailDto = 고객_가게상세_조회(userAccessToken, storeId);
+        StoreDetailResponseDto detailDto = 유저_가게상세_조회(storeId);
 
         // then
         assertThat(responseDtoList.size()).isEqualTo(3);
@@ -76,9 +75,9 @@ public class StoreAcceptanceTest extends AcceptanceTestSupport {
     }
 
 
-    private void 사장_가게상세_조회_검증(String accessToken, Long storeId, String expectedName) {
+    private void 사장_가게상세_조회_검증(Long storeId, String expectedName) {
         given()
-                .header("Authorization", accessToken)
+                .header("Authorization", ownerAccessToken)
             .when()
                 .get("/api/owner/stores/{storeId}", storeId)
             .then()
@@ -86,7 +85,7 @@ public class StoreAcceptanceTest extends AcceptanceTestSupport {
                 .body("data.basicInfo.name", equalTo(expectedName));
     }
 
-    private void 가게_기본정보_수정(String accessToken, Long storeId) {
+    private void 가게_기본정보_수정(Long storeId) {
         RequestStoreBasicInfo requestStoreBasicInfo = new RequestStoreBasicInfo(
                 "더 맛있는김밥",
                 "양식",
@@ -96,7 +95,7 @@ public class StoreAcceptanceTest extends AcceptanceTestSupport {
         StoreUpdateBasicInfoRequestDto dto = new StoreUpdateBasicInfoRequestDto(requestStoreBasicInfo);
 
         given()
-                .header("Authorization", accessToken)
+                .header("Authorization", ownerAccessToken)
                 .contentType(ContentType.JSON)
                 .body(dto)
             .when()
@@ -105,9 +104,9 @@ public class StoreAcceptanceTest extends AcceptanceTestSupport {
                 .statusCode(200);
     }
 
-    private void 가게_임시영업중지_수정(String accessToken, Long storeId) {
+    private void 가게_임시영업중지_수정(Long storeId) {
         given()
-                .header("Authorization", accessToken)
+                .header("Authorization", ownerAccessToken)
                 .contentType(ContentType.JSON)
                 .body(new StoreUpdateStatusRequest(true))
             .when()
@@ -116,9 +115,9 @@ public class StoreAcceptanceTest extends AcceptanceTestSupport {
                 .statusCode(200);
     }
 
-    private List<StorePageItemResponseDto> 고객_가게목록_조회(String accessToken, String name) {
+    private List<StorePageItemResponseDto> 유저_가게목록_조회(String name) {
         return given()
-                .header("Authorization", accessToken)
+                .header("Authorization", userAccessToken)
                 .queryParam("name", name)
             .when()
                 .get("/api/stores")
@@ -129,9 +128,9 @@ public class StoreAcceptanceTest extends AcceptanceTestSupport {
                 .getList("data.data", StorePageItemResponseDto.class);
     }
 
-    private StoreDetailResponseDto 고객_가게상세_조회(String accessToken, Long storeId) {
+    private StoreDetailResponseDto 유저_가게상세_조회(Long storeId) {
         return given()
-                .header("Authorization", accessToken)
+                .header("Authorization", userAccessToken)
             .when()
                 .get("/api/stores/{storeId}", storeId)
             .then()

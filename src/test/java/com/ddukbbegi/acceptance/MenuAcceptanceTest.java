@@ -24,14 +24,14 @@ public class MenuAcceptanceTest extends AcceptanceTestSupport {
     @Test
     void menu() {
         // given
-        String accessToken = 회원가입하고_로그인("owner21@test.com", UserRole.OWNER);
-        Long storeId = 사장_가게등록(accessToken);
-        Long menuId1 = 사장_메뉴등록(accessToken, storeId, "참치김밥");
-        Long menuId2 = 사장_메뉴등록(accessToken, storeId, "오이김밥");
-        List<AllMenuResponseDto> 메뉴목록 = 사장_메뉴목록조회(accessToken, storeId);
+        회원가입하고_로그인("owner21@test.com", UserRole.OWNER);
+        Long storeId = 사장_가게등록();
+        Long menuId1 = 사장_메뉴등록(storeId, "참치김밥");
+        Long menuId2 = 사장_메뉴등록(storeId, "오이김밥");
+        List<AllMenuResponseDto> 메뉴목록 = 사장_메뉴목록조회(storeId);
 
         // when
-        사장_메뉴수정(accessToken, storeId, 메뉴목록.get(0).menuId(), "치즈김밥");
+        사장_메뉴수정(storeId, 메뉴목록.get(0).menuId(), "치즈김밥");
 
         // then
         List<Menu> storeList = menuRepository.findAllByStoreId(storeId);    // 실제 DB 검증
@@ -43,26 +43,28 @@ public class MenuAcceptanceTest extends AcceptanceTestSupport {
     @Test
     void getMenusAndMenuDetail() {
         // given
-        String accessToken = 회원가입하고_로그인("owner22@test.com", UserRole.OWNER);
-        Long storeId = 사장_가게등록(accessToken);
-        Long menuId1 = 사장_메뉴등록(accessToken, storeId, "참치김밥");
-        Long menuId2 = 사장_메뉴등록(accessToken, storeId, "오이김밥");
-        Long menuId3 = 사장_메뉴등록(accessToken, storeId, "치즈김밥");
+        회원가입하고_로그인("owner22@test.com", UserRole.OWNER);
+        Long storeId = 사장_가게등록();
+        Long menuId1 = 사장_메뉴등록(storeId, "참치김밥");
+        Long menuId2 = 사장_메뉴등록(storeId, "오이김밥");
+        Long menuId3 = 사장_메뉴등록(storeId, "치즈김밥");
 
-        사장_메뉴삭제(accessToken, storeId, menuId2);
-        List<AllMenuResponseDto> menuList = 유저_메뉴목록조회(accessToken, storeId);
+        사장_메뉴삭제(storeId, menuId2);
+
+        회원가입하고_로그인("user22@test.com", UserRole.USER);
+        List<AllMenuResponseDto> menuList = 유저_메뉴목록조회(storeId);
 
         // when
-        DetailMenuResponseDto 메뉴상세 = 유저_메뉴상세조회(accessToken, storeId, menuList.get(0).menuId());
+        DetailMenuResponseDto 메뉴상세 = 유저_메뉴상세조회(storeId, menuList.get(0).menuId());
 
         // then
         assertThat(menuList.size()).isEqualTo(2);   // 삭제된 메뉴는 조회되지 않기 때문에 데이터는 2개
         assertThat(메뉴상세.name()).isEqualTo("참치김밥");
     }
 
-    private List<AllMenuResponseDto> 사장_메뉴목록조회(String accessToken, Long storeId) {
+    private List<AllMenuResponseDto> 사장_메뉴목록조회(Long storeId) {
         return given()
-                .header("Authorization", accessToken)
+                .header("Authorization", ownerAccessToken)
             .when()
                 .get("/api/owner/stores/{storeId}/menus", storeId)
             .then()
@@ -72,9 +74,9 @@ public class MenuAcceptanceTest extends AcceptanceTestSupport {
                 .getList("data", AllMenuResponseDto.class);
     }
 
-    private List<AllMenuResponseDto> 유저_메뉴목록조회(String accessToken, Long storeId) {
+    private List<AllMenuResponseDto> 유저_메뉴목록조회(Long storeId) {
         return given()
-                .header("Authorization", accessToken)
+                .header("Authorization", userAccessToken)
             .when()
                 .get("/api/stores/{storeId}/menus", storeId)
             .then()
@@ -84,9 +86,9 @@ public class MenuAcceptanceTest extends AcceptanceTestSupport {
                 .getList("data", AllMenuResponseDto.class);
     }
     
-    private DetailMenuResponseDto 유저_메뉴상세조회(String accessToken, Long storeId, Long menuId) {
+    private DetailMenuResponseDto 유저_메뉴상세조회(Long storeId, Long menuId) {
         return given()
-                .header("Authorization", accessToken)
+                .header("Authorization", userAccessToken)
             .when()
                 .get("/api/stores/{storeId}/menus/{menuId}", storeId, menuId)
             .then()
@@ -96,9 +98,9 @@ public class MenuAcceptanceTest extends AcceptanceTestSupport {
                 .getObject("data", DetailMenuResponseDto.class);
     }
 
-    private void 사장_메뉴수정(String accessToken, Long storeId, Long menuId, String menuName) {
+    private void 사장_메뉴수정(Long storeId, Long menuId, String menuName) {
         given()
-                .header("Authorization", accessToken)
+                .header("Authorization", ownerAccessToken)
                 .contentType(ContentType.JSON)
                 .body(new UpdatingMenuRequestDto(menuName,
                         2000,
@@ -110,9 +112,9 @@ public class MenuAcceptanceTest extends AcceptanceTestSupport {
                 .statusCode(200);
     }
 
-    private void 사장_메뉴삭제(String accessToken, Long storeId, Long menuId) {
+    private void 사장_메뉴삭제(Long storeId, Long menuId) {
         given()
-                .header("Authorization", accessToken)
+                .header("Authorization", ownerAccessToken)
                 .contentType(ContentType.JSON)
                 .body(Map.of("status", "DELETED"))
             .when()

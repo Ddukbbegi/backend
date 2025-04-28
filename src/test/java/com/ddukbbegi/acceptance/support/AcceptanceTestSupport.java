@@ -2,7 +2,6 @@ package com.ddukbbegi.acceptance.support;
 
 import com.ddukbbegi.api.auth.dto.request.LoginRequestDto;
 import com.ddukbbegi.api.auth.dto.request.SignupRequestDto;
-import com.ddukbbegi.api.menu.dto.request.NewMenuRequestDto;
 import com.ddukbbegi.api.menu.repository.MenuRepository;
 import com.ddukbbegi.api.store.repository.StoreRepository;
 import com.ddukbbegi.api.user.enums.UserRole;
@@ -30,8 +29,16 @@ public abstract class AcceptanceTestSupport {//extends TestContainersConfig {
     @LocalServerPort
     protected int port;
 
+    protected String adminAccessToken;
+    protected String ownerAccessToken;
+    protected String userAccessToken;
+
     @BeforeEach
     void cleanUp() {
+        adminAccessToken = null;
+        ownerAccessToken = null;
+        userAccessToken = null;
+
         menuRepository.deleteAll();
         storeRepository.deleteAll();
         userRepository.deleteAll();
@@ -42,9 +49,14 @@ public abstract class AcceptanceTestSupport {//extends TestContainersConfig {
         RestAssured.port = port;
     }
 
-    protected String 회원가입하고_로그인(String email, UserRole userRole) {
+    protected void 회원가입하고_로그인(String email, UserRole userRole) {
         회원가입(email, userRole);
-        return 로그인_및_액세스_토큰_발급(email, userRole);
+        String token = 로그인_및_액세스_토큰_발급(email, userRole);
+        switch (userRole) {
+            case ADMIN -> adminAccessToken = token;
+            case OWNER -> ownerAccessToken = token;
+            case USER -> userAccessToken = token;
+        }
     }
 
     protected void 회원가입(String email, UserRole userRole) {
@@ -69,9 +81,9 @@ public abstract class AcceptanceTestSupport {//extends TestContainersConfig {
                 .path("data.accessToken");
     }
 
-    protected Long 사장_가게등록(String accessToken) {
+    protected Long 사장_가게등록() {
         return given()
-                .header("Authorization", accessToken)
+                .header("Authorization", ownerAccessToken)
                 .contentType(ContentType.JSON)
                 .body(StoreFixture.createStoreRegisterRequestDto())
             .when()
@@ -83,9 +95,9 @@ public abstract class AcceptanceTestSupport {//extends TestContainersConfig {
                 .getLong("data.storeId");
     }
 
-    protected Long 사장_메뉴등록(String accessToken, Long storeId, String menuName) {
+    protected Long 사장_메뉴등록(Long storeId, String menuName) {
         return given()
-                .header("Authorization", accessToken)
+                .header("Authorization", ownerAccessToken)
                 .contentType(ContentType.JSON)
                 .body(MenuFixture.createNewMenuRequestDto(menuName))
             .when()
