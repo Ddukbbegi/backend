@@ -2,6 +2,7 @@ package com.ddukbbegi.api.point.service;
 
 import com.ddukbbegi.api.order.entity.Order;
 import com.ddukbbegi.api.point.dto.PointResponseDto;
+import com.ddukbbegi.api.point.dto.PointUsageResponsDto;
 import com.ddukbbegi.api.point.entity.Point;
 import com.ddukbbegi.api.point.entity.PointUsage;
 import com.ddukbbegi.api.point.repository.PointRepository;
@@ -9,6 +10,8 @@ import com.ddukbbegi.api.point.repository.PointUsageRepository;
 import com.ddukbbegi.api.user.entity.User;
 import com.ddukbbegi.api.user.repository.UserRepository;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,6 +29,13 @@ public class PointService {
 
         return pointRepository.findPointByUser_Id(userId).getMyPoint();
     }
+
+    @Transactional(readOnly = true)
+    public Page<PointUsageResponsDto> getMyPointHistory(Long userId, Pageable pageable){
+        Page<PointUsage> pointUsagesHistory = pointUsageRepository.findAllByUser_Id(userId, pageable);
+        return pointUsagesHistory.map(PointUsageResponsDto::from);
+    }
+
 
     @Transactional
     public PointResponseDto savePointWallet(Long userId){
