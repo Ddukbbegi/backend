@@ -3,6 +3,7 @@ package com.ddukbbegi.api.review.repository;
 import com.ddukbbegi.api.common.repository.BaseRepository;
 import com.ddukbbegi.api.review.dto.ReviewResponseDto;
 import com.ddukbbegi.api.review.entity.Review;
+import com.ddukbbegi.api.user.entity.User;
 import com.ddukbbegi.common.component.ResultCode;
 import com.ddukbbegi.common.exception.BusinessException;
 import org.springframework.data.domain.Page;
