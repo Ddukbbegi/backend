@@ -9,6 +9,7 @@ import com.ddukbbegi.api.order.entity.Order;
 import com.ddukbbegi.api.order.enums.OrderStatus;
 import com.ddukbbegi.api.order.repository.OrderMenuRepository;
 import com.ddukbbegi.api.order.repository.OrderRepository;
+import com.ddukbbegi.api.point.service.PointService;
 import com.ddukbbegi.api.review.repository.ReviewRepository;
 import com.ddukbbegi.api.store.entity.Store;
 import com.ddukbbegi.api.user.entity.User;
@@ -54,6 +55,9 @@ class OrderServiceTest {
     @Mock
     private ReviewRepository reviewRepository;
 
+    @Mock
+    private PointService pointService;
+
     private User user;
 
     private Store store;
@@ -70,7 +74,7 @@ class OrderServiceTest {
                 LocalDateTime.of(2024, 1, 1, 10, 0).toInstant(ZoneOffset.UTC),
                 ZoneId.systemDefault()
         );
-        orderService = new OrderService(orderRepository, userRepository, menuRepository, orderMenuRepository,reviewRepository,fixedClock);
+        orderService = new OrderService(orderRepository, userRepository, menuRepository, orderMenuRepository,reviewRepository,fixedClock, pointService);
 
         user = User.of("test@email.com", "pw", "홍길동", "010-1234-5678", UserRole.USER);
         ReflectionTestUtils.setField(user,"id",1L);
@@ -95,7 +99,8 @@ class OrderServiceTest {
                         new OrderCreateRequestDto.MenuOrderDto(2L, 1)
                 ),
                 REQUEST_COMMENT,
-                uuid
+                uuid,
+                true
         );
 
         Menu menu1 = Menu.builder().name("짜장면").price(7000).isOption(false).store(store).status(MenuStatus.ON_SALE).build();
@@ -129,7 +134,8 @@ class OrderServiceTest {
                         new OrderCreateRequestDto.MenuOrderDto(2L, 1)
                 ),
                 REQUEST_COMMENT,
-                uuid
+                uuid,
+                true
         );
 
         given(orderRepository.existsByRequestId(uuid)).willReturn(true);
@@ -150,7 +156,8 @@ class OrderServiceTest {
                         new OrderCreateRequestDto.MenuOrderDto(2L, 1)
                 ),
                 REQUEST_COMMENT,
-                uuid
+                uuid,
+                true
         );
 
         Menu menu1 = Menu.builder().name("짜장면").price(7000).isOption(false).store(store).build();
@@ -175,7 +182,8 @@ class OrderServiceTest {
                         new OrderCreateRequestDto.MenuOrderDto(2L, 1)
                 ),
                 REQUEST_COMMENT,
-                uuid
+                uuid,
+                true
         );
 
         Store anotherStore = Store.builder()
@@ -200,7 +208,8 @@ class OrderServiceTest {
         OrderCreateRequestDto request = new OrderCreateRequestDto(
                 List.of(new OrderCreateRequestDto.MenuOrderDto(1L, 1)),
                 REQUEST_COMMENT,
-                uuid
+                uuid,
+                true
         );
 
         Menu menu = Menu.builder().name("미니샐러드").price(1000).isOption(false).store(store).build();
@@ -222,7 +231,8 @@ class OrderServiceTest {
         OrderCreateRequestDto request = new OrderCreateRequestDto(
                 List.of(new OrderCreateRequestDto.MenuOrderDto(1L, 1)),
                 REQUEST_COMMENT,
-                uuid
+                uuid,
+                true
         );
 
         Store closedStore = Store.builder()

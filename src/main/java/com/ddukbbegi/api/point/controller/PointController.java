@@ -3,7 +3,7 @@ package com.ddukbbegi.api.point.controller;
 import com.ddukbbegi.api.common.dto.PageResponseDto;
 import com.ddukbbegi.api.point.dto.PointUsageResponsDto;
 import com.ddukbbegi.api.point.service.PointService;
-import com.ddukbbegi.common.auth.CustomUserDetails;
+import com.ddukbbegi.api.user.entity.CustomUserDetails;
 import com.ddukbbegi.common.component.BaseResponse;
 import com.ddukbbegi.common.component.ResultCode;
 import lombok.AllArgsConstructor;
