@@ -2,6 +2,8 @@ package com.ddukbbegi.common.config;
 
 import com.ddukbbegi.api.user.service.CustomOAuth2UserService;
 import com.ddukbbegi.api.user.service.CustomUserDetailsService;
+import com.ddukbbegi.common.exception.CustomAccessDeniedHandler;
+import com.ddukbbegi.common.exception.CustomAuthenticationEntryPoint;
 import com.ddukbbegi.common.jwt.JwtFilter;
 import com.ddukbbegi.common.oauth.OAuth2AuthenticationSuccessHandler;
 import lombok.RequiredArgsConstructor;
@@ -17,12 +19,10 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
-
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
 public class SecurityConfig {
-
 
     private final JwtFilter jwtFilter;
     private final CustomUserDetailsService customUserDetailsService;
