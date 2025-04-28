@@ -89,7 +89,7 @@ public class OrderConcurrencyTest {
                 .build();
         store = storeRepository.save(store);
 
-        menu  = Menu.builder().name("짜장면").price(15000).isOption(false).store(store).status(MenuStatus.ON_SALE).build();
+        menu  = Menu.builder().name("짜장면").price(15000).store(store).status(MenuStatus.ON_SALE).build();
         menuRepository.save(menu);
 
         uuid = UUID.randomUUID().toString();
