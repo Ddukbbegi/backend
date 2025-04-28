@@ -1,4 +1,8 @@
 package com.ddukbbegi.api.menu.entity;
+import com.ddukbbegi.api.menu.enums.Category;
+import com.ddukbbegi.api.menu.enums.MenuStatus;
+import com.ddukbbegi.api.store.entity.Store;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;

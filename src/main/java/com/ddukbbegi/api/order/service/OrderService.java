@@ -64,6 +64,7 @@ public class OrderService {
         checkIsAllNotDeleted(menuIds.size(),menus.size());
 
         Store store = menus.get(0).getStore();
+
         checkIsAllSameStore(menus, store.getId());
 
         LocalTime now = now();
