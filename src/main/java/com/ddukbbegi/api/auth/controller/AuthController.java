@@ -6,6 +6,7 @@ import com.ddukbbegi.api.auth.dto.response.ReissueResponseDto;
 import com.ddukbbegi.api.auth.service.AuthService;
 import com.ddukbbegi.api.auth.dto.request.SignupRequestDto;
 import com.ddukbbegi.api.auth.dto.response.SignupResponseDto;
+import com.ddukbbegi.api.point.service.PointService;
 import com.ddukbbegi.common.jwt.JwtUtil;
 import com.ddukbbegi.common.component.BaseResponse;
 import com.ddukbbegi.common.component.ResultCode;
@@ -24,6 +25,7 @@ public class AuthController {
 
     private final AuthService authService;
     private final JwtUtil jwtUtil;
+    private final PointService pointService;
 
     /**
      * 회원가입
@@ -34,6 +36,7 @@ public class AuthController {
     @PostMapping("/signup")
     public BaseResponse<SignupResponseDto> signup(@Valid @RequestBody SignupRequestDto requestDto) {
         SignupResponseDto signUpResponseDto = authService.signup(requestDto);
+        pointService.savePointWallet(signUpResponseDto.id());
         return BaseResponse.success(signUpResponseDto, ResultCode.CREATED);
     }
 

@@ -13,6 +13,7 @@ import com.ddukbbegi.api.order.entity.OrderMenu;
 import com.ddukbbegi.api.order.enums.OrderStatus;
 import com.ddukbbegi.api.order.repository.OrderMenuRepository;
 import com.ddukbbegi.api.order.repository.OrderRepository;
+import com.ddukbbegi.api.point.service.PointService;
 import com.ddukbbegi.api.review.repository.ReviewRepository;
 import com.ddukbbegi.api.store.entity.Store;
 import com.ddukbbegi.api.user.entity.User;
@@ -46,6 +47,7 @@ public class OrderService {
     private final ReviewRepository reviewRepository;
 
     private final Clock clock;
+    private final PointService pointService;
 
     protected LocalTime now() {
         return LocalTime.now(clock);
@@ -69,7 +71,7 @@ public class OrderService {
         LocalTime now = now();
         checkStoreIsWorking(now,store);
 
-        checkIsTotalPriceOverMinDeliveryPrice(menus,request,store.getMinDeliveryPrice());
+        int totalPrice = checkIsTotalPriceOverMinDeliveryPrice(menus,request,store.getMinDeliveryPrice());
 
         Order order = Order.builder()
                 .user(user)
@@ -77,9 +79,12 @@ public class OrderService {
                 .requestComment(request.requestComment())
                 .requestId(request.requestId())
                 .build();
-
+        order.setTotalPrice((long) totalPrice);
         Order savedOrder = orderRepository.save(order);
-
+        if(request.pointUsage()){
+           Long myPoint = pointService.usagePoint(user, order);
+           totalPrice -= myPoint;
+        }
         for (OrderCreateRequestDto.MenuOrderDto item : request.menus()) {
             Menu menu = menus.stream()
                     .filter(m -> m.getId().equals(item.menuId()))
@@ -94,7 +99,6 @@ public class OrderService {
 
             orderMenuRepository.save(orderMenu);
         }
-
         return new OrderCreateResponseDto(savedOrder.getId());
     }
 
@@ -221,8 +225,10 @@ public class OrderService {
 
         OrderStatus currentStatus = order.getOrderStatus();
         checkUpdateStatusIsAvailable(currentStatus, newStatus);
-
         order.updateStatus(newStatus);
+        if(order.getOrderStatus().equals(OrderStatus.DELIVERED)){
+            pointService.addPoint(order.getUser(), order, order.getTotalPrice());
+        }
     }
 
     private void checkUpdateStatusIsAvailable(OrderStatus currentStatus, OrderStatus newStatus) {
