@@ -44,7 +44,7 @@ public class OrderController {
     @PatchMapping("/orders/{orderId}/cancel")
     public BaseResponse<Void> cancelOrder(@AuthenticationPrincipal CustomUserDetails userDetails,
                                           @PathVariable("orderId") Long orderId) {
-        orderService.cancelOrder(userDetails.getUserId(), orderId);
+        orderService.cancelOrder(orderId,userDetails.getUserId());
         return BaseResponse.success(ResultCode.OK);
     }
 

@@ -79,6 +79,8 @@ public class OrderService {
                 .requestId(request.requestId())
                 .build();
 
+        order.setTotalPrice(10000L);
+
         Order savedOrder = orderRepository.save(order);
 
         for (OrderCreateRequestDto.MenuOrderDto item : request.menus()) {
