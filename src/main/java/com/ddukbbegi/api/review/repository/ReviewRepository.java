@@ -28,9 +28,6 @@ public interface ReviewRepository extends BaseRepository<Review, Long> {
     @Query("SELECT r.order.id FROM Review r WHERE r.order.id IN :orderIds")
     List<Long> findReviewedOrderIds(@Param("orderIds") List<Long> orderIds);
 
-    @Query("SELECT r.order.id FROM Review r WHERE r.order.id IN :orderIds")
-    List<Long> findReviewedOrderIds(@Param("orderIds") List<Long> orderIds);
-
     default Review findReviewByIdWithUser(Long reviewId){
         return findByIdWithUser(reviewId).orElseThrow(()->new BusinessException(ResultCode.NOT_FOUND));
     }
