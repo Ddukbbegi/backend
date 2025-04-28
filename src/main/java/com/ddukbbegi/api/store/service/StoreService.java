@@ -4,6 +4,7 @@ import com.ddukbbegi.api.common.dto.PageResponseDto;
 import com.ddukbbegi.api.store.dto.request.*;
 import com.ddukbbegi.api.store.dto.response.*;
 import com.ddukbbegi.api.store.entity.Store;
+import com.ddukbbegi.api.store.enums.StoreStatus;
 import com.ddukbbegi.api.store.repository.StoreRepository;
 import com.ddukbbegi.api.user.entity.User;
 import com.ddukbbegi.api.user.repository.UserRepository;
@@ -140,6 +141,9 @@ public class StoreService {
         checkStoreOwnerPermission(store, userId);
 
         store.updateTemporarilyClosed(dto.status());
+        if (dto.status()) {
+            store.updateStatus(StoreStatus.TEMPORARILY_CLOSED);
+        }
     }
 
     @Transactional
@@ -154,6 +158,9 @@ public class StoreService {
         }
 
         store.updatePermanentlyClosed(dto.status());
+        if (dto.status()) {
+            store.updateStatus(StoreStatus.PERMANENTLY_CLOSED);
+        }
     }
 
     private void checkStoreOwnerPermission(Store store, Long userId) {
