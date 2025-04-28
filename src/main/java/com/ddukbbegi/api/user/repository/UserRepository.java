@@ -7,8 +7,6 @@ import java.util.Optional;
 
 public interface UserRepository extends BaseRepository<User, Long> {
 
-
-
     boolean existsByIdAndIsDeletedTrue(Long id);
 
     boolean existsByEmail(String email);
