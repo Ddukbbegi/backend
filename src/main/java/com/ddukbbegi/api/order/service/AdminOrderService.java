@@ -24,14 +24,17 @@ public class AdminOrderService {
         LocalDateTime startDateTime = startDate.atStartOfDay();
         LocalDateTime endDateTime = endDate.atTime(23, 59, 59, 999_999_999);
 
-        Long count = orderRepository.countOrdersBetweenDates(startDateTime, endDateTime);
+        Long count = orderRepository.countOrdersByDateRange(startDateTime, endDateTime);
 
         return OrderTotalResponseDto.from(count);
     }
 
     public OrderTotalResponseDto getOrderCountByDate(String date) {
-        LocalDateTime localDateTime = LocalDate.parse(date).atStartOfDay();
-        Long count = orderRepository.countOrdersByDate(localDateTime);
+        LocalDate localDate = LocalDate.parse(date);
+        LocalDateTime startOfDay = localDate.atStartOfDay(); // 자정
+        LocalDateTime endOfDay = localDate.atTime(23, 59, 59, 999999999); // 끝 시간
+
+        Long count = orderRepository.countOrdersByDateRange(startOfDay, endOfDay);
 
         return OrderTotalResponseDto.from(count);
     }
