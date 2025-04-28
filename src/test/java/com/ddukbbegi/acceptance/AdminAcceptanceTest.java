@@ -1,8 +1,6 @@
 package com.ddukbbegi.acceptance;
 
 import com.ddukbbegi.acceptance.support.AcceptanceTestSupport;
-import com.ddukbbegi.api.order.enums.OrderStatus;
-import com.ddukbbegi.api.store.dto.response.StorePageItemResponseDto;
 import com.ddukbbegi.api.user.enums.UserRole;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -12,7 +10,6 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 import static io.restassured.RestAssured.given;
-import static org.assertj.core.api.Assertions.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("인수 테스트 - Admin")

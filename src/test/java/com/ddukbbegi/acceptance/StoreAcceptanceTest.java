@@ -5,6 +5,7 @@ import com.ddukbbegi.api.store.dto.request.*;
 import com.ddukbbegi.api.store.dto.response.StoreDetailResponseDto;
 import com.ddukbbegi.api.store.dto.response.StorePageItemResponseDto;
 import com.ddukbbegi.api.store.entity.Store;
+import com.ddukbbegi.api.store.enums.DayOfWeek;
 import com.ddukbbegi.api.store.enums.StoreStatus;
 import com.ddukbbegi.api.user.enums.UserRole;
 import io.restassured.http.ContentType;
@@ -22,7 +23,7 @@ public class StoreAcceptanceTest extends AcceptanceTestSupport {
 
     private final String email = "owner@test.com";
 
-    @DisplayName("1. (사장) 가게 등록 후 상세 조회")
+    @DisplayName("1. (사장) 가게를 등록한 후 등록한 가게의 상세 정보를 조회한다.")
     @Test
     void registerStoreAndGet() {
         // given
@@ -33,9 +34,13 @@ public class StoreAcceptanceTest extends AcceptanceTestSupport {
 
         // then
         사장_가게상세_조회_검증(storeId, "맛있는김밥");
+
+        Store store = storeRepository.findByIdOrElseThrow(storeId);
+        assertThat(store.getName()).isEqualTo("맛있는김밥");
+        assertThat(store.getClosedDays()).isEqualTo(List.of(DayOfWeek.MON, DayOfWeek.SUN));
     }
 
-    @DisplayName("2. (사장) 등록된 가게 기본 정보 및 상태 수정")
+    @DisplayName("2. (사장) 등록된 가게 기본 정보와 영업 상태 수정를 수정한다.")
     @Test
     void updateStoreInfo() {
         // given
@@ -52,7 +57,7 @@ public class StoreAcceptanceTest extends AcceptanceTestSupport {
         assertThat(store.getStatus()).isEqualTo(StoreStatus.TEMPORARILY_CLOSED);
     }
 
-    @DisplayName("3. (유저) 가게 목록 조회 및 가게 상세 정보 조회")
+    @DisplayName("3. (유저) 키워드로 가게를 검색하고 원하는 가게의 상세 정보를 조회한다.")
     @Test
     void getStoreListAndDetails() {
         // given
