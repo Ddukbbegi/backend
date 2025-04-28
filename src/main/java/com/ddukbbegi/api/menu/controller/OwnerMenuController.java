@@ -3,7 +3,6 @@ package com.ddukbbegi.api.menu.controller;
 import java.util.List;
 
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -18,7 +17,7 @@ import com.ddukbbegi.api.menu.dto.request.UpdatingMenuRequestDto;
 import com.ddukbbegi.api.menu.dto.request.UpdatingMenuStatusRequestDto;
 import com.ddukbbegi.api.menu.dto.response.AllMenuResponseDto;
 import com.ddukbbegi.api.menu.service.MenuService;
-import com.ddukbbegi.common.auth.CustomUserDetails;
+import com.ddukbbegi.api.user.entity.CustomUserDetails;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;

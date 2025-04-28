@@ -7,7 +7,7 @@ import com.ddukbbegi.api.order.dto.response.OrderHistoryOwnerResponseDto;
 import com.ddukbbegi.api.order.dto.response.OrderHistoryUserResponseDto;
 import com.ddukbbegi.api.order.enums.OrderStatus;
 import com.ddukbbegi.api.order.service.OrderService;
-import com.ddukbbegi.common.auth.CustomUserDetails;
+import com.ddukbbegi.api.user.entity.CustomUserDetails;
 import com.ddukbbegi.common.component.BaseResponse;
 import com.ddukbbegi.common.component.ResultCode;
 import lombok.RequiredArgsConstructor;

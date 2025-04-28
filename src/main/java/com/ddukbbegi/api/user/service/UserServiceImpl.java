@@ -6,7 +6,7 @@ import com.ddukbbegi.api.user.dto.response.MyInfoResponseDto;
 import com.ddukbbegi.api.user.dto.response.UserInfoResponseDto;
 import com.ddukbbegi.api.user.entity.User;
 import com.ddukbbegi.api.user.repository.UserRepository;
-import com.ddukbbegi.common.auth.JwtUtil;
+import com.ddukbbegi.common.jwt.JwtUtil;
 import com.ddukbbegi.common.config.PasswordEncoder;
 import com.ddukbbegi.common.exception.BusinessException;
 import lombok.RequiredArgsConstructor;
