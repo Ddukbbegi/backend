@@ -1,6 +1,7 @@
 package com.ddukbbegi.api.order.service;
 
 import com.ddukbbegi.api.menu.entity.Menu;
+import com.ddukbbegi.api.menu.enums.Category;
 import com.ddukbbegi.api.menu.enums.MenuStatus;
 import com.ddukbbegi.api.menu.repository.MenuRepository;
 import com.ddukbbegi.api.order.dto.request.OrderCreateRequestDto;
@@ -55,9 +56,6 @@ class OrderServiceTest {
     @Mock
     private ReviewRepository reviewRepository;
 
-    @Mock
-    private PointService pointService;
-
     private User user;
 
     private Store store;
@@ -67,6 +65,8 @@ class OrderServiceTest {
     private OrderService orderService;
 
     private final String REQUEST_COMMENT = "문 앞에 놔주세요";
+
+    private PointService pointService;
 
     @BeforeEach
     void setUp() {
@@ -100,11 +100,11 @@ class OrderServiceTest {
                 ),
                 REQUEST_COMMENT,
                 uuid,
-                true
+                false
         );
 
-        Menu menu1 = Menu.builder().name("짜장면").price(7000).isOption(false).store(store).status(MenuStatus.ON_SALE).build();
-        Menu menu2 = Menu.builder().name("짬뽕").price(8000).isOption(false).store(store).status(MenuStatus.ON_SALE).build();
+        Menu menu1 = Menu.builder().name("짜장면").price(7000).description("리베이스스으으으").category(Category.MAIN_MENU).status(MenuStatus.ON_SALE).store(store).build();
+        Menu menu2 = Menu.builder().name("짬뽕").price(8000).description("리베이스스으으으").category(Category.DESSERT).status(MenuStatus.ON_SALE).store(store).build();
 
         ReflectionTestUtils.setField(menu1,"id",1L);
         ReflectionTestUtils.setField(menu2,"id",2L);
@@ -135,7 +135,7 @@ class OrderServiceTest {
                 ),
                 REQUEST_COMMENT,
                 uuid,
-                true
+                false
         );
 
         given(orderRepository.existsByRequestId(uuid)).willReturn(true);
@@ -157,12 +157,12 @@ class OrderServiceTest {
                 ),
                 REQUEST_COMMENT,
                 uuid,
-                true
+                false
         );
 
-        Menu menu1 = Menu.builder().name("짜장면").price(7000).isOption(false).store(store).build();
+        Menu menu1 = Menu.builder().name("짜장면").price(7000).description("리베이스스으으으").category(Category.MAIN_MENU).status(MenuStatus.ON_SALE).store(store).build();
         ReflectionTestUtils.setField(menu1,"id",1L);
-        menu1.delete();
+        menu1.getStatus();
 
         given(userRepository.findByIdOrElseThrow(1L)).willReturn(user);
         given(menuRepository.findAllByIdInAndStatusNot(anyList(), eq(MenuStatus.DELETED))).willReturn(List.of());
@@ -183,15 +183,15 @@ class OrderServiceTest {
                 ),
                 REQUEST_COMMENT,
                 uuid,
-                true
+                false
         );
 
         Store anotherStore = Store.builder()
                 .build();
         ReflectionTestUtils.setField(anotherStore,"id",2L);
 
-        Menu menu1 = Menu.builder().name("짜장면").price(7000).isOption(false).store(store).build();
-        Menu menu2 = Menu.builder().name("피자").price(15000).isOption(false).store(anotherStore).build();
+        Menu menu1 = Menu.builder().name("짜장면").price(7000).description("리베이스스으으으").category(Category.MAIN_MENU).status(MenuStatus.ON_SALE).store(store).build();
+        Menu menu2 = Menu.builder().name("짬뽕").price(8000).description("리베이스스으으으").category(Category.DESSERT).status(MenuStatus.ON_SALE).store(store).build();
 
         given(userRepository.findByIdOrElseThrow(1L)).willReturn(user);
         given(menuRepository.findAllByIdInAndStatusNot(anyList(), eq(MenuStatus.DELETED))).willReturn(List.of(menu1, menu2));
@@ -209,10 +209,10 @@ class OrderServiceTest {
                 List.of(new OrderCreateRequestDto.MenuOrderDto(1L, 1)),
                 REQUEST_COMMENT,
                 uuid,
-                true
+                false
         );
 
-        Menu menu = Menu.builder().name("미니샐러드").price(1000).isOption(false).store(store).build();
+        Menu menu = Menu.builder().name("짜장면").price(7000).description("리베이스스으으으").category(Category.MAIN_MENU).status(MenuStatus.ON_SALE).store(store).build();
         ReflectionTestUtils.setField(menu,"id",1L);
 
         given(userRepository.findByIdOrElseThrow(1L)).willReturn(user);
@@ -232,7 +232,7 @@ class OrderServiceTest {
                 List.of(new OrderCreateRequestDto.MenuOrderDto(1L, 1)),
                 REQUEST_COMMENT,
                 uuid,
-                true
+            false
         );
 
         Store closedStore = Store.builder()
@@ -242,7 +242,7 @@ class OrderServiceTest {
                 .build();
         ReflectionTestUtils.setField(closedStore,"id",2L);
 
-        Menu menu = Menu.builder().name("라면").price(12000).isOption(false).store(closedStore).build();
+        Menu menu = Menu.builder().name("짜장면").price(7000).description("리베이스스으으으").category(Category.MAIN_MENU).status(MenuStatus.ON_SALE).store(closedStore).build();
         ReflectionTestUtils.setField(menu,"id",1L);
 
         given(menuRepository.findAllByIdInAndStatusNot(anyList(), eq(MenuStatus.DELETED))).willReturn(List.of(menu));

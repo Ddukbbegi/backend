@@ -127,10 +127,10 @@ public class ReviewService {
         User findUser = userRepository.findByIdOrElseThrow(userId);
         Review findReview = reviewRepository.findReviewByIdWithUser(reviewId);
         reviewLikeRepository.findByUserAndReview(findUser, findReview)
-                .ifPresent(entity -> {
-                    reviewLikeRepository.delete(entity);
-                    findReview.notLikeCount();
-                });
+            .ifPresent(entity -> {
+                reviewLikeRepository.delete(entity);
+                findReview.notLikeCount();
+            });
     }
 
     @Transactional
