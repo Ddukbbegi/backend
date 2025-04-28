@@ -8,6 +8,7 @@ import java.time.DayOfWeek;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 
+// static 클래스보다는 Bean으로 관리하는게 테스트 시 편리함
 @Service
 public class StoreStatusResolveService {
 

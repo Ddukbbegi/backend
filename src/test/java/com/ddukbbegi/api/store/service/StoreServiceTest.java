@@ -23,8 +23,10 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.test.util.ReflectionTestUtils;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
+import static org.assertj.core.api.Assertions.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.*;
@@ -35,6 +37,8 @@ import static org.mockito.Mockito.mock;
 class StoreServiceTest {
 
     @InjectMocks private StoreService storeService;
+
+    @Mock private StoreStatusResolveService storeStatusResolveService;
 
     @Mock private StoreRepository storeRepository;
     @Mock private UserRepository userRepository;
@@ -62,6 +66,7 @@ class StoreServiceTest {
 
             // then
             assertThat(storeIdResponseDto.storeId()).isEqualTo(1L);
+            
         }
 
         @DisplayName("실패 - 이미 등록된 가게가 3개 이상일 경우 예외 발생")
@@ -274,6 +279,7 @@ class StoreServiceTest {
             given(storeRepository.findByIdOrElseThrow(storeId)).willReturn(store);
             given(user.getId()).willReturn(userId);
             given(storeRepository.isStoreRegistrationAvailable(userId)).willReturn(true);
+            given(storeStatusResolveService.resolveStoreStatus(any(Store.class), any(LocalDateTime.class))).willReturn(StoreStatus.OPEN);
 
             // when
             storeService.updatePermanentlyClosed(storeId, dto, userId);

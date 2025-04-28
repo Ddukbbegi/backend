@@ -16,12 +16,15 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
 public class StoreService {
+
+    private final StoreStatusResolveService storeStatusResolveService;
 
     private final StoreRepository storeRepository;
     private final UserRepository userRepository;
@@ -141,9 +144,8 @@ public class StoreService {
         checkStoreOwnerPermission(store, userId);
 
         store.updateTemporarilyClosed(dto.status());
-        if (dto.status()) {
-            store.updateStatus(StoreStatus.TEMPORARILY_CLOSED);
-        }
+        StoreStatus storeStatus = storeStatusResolveService.resolveStoreStatus(store, LocalDateTime.now());
+        store.updateStatus(storeStatus);
     }
 
     @Transactional
@@ -158,9 +160,8 @@ public class StoreService {
         }
 
         store.updatePermanentlyClosed(dto.status());
-        if (dto.status()) {
-            store.updateStatus(StoreStatus.PERMANENTLY_CLOSED);
-        }
+        StoreStatus storeStatus = storeStatusResolveService.resolveStoreStatus(store, LocalDateTime.now());
+        store.updateStatus(storeStatus);
     }
 
     private void checkStoreOwnerPermission(Store store, Long userId) {
