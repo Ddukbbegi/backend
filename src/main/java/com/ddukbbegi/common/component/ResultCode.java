@@ -46,7 +46,9 @@ public enum ResultCode {
     ORDER_STATUS_FLOW_INVALID(HttpStatus.BAD_REQUEST, "E207", "현재 주문 단계의 다음 상태로만 변경이 가능합니다."),
     ORDER_ALREADY_TERMINATED(HttpStatus.BAD_REQUEST,"E208" ,"이미 종료된 주문입니다." ),
     STORE_OWNER_MISMATCH(HttpStatus.BAD_REQUEST, "E209", "본인 가게의 주문이 아닙니다."),
-    ORDER_NOT_FOUND(HttpStatus.BAD_REQUEST,"E210", "존재하지 않는 주문입니다.");
+    ORDER_NOT_FOUND(HttpStatus.BAD_REQUEST,"E210", "존재하지 않는 주문입니다."),
+    DUPLICATE_REQUEST_ID(HttpStatus.BAD_REQUEST, "E211", "이미 요청된 주문입니다.");
+
 
     private final HttpStatus status;
     private final String code;

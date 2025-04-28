@@ -70,4 +70,7 @@ public class Menu {
 		this.category = category;
 	}
 
+	public void delete() {
+		this.status = MenuStatus.DELETED;
+	}
 }
