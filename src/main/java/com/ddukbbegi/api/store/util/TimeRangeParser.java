@@ -10,7 +10,7 @@ public class TimeRangeParser {
 
     public static Pair<LocalTime, LocalTime> parse(String range) {
 
-        if (range == null || !range.matches("^\\d{2}:\\d{2}-\\d{2}:\\d{2}$")) {
+        if (range == null || !range.matches("^(?:[01]\\d|2[0-3]):[0-5]\\d-(?:[01]\\d|2[0-3]):[0-5]\\d$")) {
             throw new BusinessException(ResultCode.VALID_FAIL, "올바르지 않은 시간 범위 형식입니다.");
         }
 

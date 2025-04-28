@@ -17,7 +17,7 @@ public record StorePageItemResponseDto(
         return new StorePageItemResponseDto(
                 store.getName(),
                 store.getDescription(),
-                store.getCategory().name(),
+                store.getCategory().getDesc(),
                 store.getMinDeliveryPrice(),
                 store.getDeliveryTip(),
                 store.getStatus()

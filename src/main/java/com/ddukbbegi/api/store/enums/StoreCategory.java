@@ -25,15 +25,15 @@ public enum StoreCategory {
     FUSION("퓨전"),
     ETC("기타");
 
-    private final String category;
+    private final String desc;
 
-    StoreCategory(String category) {
-        this.category = category;
+    StoreCategory(String desc) {
+        this.desc = desc;
     }
 
     public static StoreCategory fromString(String name) {
         return Arrays.stream(values())
-                .filter(c -> c.category.equals(name))
+                .filter(c -> c.desc.equals(name))
                 .findFirst()
                 .orElseThrow(() -> new BusinessException(ResultCode.VALID_FAIL, "존재하지 않는 카테고리명: " + name));
     }

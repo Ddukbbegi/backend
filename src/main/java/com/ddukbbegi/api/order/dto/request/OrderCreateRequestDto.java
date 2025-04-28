@@ -10,7 +10,8 @@ public record OrderCreateRequestDto(
         @NotEmpty(message = "메뉴 목록은 비어 있을 수 없습니다.")
         List<@Valid MenuOrderDto> menus,
 
-        String requestComment
+        String requestComment,
+        String requestId
 
 ) {
     public record MenuOrderDto(

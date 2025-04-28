@@ -29,7 +29,7 @@ public record OwnerStoreResponseDto(
         return new OwnerStoreResponseDto(
                 store.getId(),
                 store.getName(),
-                store.getCategory().name(),
+                store.getCategory().getDesc(),
                 store.getStatus(),
                 TimeRangeFormatter.format(startTime, endTime),
                 store.isTemporarilyClosed(),

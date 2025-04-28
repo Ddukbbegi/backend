@@ -28,10 +28,11 @@ public class StoreService {
     @Transactional
     public StoreIdResponseDto registerStore(StoreRegisterRequestDto dto, Long userId) {
 
-        User user = userRepository.findByIdOrElseThrow(userId);
         if (!storeRepository.isStoreRegistrationAvailable(userId)) {
             throw new BusinessException(ResultCode.STORE_LIMIT_EXCEEDED);
         }
+
+        User user = userRepository.findByIdOrElseThrow(userId);
 
         Store store = dto.toEntity(user);
         Store savedStore = storeRepository.save(store);
@@ -70,7 +71,7 @@ public class StoreService {
     @Transactional(readOnly = true)
     public PageResponseDto<StorePageItemResponseDto> getStores(String name, Pageable pageable) {
 
-        Page<StorePageItemResponseDto> result = storeRepository.findAllOpenedStoreByName("%" + name + "%", pageable)
+        Page<StorePageItemResponseDto> result = storeRepository.findAllStoreByName("%" + name + "%", pageable)
                 .map(StorePageItemResponseDto::fromEntity);
         return PageResponseDto.toDto(result);
     }

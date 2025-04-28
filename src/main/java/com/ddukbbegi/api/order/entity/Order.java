@@ -29,6 +29,9 @@ public class Order extends BaseUserEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     private Store store;
 
+    @Version
+    private Long version;
+
     @NotNull
     @Enumerated(EnumType.STRING)
     private OrderStatus orderStatus;
@@ -36,12 +39,16 @@ public class Order extends BaseUserEntity {
     @Nullable
     private String requestComment;
 
+    @Column(name = "request_id", nullable = false, unique = true)
+    private String requestId;
+
     @Builder
-    public Order(User user, Store store, @Nullable String requestComment) {
+    public Order(User user, Store store, @Nullable String requestComment, String requestId) {
         this.user = user;
         this.store = store;
         this.orderStatus = OrderStatus.WAITING;
         this.requestComment = requestComment;
+        this.requestId = requestId;
     }
 
     public void cancel() {

@@ -34,6 +34,7 @@ public enum ResultCode {
     /* 가게 도메인 */
     STORE_LIMIT_EXCEEDED(HttpStatus.BAD_REQUEST, "E301", "가게 등록 가능 개수를 초과했습니다. 최대 3개까지만 등록할 수 있습니다."),
     STORE_FORBIDDEN_ACCESS(HttpStatus.FORBIDDEN, "E301", "해당 가게에 접근할 권한이 없습니다."),
+    STORE_INVALID_TIME_RANGE(HttpStatus.BAD_REQUEST, "E301", "올바르지 않은 시간 범위 형식입니다."),
 
     /* 주문 도메인 */
     CONTAIN_DIFFERENT_STORE_MENU(HttpStatus.BAD_REQUEST, "E201", "서로 다른 가게의 메뉴가 포함되어 있습니다."),
@@ -45,8 +46,8 @@ public enum ResultCode {
     ORDER_STATUS_FLOW_INVALID(HttpStatus.BAD_REQUEST, "E207", "현재 주문 단계의 다음 상태로만 변경이 가능합니다."),
     ORDER_ALREADY_TERMINATED(HttpStatus.BAD_REQUEST,"E208" ,"이미 종료된 주문입니다." ),
     STORE_OWNER_MISMATCH(HttpStatus.BAD_REQUEST, "E209", "본인 가게의 주문이 아닙니다."),
-    ORDER_NOT_FOUND(HttpStatus.BAD_REQUEST,"E210", "존재하지 않는 주문입니다.");
-    UNDER_MIN_DELIVERY_PRICE(HttpStatus.BAD_REQUEST, "E204", "최소 주문 금액이 충족되지 않았습니다.");
+    ORDER_NOT_FOUND(HttpStatus.BAD_REQUEST,"E210", "존재하지 않는 주문입니다."),
+    DUPLICATE_REQUEST_ID(HttpStatus.BAD_REQUEST, "E211", "이미 요청된 주문입니다.");
 
     private final HttpStatus status;
     private final String code;
