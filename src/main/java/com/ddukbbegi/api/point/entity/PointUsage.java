@@ -28,5 +28,5 @@ public class PointUsage extends BaseTimeEntity {
     private Order order;
 
     @Column(nullable = false)
-    private Long usage;
+    private Long usageHistory;
 }

@@ -18,7 +18,7 @@ public class PointUsageResponsDto {
         return PointUsageResponsDto.builder()
                 .userId(pointUsage.getUser().getId())
                 .orderId(pointUsage.getOrder().getId())
-                .usage(pointUsage.getUsage())
+                .usage(pointUsage.getUsageHistory())
                 .createAt(pointUsage.getCreatedAt())
                 .build();
     }

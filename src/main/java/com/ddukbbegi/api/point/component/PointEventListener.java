@@ -29,7 +29,7 @@ public class PointEventListener {
         PointUsage pointUsage = PointUsage.builder()
                 .user(event.getUser())
                 .order(event.getOrder())
-                .usage(point)
+                .usageHistory(point)
                 .build();
         Point findMyPoint = pointRepository.findPointByUser(event.getUser());
         findMyPoint.addPoint(point);
@@ -41,7 +41,7 @@ public class PointEventListener {
     public void usagePoint(PointUsageEvent event){
         Point point = pointRepository.findPointByUser(event.getUser());
         PointUsage pointUsage = PointUsage.builder()
-                                    .usage(point.getMyPoint() * -1)
+                                    .usageHistory(point.getMyPoint() * -1)
                                     .user(event.getUser())
                                     .order(event.getOrder())
                                     .build();
