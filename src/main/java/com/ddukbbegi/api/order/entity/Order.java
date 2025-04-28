@@ -26,8 +26,8 @@ public class Order extends BaseUserEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     private Store store;
 
-    @Version
-    private Long version;
+//    @Version
+//    private Long version;
 
     @NotNull
     @Enumerated(EnumType.STRING)
