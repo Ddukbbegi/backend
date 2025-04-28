@@ -53,6 +53,7 @@ public class MenuServiceTest {
 		Menu menu1 = mock(Menu.class);
 		Menu menu2 = mock(Menu.class);
 
+		when(menuRepository.isStoreOwner(storeId, userId)).thenReturn(true);
 		when(storeRepository.findByIdOrElseThrow(storeId)).thenReturn(store);
 		when(menuRepository.isStoreOwner(storeId, userId)).thenReturn(true);
 		when(menuRepository.findAllByStoreId(storeId)).thenReturn(Arrays.asList(menu1, menu2));
@@ -65,7 +66,6 @@ public class MenuServiceTest {
 		verify(menuRepository).isStoreOwner(storeId, userId);
 		verify(menuRepository).findAllByStoreId(storeId);
 	}
-
 
 	@Test
 	void findAllMenusForOwner_notOwner_throwsException() {
