@@ -28,6 +28,8 @@ public class SecurityConfig {
     private final CustomUserDetailsService customUserDetailsService;
     private final CustomOAuth2UserService customOAuth2UserService;
     private final OAuth2AuthenticationSuccessHandler oAuth2AuthenticationSuccessHandler;
+    private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
+    private final CustomAccessDeniedHandler customAccessDeniedHandler;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -40,8 +42,14 @@ public class SecurityConfig {
                         .requestMatchers(
                                 "/api/owner/**"
                         ).hasRole("OWNER")
-                        .requestMatchers("/api/stores/*/menus").permitAll()
+                        .requestMatchers(
+                                "/api/admin/**", "/api/owner/**"
+                        ).hasRole("ADMIN")
                         .anyRequest().authenticated()
+                )
+                .exceptionHandling(c -> c
+                        .authenticationEntryPoint(customAuthenticationEntryPoint)
+                        .accessDeniedHandler(customAccessDeniedHandler)
                 )
                 .formLogin(AbstractHttpConfigurer::disable)
                 .httpBasic(AbstractHttpConfigurer::disable)
