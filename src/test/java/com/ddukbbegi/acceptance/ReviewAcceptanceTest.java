@@ -23,12 +23,12 @@ public class ReviewAcceptanceTest extends AcceptanceTestSupport {
     @Test
     void doOrderThenWriteReview() {
         // given
-        회원가입하고_로그인("owner31@test.com", UserRole.OWNER);
+        회원가입하고_로그인("owner41@test.com", UserRole.OWNER);
         Long storeId = 사장_24시운영_가게등록();
         Long menuId1 = 사장_메뉴등록(storeId, "참치김밥");
         Long menuId2 = 사장_메뉴등록(storeId, "치즈김밥");
 
-        회원가입하고_로그인("user31@test.com", UserRole.USER);
+        회원가입하고_로그인("user41@test.com", UserRole.USER);
         Long orderId = 유저_주문요청(List.of(menuId1, menuId2));
 
         사장_주문수락(orderId);
@@ -51,12 +51,12 @@ public class ReviewAcceptanceTest extends AcceptanceTestSupport {
     @Test
     void replyReview() {
         // given
-        회원가입하고_로그인("owner32@test.com", UserRole.OWNER);
+        회원가입하고_로그인("owner42@test.com", UserRole.OWNER);
         Long storeId = 사장_24시운영_가게등록();
         Long menuId1 = 사장_메뉴등록(storeId, "참치김밥");
         Long menuId2 = 사장_메뉴등록(storeId, "치즈김밥");
 
-        회원가입하고_로그인("user32@test.com", UserRole.USER);
+        회원가입하고_로그인("user42@test.com", UserRole.USER);
         Long orderId = 유저_주문요청(List.of(menuId1, menuId2));
 
         사장_주문수락(orderId);

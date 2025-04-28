@@ -1,6 +1,7 @@
 package com.ddukbbegi.api.review.service;
 
 import com.ddukbbegi.api.order.entity.Order;
+import com.ddukbbegi.api.order.enums.OrderStatus;
 import com.ddukbbegi.api.order.repository.OrderRepository;
 import com.ddukbbegi.api.review.dto.*;
 import com.ddukbbegi.api.review.entity.Review;
@@ -30,6 +31,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -50,7 +52,7 @@ class ReviewServiceTest {
 
     @Test
     void saveReview() {
-        Order order = Order.builder().build();
+        Order order = mock(Order.class);
         User user = new User();
         Long likeCount = 0L;
         ReviewRequestDto requestDto =
@@ -74,6 +76,7 @@ class ReviewServiceTest {
                 .willReturn(order);
         given(userRepository.findByIdOrElseThrow(userId))
                 .willReturn(user);
+        given(order.getOrderStatus()).willReturn(OrderStatus.DELIVERED);
         // 여기서 Review.from()은 stub하지 않고 그냥 사용
 
         given(reviewRepository.save(any(Review.class)))
