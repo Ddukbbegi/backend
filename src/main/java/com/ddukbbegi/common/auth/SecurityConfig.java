@@ -1,16 +1,13 @@
 package com.ddukbbegi.common.auth;
 
+import com.ddukbbegi.api.user.service.CustomOAuth2UserService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
@@ -26,6 +23,8 @@ public class SecurityConfig {
 
     private final JwtFilter jwtFilter;
     private final CustomUserDetailsService customUserDetailsService;
+    private final CustomOAuth2UserService customOAuth2UserService;
+    private final OAuth2AuthenticationSuccessHandler oAuth2AuthenticationSuccessHandler;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -40,7 +39,15 @@ public class SecurityConfig {
                         ).hasRole("OWNER")
                         .anyRequest().authenticated()
                 )
+                .formLogin(AbstractHttpConfigurer::disable)
+                .httpBasic(AbstractHttpConfigurer::disable)
                 .userDetailsService(customUserDetailsService)
+                .oauth2Login(oauth2 -> oauth2
+                        .userInfoEndpoint(userInfo -> userInfo
+                                .userService(customOAuth2UserService)// 소셜 로그인 유저 서비스
+                        )
+                        .successHandler(oAuth2AuthenticationSuccessHandler) // 소셜 로그인 성공 핸들러 (JWT 발급)
+                )
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();

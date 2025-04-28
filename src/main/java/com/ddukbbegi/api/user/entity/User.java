@@ -3,9 +3,15 @@ package com.ddukbbegi.api.user.entity;
 import com.ddukbbegi.api.common.entity.BaseTimeEntity;
 import com.ddukbbegi.api.user.enums.UserRole;
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.SQLDelete;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+
+import java.util.Collection;
+import java.util.List;
 
 @Entity
 @Getter
@@ -18,16 +24,13 @@ public class User extends BaseTimeEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(unique = true)
+    @Column(nullable = false, unique = true)
     private String email;
 
-    @Column(nullable = false)
     private String password;
 
-    @Column(nullable = false)
     private String name;
 
-    @Column(nullable = false)
     private String phone;
 
     @Enumerated(EnumType.STRING)
@@ -35,6 +38,22 @@ public class User extends BaseTimeEntity {
 
     @Column(nullable = false)
     private boolean isDeleted = Boolean.FALSE;
+
+    // --- 소셜 로그인 관련 추가 필드 ---
+    private String provider;  // "google", "kakao", "naver" (없으면 일반 로그인 유저)
+    private String providerId; // 소셜에서 내려주는 고유 ID
+
+    @Builder
+    public User(String email, String password, String name, String phone, UserRole userRole, boolean isDeleted, String provider, String providerId) {
+        this.email = email;
+        this.password = password;
+        this.name = name;
+        this.phone = phone;
+        this.userRole = userRole;
+        this.isDeleted = isDeleted;
+        this.provider = provider;
+        this.providerId = providerId;
+    }
 
     public User(String email, String password, String name, String phone, UserRole userRole) {
         this.email = email;
@@ -64,4 +83,12 @@ public class User extends BaseTimeEntity {
         this.phone = phone;
     }
 
+    // getAuthorities() 메서드
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return List.of(new SimpleGrantedAuthority(userRole.name()));
+    }
+
+    public Long getId() {
+        return id;
+    }
 }

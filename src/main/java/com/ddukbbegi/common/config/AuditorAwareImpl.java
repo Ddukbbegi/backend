@@ -28,5 +28,4 @@ public class AuditorAwareImpl implements AuditorAware<Long> {
 
         return Optional.empty();
     }
-
 }

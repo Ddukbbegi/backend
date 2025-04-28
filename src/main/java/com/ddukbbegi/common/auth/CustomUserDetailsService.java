@@ -23,7 +23,7 @@ public class CustomUserDetailsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String userId) throws UsernameNotFoundException {
-        // 데이터베이스에서 userId로 사용자 조회
+
         User userEntity = userRepository.findById(Long.valueOf(userId))
                 .orElseThrow(() ->
                         new BusinessException(ResultCode.NOT_FOUND));

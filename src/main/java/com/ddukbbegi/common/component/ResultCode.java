@@ -49,6 +49,7 @@ public enum ResultCode {
     ORDER_NOT_FOUND(HttpStatus.BAD_REQUEST,"E210", "존재하지 않는 주문입니다."),
     DUPLICATE_REQUEST_ID(HttpStatus.BAD_REQUEST, "E211", "이미 요청된 주문입니다.");
 
+
     private final HttpStatus status;
     private final String code;
     private final String defaultMessage;
