@@ -8,6 +8,7 @@ import java.time.DayOfWeek;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 
+// static 클래스보다는 Bean으로 관리하는게 테스트 시 편리함
 @Service
 public class StoreStatusResolveService {
 
@@ -30,6 +31,10 @@ public class StoreStatusResolveService {
         LocalTime breakStart = isWeekend ? store.getWeekendBreakStartTime() : store.getWeekdayBreakStartTime();
         LocalTime breakEnd = isWeekend ? store.getWeekendBreakEndTime() : store.getWeekdayBreakEndTime();
 
+        // 24시간 영업 표시용
+        if (openTime.equals(closeTime)) {
+            return StoreStatus.OPEN;
+        }
 
         if (isWithin(time, breakStart, breakEnd)) {
             return StoreStatus.BREAK;

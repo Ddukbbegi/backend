@@ -2,6 +2,7 @@ package com.ddukbbegi.api.review.service;
 
 
 import com.ddukbbegi.api.order.entity.Order;
+import com.ddukbbegi.api.order.enums.OrderStatus;
 import com.ddukbbegi.api.order.repository.OrderRepository;
 import com.ddukbbegi.api.review.dto.*;
 import com.ddukbbegi.api.review.entity.Review;
@@ -33,8 +34,13 @@ public class ReviewService {
 
     public ReviewResponseDto saveReview(Long userId, ReviewRequestDto requestDto){
         Order findOrder = orderRepository.findByIdOrElseThrow(requestDto.orderId());
+        if (findOrder.getOrderStatus() != OrderStatus.DELIVERED) {
+            throw new BusinessException(ResultCode.ORDER_NOT_DELIVERED);
+        }
+
         User findUser = userRepository.findByIdOrElseThrow(userId);
         Review review = Review.from(findUser, findOrder,requestDto);
+
         Review savedReview = reviewRepository.save(review);
         Long likeCount = reviewLikeRepository.countLikesByReviewId(savedReview.getId());
         return ReviewResponseDto.from(savedReview, likeCount);

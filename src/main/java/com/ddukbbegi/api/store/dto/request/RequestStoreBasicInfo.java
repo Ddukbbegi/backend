@@ -23,7 +23,7 @@ public record RequestStoreBasicInfo(
         String description
 ) {
 
-    public StoreCategory getCategory() {
+    public StoreCategory toCategory() {
         return StoreCategory.fromString(this.category);
     }
 

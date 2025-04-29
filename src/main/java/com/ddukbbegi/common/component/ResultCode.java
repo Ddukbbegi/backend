@@ -47,7 +47,10 @@ public enum ResultCode {
     ORDER_ALREADY_TERMINATED(HttpStatus.BAD_REQUEST,"E208" ,"이미 종료된 주문입니다." ),
     STORE_OWNER_MISMATCH(HttpStatus.BAD_REQUEST, "E209", "본인 가게의 주문이 아닙니다."),
     ORDER_NOT_FOUND(HttpStatus.BAD_REQUEST,"E210", "존재하지 않는 주문입니다."),
-    DUPLICATE_REQUEST_ID(HttpStatus.BAD_REQUEST, "E211", "이미 요청된 주문입니다.");
+    DUPLICATE_REQUEST_ID(HttpStatus.BAD_REQUEST, "E211", "이미 요청된 주문입니다."),
+
+    /* 리뷰 도메인 */
+    ORDER_NOT_DELIVERED(HttpStatus.BAD_REQUEST, "E401", "아직 배달 완료되지 않은 주문에는 리뷰를 작성할 수 없습니다.");
 
 
     private final HttpStatus status;

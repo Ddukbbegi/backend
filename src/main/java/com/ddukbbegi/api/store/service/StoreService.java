@@ -4,6 +4,7 @@ import com.ddukbbegi.api.common.dto.PageResponseDto;
 import com.ddukbbegi.api.store.dto.request.*;
 import com.ddukbbegi.api.store.dto.response.*;
 import com.ddukbbegi.api.store.entity.Store;
+import com.ddukbbegi.api.store.enums.StoreStatus;
 import com.ddukbbegi.api.store.repository.StoreRepository;
 import com.ddukbbegi.api.user.entity.User;
 import com.ddukbbegi.api.user.repository.UserRepository;
@@ -15,12 +16,15 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
 public class StoreService {
+
+    private final StoreStatusResolveService storeStatusResolveService;
 
     private final StoreRepository storeRepository;
     private final UserRepository userRepository;
@@ -35,6 +39,7 @@ public class StoreService {
         User user = userRepository.findByIdOrElseThrow(userId);
 
         Store store = dto.toEntity(user);
+        store.updateStatus(storeStatusResolveService.resolveStoreStatus(store, LocalDateTime.now()));
         Store savedStore = storeRepository.save(store);
 
         return StoreIdResponseDto.of(savedStore.getId());
@@ -92,7 +97,7 @@ public class StoreService {
         RequestStoreBasicInfo basicInfoDto = dto.basicInfoDto();
         store.updateBasicInfo(
                 basicInfoDto.name(),
-                basicInfoDto.getCategory(),
+                basicInfoDto.toCategory(),
                 basicInfoDto.phoneNumber(),
                 basicInfoDto.description()
         );
@@ -140,6 +145,7 @@ public class StoreService {
         checkStoreOwnerPermission(store, userId);
 
         store.updateTemporarilyClosed(dto.status());
+        store.updateStatus(storeStatusResolveService.resolveStoreStatus(store, LocalDateTime.now()));
     }
 
     @Transactional
@@ -154,6 +160,7 @@ public class StoreService {
         }
 
         store.updatePermanentlyClosed(dto.status());
+        store.updateStatus(storeStatusResolveService.resolveStoreStatus(store, LocalDateTime.now()));
     }
 
     private void checkStoreOwnerPermission(Store store, Long userId) {

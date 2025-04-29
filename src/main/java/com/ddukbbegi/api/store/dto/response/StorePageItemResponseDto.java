@@ -4,6 +4,7 @@ import com.ddukbbegi.api.store.entity.Store;
 import com.ddukbbegi.api.store.enums.StoreStatus;
 
 public record StorePageItemResponseDto(
+        Long storeId,
         String name,
         String description,
         String storeCategory,
@@ -15,6 +16,7 @@ public record StorePageItemResponseDto(
     public static StorePageItemResponseDto fromEntity(Store store) {
 
         return new StorePageItemResponseDto(
+                store.getId(),
                 store.getName(),
                 store.getDescription(),
                 store.getCategory().getDesc(),

@@ -25,7 +25,7 @@ public record StoreRegisterRequestDto(
         return Store.builder()
                 .user(user)
                 .name(basicInfoDto.name())
-                .category(basicInfoDto.getCategory())
+                .category(basicInfoDto.toCategory())
                 .phoneNumber(basicInfoDto.phoneNumber())
                 .description(basicInfoDto.description())
 

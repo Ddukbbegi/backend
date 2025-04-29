@@ -15,6 +15,7 @@ import com.ddukbbegi.api.order.repository.OrderMenuRepository;
 import com.ddukbbegi.api.order.repository.OrderRepository;
 import com.ddukbbegi.api.review.repository.ReviewRepository;
 import com.ddukbbegi.api.store.entity.Store;
+import com.ddukbbegi.api.store.enums.StoreStatus;
 import com.ddukbbegi.api.user.entity.User;
 import com.ddukbbegi.api.user.repository.UserRepository;
 import com.ddukbbegi.common.component.ResultCode;
@@ -66,10 +67,7 @@ public class OrderService {
         Store store = menus.get(0).getStore();
 
         checkIsAllSameStore(menus, store.getId());
-
-        LocalTime now = now();
-        checkStoreIsWorking(now,store);
-
+        checkStoreIsWorking(store);
         checkIsTotalPriceOverMinDeliveryPrice(menus,request,store.getMinDeliveryPrice());
 
         Order order = Order.builder()
@@ -131,8 +129,8 @@ public class OrderService {
         return totalPrice;
     }
 
-    private void checkStoreIsWorking(LocalTime now,Store store) {
-        if (now.isBefore(store.getWeekdayWorkingStartTime()) || now.isAfter(store.getWeekdayWorkingEndTime())) {
+    private void checkStoreIsWorking(Store store) {
+        if (!store.getStatus().equals(StoreStatus.OPEN)) {
             throw new BusinessException(ResultCode.STORE_NOT_WORKING);
         }
     }
