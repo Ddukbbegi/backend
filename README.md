@@ -255,9 +255,10 @@ src/main/java/com/ddukbbegi/
 ### 1. [노션 생성](https://www.notion.so/teamsparta/20-1d62dc3ef5148053aa5cd14469fafe83?p=1e32dc3ef5148011b438cb3f4888c01e&pm=s)
 ### 2. Brainstorming
 ### 3. MVP 정의
-### 4. 🔨 [wireframe 설계](https://www.figma.com/design/IkLKjHDcvBtkaDKLO69DhR/ddukbegi?node-id=0-1&t=YrGKiWKWhyDuf7RH-1)
-### 5. 📪 [ERD 설계](https://www.erdcloud.com/d/X5Xzxh5QTnYxzR7jZ)
-### 6. ⌚️ [API 명세서 구현 및 S.A 작성](https://www.notion.so/teamsparta/S-A-1dd2dc3ef5148037bf05c4961b647801)
+### 4. [wireframe 설계](https://www.figma.com/design/IkLKjHDcvBtkaDKLO69DhR/ddukbegi?node-id=0-1&t=YrGKiWKWhyDuf7RH-1)
+### 5. [ERD 설계](https://www.erdcloud.com/d/X5Xzxh5QTnYxzR7jZ)
+### 6. [API 명세서 구현 및 S.A 작성](https://www.notion.so/teamsparta/S-A-1dd2dc3ef5148037bf05c4961b647801)
+### 7. 기능 구현
 
 ***
 
